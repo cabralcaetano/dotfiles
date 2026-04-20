@@ -1,0 +1,128 @@
+{
+  // === BAR =====================================
+  "layer": "top",
+  "position": "top",
+  "passthrough": false,
+  "reload_on_style_change": true,
+
+  // === MARGENS =================================
+  "spacing": 10,
+  "margin-top": 0,
+  "margin-left": 0,
+  "margin-right": 0,
+  "margin-bottom": 1,
+
+  // === MÓDULOS =================================
+  "modules-left": ["custom/icon", "hyprland/workspaces", "hyprland/window"],
+  "modules-center": ["clock"],
+  "modules-right": ["network", "bluetooth", "pulseaudio", "battery", "tray"],
+
+  // === ÍCONE CUSTOM ============================
+  "custom/icon": {
+    "format": ""
+  },
+
+  // === WORKSPACES ==============================
+  "hyprland/workspaces": {
+    "disable-scroll": true,
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "1": "i",
+      "2": "ii",
+      "3": "iii",
+      "4": "iv",
+      "5": "v",
+      "6": "vi",
+      "7": "vii",
+      "8": "viii",
+      "9": "ix",
+      "10": "x"
+    }
+  },
+
+  // === JANELA ATIVA ============================
+  "hyprland/window": {
+    "separate-outputs": true,
+    "max-length": 20,
+    "format": "{class}"
+  },
+
+  // === RELÓGIO =================================
+  "clock": {
+    "format": "{:%a %d %H:%M:%S}",
+    "interval": 1,
+    "tooltip-format": "<tt>{calendar}</tt>",
+    "calendar": {
+      "format": {
+        "today": "<b>{}</b>"
+      }
+    },
+    "actions": {
+      "on-click-right": "shift_down",
+      "on-click": "shift_up"
+      // "on-double-click": "gnome-calendar"
+    }
+  },
+
+  // === BATERIA =================================
+  "battery": {
+  "adapter": "ADP0",
+  "bat": "BAT0",
+  "format": "{icon} {capacity}%",
+  "format-charging": "󰂄 {capacity}%",
+  "format-not-charging": "󰚥 {capacity}%",
+  "format-full": "󰁹 {capacity}%",
+  "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+  },
+
+  // === TRAY ====================================
+  "tray": {
+    "icon-size": 16,
+    "spacing": 5,
+    "show-passive-items": true
+  },
+
+  // === REDE ====================================
+"network": {
+  "format-wifi": "{icon}",
+  "format-ethernet": "󰈀",
+  "format-disconnected": "󰤭",
+  "format-icons": ["󰤯", "󰤢", "󰤥", "󰤨"],
+  "on-click": "nm-applet",
+  "tooltip-format-wifi": "{essid} {signalStrength}%"
+  },
+
+  // === BLUETOOTH ================================
+"bluetooth": {
+  "format": "󰂯",
+  "format-connected": "󰂱",
+  "format-off": "󰂲",
+  "on-click": "flatpak run io.github.kaii_lb.Overskride",
+  "tooltip": true,
+  "tooltip-format-connected": "{device_alias}\nBateria: {device_battery_percentage}%"
+  },
+
+  // === PULSEAUDIO ================================
+"pulseaudio": {
+  "format": "{icon}",
+  "icon-size": 16,
+  "format-muted": "󰖁",
+  "format-icons": {
+    "default": ["󰕿", "󰖀", "󰕾"]
+  },
+  "tooltip": true,
+  "tooltip-format": "{volume}%",
+  "scroll-step": 5,
+  "on-click": "pavucontrol"
+  },
+
+  // === POWER ====================================
+  "custom/power": {
+  "format": "",
+  "on-click": "wlogout",
+  "tooltip": false
+  }
+}
+
+  

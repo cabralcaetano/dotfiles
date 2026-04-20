@@ -1,0 +1,112 @@
+/* === GLOBAL ==================================== */
+* {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  border: none;
+  min-height: 0;
+}
+
+/* === BAR ======================================= */
+window#waybar {
+  background-color: alpha(#1d1d20, 0.85);
+  border-radius: 0;
+  color: #ffffff;
+  padding: 2px 12px;
+  transition: 0.3s all;
+}
+
+/* === MÓDULOS =================================== */
+.modules-left,
+.modules-center,
+.modules-right {
+  padding: 0 1rem;
+  color: #ffffff;
+  border: none;
+}
+
+.modules-center {
+  padding: 2px;
+}
+
+/* === ÍCONE CUSTOM ============================== */
+#custom-icon {
+  font-size: 15px;
+  padding-right: 5px;
+}
+
+/* === JANELA ATIVA ============================== */
+#window {
+  font-weight: bold;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+/* === WORKSPACES ================================ */
+#workspaces {
+  font-weight: bold;
+  font-size: 12px;
+  border: none;
+}
+
+#workspaces button {
+  color: #ffffff;
+  border-radius: 0;
+  transition: 0.2s ease-out;
+  border-bottom: 1px solid transparent;
+}
+
+#workspaces button.active {
+  color: #a0a0a0;
+  border-bottom: 1px solid #a0a0a0;
+}
+
+#workspaces button.urgent {
+  color: #ffffff;
+  border-bottom: 1px solid #ffffff;
+}
+
+/* === TRAY ====================================== */
+#tray {
+  color: #ffffff;
+}
+
+/* === RELÓGIO =================================== */
+#clock {
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+#clock:hover {
+  color: #a0a0a0;
+}
+
+/* === BATERIA =================================== */
+#battery {
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* === REDE ====================================== */
+#network {
+  font-weight: 700;
+  color: #ffffff;
+  padding-right: 6px;
+}
+
+/* === PULSEAUDIO ====================================== */
+#pulseaudio {
+  font-weight: 700;
+  font-size: 16px;
+  color: #ffffff;
+  padding-right: 2px;
+}
+
+/* === POWER ====================================== */
+#custom-power {
+  padding: 0 10px;
+  font-size: 16px;
+}
+
+#custom-power:hover {
+  background-color: rgba(255,255,255,0.1);
+}
