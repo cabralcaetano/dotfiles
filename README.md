@@ -1,94 +1,63 @@
-# 🧩 Meu Setup Linux (Dotfiles)
+# Dotfiles — cabralcaetano
 
-Este repositório contém minhas configurações pessoais para ambiente Linux, incluindo Hyprland, Neovim, Zsh e outras ferramentas.
-
----
-
-## 📸 Preview
-
-(Coloque aqui prints do seu desktop depois)
+Configurações pessoais para ambiente Linux com Hyprland no Fedora.
 
 ---
 
-## 🛠️ Programas usados
+## Setup
 
-* Hyprland (window manager)
-* Waybar (barra de status)
-* Kitty (terminal)
-* Neovim (editor)
-* Zsh (shell)
-* Tmux (multiplexador de terminal)
-
----
-
-## 📁 Estrutura
-
-```
-dotfiles/
-├── hypr/
-├── waybar/
-├── kitty/
-├── nvim/
-├── zsh/
-├── scripts/
-├── install/
-└── README.md
-```
+| Ferramenta | Funcao |
+|---|---|
+| Hyprland | Window manager Wayland |
+| Waybar | Barra de status |
+| SwayNC | Central de notificacoes |
+| Hyprlock | Lockscreen |
+| Hypridle | Daemon de inatividade |
+| Fuzzel | App launcher |
+| Kitty | Terminal |
+| Hyprpaper | Wallpaper |
 
 ---
 
-## 🚀 Instalação
+## Estrutura
 
-### 1. Clonar o repositório
-
-```
-git clone https://github.com/SEU_USUARIO/dotfiles.git
-cd dotfiles
-```
-
-### 2. Rodar script de instalação
-
-#### Arch Linux
-
-```
-bash install/arch.sh
-```
-
-#### Fedora
-
-```
-bash install/fedora.sh
-```
+    dotfiles/
+    hypr/       -> hyprland.conf, hyprlock.conf, hypridle.conf
+    waybar/     -> config.jsonc, style.css
+    swaync/     -> config.json, style.css
+    fuzzel/     -> fuzzel.ini
+    scripts/    -> screenshot.sh, volume.sh, brightness.sh
 
 ---
 
-## ⚙️ Como funciona
+## Instalacao com GNU Stow
 
-Este repositório usa **GNU Stow** para criar links simbólicos automaticamente.
-
-Exemplo:
-
-```
-stow hypr
-```
+    git clone https://github.com/cabralcaetano/dotfiles.git ~/dotfiles
+    cd ~/dotfiles
+    sudo dnf install stow
+    stow hypr waybar swaync fuzzel scripts
 
 ---
 
-## 🧠 Observações
+## Keybinds principais
 
-* Algumas configs podem precisar de ajustes dependendo do seu sistema
-* Certifique-se de ter todas as dependências instaladas
+| Atalho | Acao |
+|---|---|
+| SUPER + R | Launcher (Fuzzel) |
+| SUPER + Q | Terminal (Kitty) |
+| SUPER + B | Navegador (Brave) |
+| SUPER + N | Central de notificacoes |
+| SUPER + L | Bloqueia a tela |
+| SUPER + C | Fecha janela |
+| SUPER + V | Toggle floating |
+| SUPER + S | Scratchpad |
+| Print | Screenshot tela inteira |
+| SHIFT + Print | Screenshot de area |
+| CTRL + Print | Screenshot para clipboard |
+| CTRL SHIFT + S | Historico de clipboard |
 
 ---
 
-## 📌 TODO
-
-* [ ] Adicionar screenshots
-* [ ] Melhorar scripts
-* [ ] Documentar keybinds do Hyprland
-
----
-
-## 📄 Licença
+## Licenca
 
 MIT
