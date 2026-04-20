@@ -1,0 +1,267 @@
+/* === GLOBAL ==================================== */
+* {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 13px;
+  border: none;
+  min-height: 0;
+  transition: all 0.2s ease;
+}
+
+/* === CONTROL CENTER ============================ */
+.control-center {
+  background-color: alpha(#1d1d20, 0.92);
+  border: 1px solid rgba(160, 160, 160, 0.2);
+  border-radius: 8px;
+  padding: 10px;
+  margin: 8px;
+  color: #ffffff;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* === LISTA DE NOTIFICAÇÕES ===================== */
+.notification-row {
+  margin: 4px 0;
+}
+
+.notification {
+  background-color: alpha(#2a2a2e, 0.95);
+  border: 1px solid rgba(160, 160, 160, 0.15);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #ffffff;
+}
+
+.notification:hover {
+  background-color: alpha(#323236, 0.95);
+  border-color: rgba(160, 160, 160, 0.35);
+}
+
+/* === URGÊNCIA ================================== */
+.notification.critical {
+  border-left: 2px solid rgba(255, 100, 100, 0.8);
+}
+
+.notification.normal {
+  border-left: 2px solid rgba(160, 160, 160, 0.5);
+}
+
+.notification.low {
+  border-left: 2px solid rgba(80, 80, 80, 0.5);
+}
+
+/* === CONTEÚDO DA NOTIFICAÇÃO =================== */
+.notification-default-action {
+  border-radius: 8px;
+  padding: 0;
+}
+
+.notification-default-action:hover {
+  background-color: transparent;
+}
+
+.notification-summary {
+  font-weight: bold;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.notification-body {
+  font-size: 12px;
+  color: #a0a0a0;
+  margin-top: 2px;
+}
+
+.notification-time {
+  font-size: 11px;
+  color: rgba(160, 160, 160, 0.6);
+}
+
+/* === BOTÃO FECHAR ============================== */
+.close-button {
+  background-color: transparent;
+  color: rgba(160, 160, 160, 0.5);
+  border-radius: 4px;
+  min-width: 18px;
+  min-height: 18px;
+  font-size: 12px;
+}
+
+.close-button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* === BOTÕES DE AÇÃO ============================ */
+.notification-action-button {
+  background-color: rgba(160, 160, 160, 0.1);
+  border-radius: 6px;
+  color: #a0a0a0;
+  padding: 4px 10px;
+  margin: 4px 2px 0;
+  font-size: 12px;
+}
+
+.notification-action-button:hover {
+  background-color: rgba(160, 160, 160, 0.2);
+  color: #ffffff;
+}
+
+/* === CABEÇALHO DO CONTROL CENTER =============== */
+.widget-title {
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(160, 160, 160, 0.15);
+}
+
+.widget-title > label {
+  font-weight: bold;
+  font-size: 13px;
+  color: #ffffff;
+}
+
+.widget-title > button {
+  background-color: transparent;
+  color: #a0a0a0;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
+.widget-title > button:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+/* === WIDGET DND ================================ */
+.widget-dnd {
+  background-color: alpha(#2a2a2e, 0.8);
+  border: 1px solid rgba(160, 160, 160, 0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+.widget-dnd > switch {
+  border-radius: 20px;
+  background-color: rgba(160, 160, 160, 0.2);
+}
+
+.widget-dnd > switch:checked {
+  background-color: #a0a0a0;
+}
+
+.widget-dnd > switch slider {
+  background-color: #ffffff;
+  border-radius: 20px;
+}
+
+/* === WIDGET LABEL ============================== */
+.widget-label {
+  padding: 4px 2px;
+}
+
+.widget-label > label {
+  font-weight: bold;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+/* === WIDGET MPRIS (media player) =============== */
+.widget-mpris {
+  background-color: alpha(#2a2a2e, 0.8);
+  border: 1px solid rgba(160, 160, 160, 0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+.widget-mpris-title {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.widget-mpris-subtitle {
+  font-size: 12px;
+  color: #a0a0a0;
+}
+
+/* === WIDGET VOLUME ============================= */
+.widget-volume {
+  background-color: alpha(#2a2a2e, 0.8);
+  border: 1px solid rgba(160, 160, 160, 0.15);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+.widget-volume > box > button {
+  background-color: transparent;
+  color: #a0a0a0;
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+.widget-volume > box > button:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+scale trough {
+  background-color: rgba(160, 160, 160, 0.15);
+  border-radius: 10px;
+  min-height: 4px;
+}
+
+scale highlight {
+  background-color: #a0a0a0;
+  border-radius: 10px;
+}
+
+scale slider {
+  background-color: #ffffff;
+  border-radius: 50%;
+  min-width: 12px;
+  min-height: 12px;
+}
+
+/* === POPUP (notificação flutuante) ============= */
+.floating-notifications {
+  background-color: transparent;
+}
+
+.blank-window {
+  background-color: transparent;
+}
+
+.notification-window {
+  background-color: transparent;
+  border-radius: 8px;
+  margin: 4px;
+}
+
+/* === BUTTONS GRID ============================== */
+.widget-buttons-grid {
+  background-color: alpha(#2a2a2e, 0.8);
+  border: 1px solid rgba(160, 160, 160, 0.15);
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 6px;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild > button {
+  background-color: rgba(160, 160, 160, 0.1);
+  border-radius: 6px;
+  color: #a0a0a0;
+  font-size: 18px;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 3px;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild > button:hover {
+  background-color: rgba(160, 160, 160, 0.2);
+  color: #ffffff;
+}
