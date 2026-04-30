@@ -1,0 +1,5 @@
+# AULA F75 / Compx 2.4G Wireless Receiver
+# Remapeia Right Ctrl -> AltGr (Right Alt)
+# Vendor: 3554, Product: FA09 (USB HID, Bus 0003)
+evdev:input:b0003v3554pFA09e0111-*
+ KEYBOARD_KEY_700e4=rightalt

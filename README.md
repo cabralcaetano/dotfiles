@@ -27,6 +27,7 @@ Configurações pessoais para ambiente Linux com Hyprland no Fedora.
     swaync/     -> config.json, style.css
     fuzzel/     -> fuzzel.ini
     scripts/    -> screenshot.sh, volume.sh, brightness.sh
+    udev/       -> regras hwdb de teclado
 
 ---
 
@@ -36,6 +37,21 @@ Configurações pessoais para ambiente Linux com Hyprland no Fedora.
     cd ~/dotfiles
     sudo dnf install stow
     stow hypr waybar swaync fuzzel scripts
+
+---
+
+## Teclado — Right Ctrl como AltGr (AULA F75)
+
+O teclado AULA F75 (Compx 2.4G Wireless Receiver) nao possui tecla AltGr dedicada.
+A solucao usa udev hwdb para remap no nivel do kernel, funcionando em Wayland/Hyprland sem depender de XKB.
+
+**Instalacao manual** (requer root, nao compativel com stow):
+
+    sudo cp udev/90-aula-rctrl-altgr.hwdb /etc/udev/hwdb.d/
+    sudo systemd-hwdb update
+    sudo udevadm trigger --action=change --subsystem-match=input
+
+Reconecte o receptor USB apos aplicar. O Right Ctrl passara a funcionar como AltGr.
 
 ---
 
