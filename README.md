@@ -26,7 +26,7 @@ Configurações pessoais para ambiente Linux com Hyprland no Fedora.
     waybar/     -> config.jsonc, style.css
     swaync/     -> config.json, style.css
     fuzzel/     -> fuzzel.ini
-    scripts/    -> screenshot.sh, volume.sh, brightness.sh
+    scripts/    -> screenshot.sh, volume.sh, brightness.sh, power-profile.sh
     udev/       -> regras hwdb de teclado
 
 ---
@@ -37,6 +37,22 @@ Configurações pessoais para ambiente Linux com Hyprland no Fedora.
     cd ~/dotfiles
     sudo dnf install stow
     stow hypr waybar swaync fuzzel scripts
+
+---
+
+## Perfil de energia
+
+Usa `tuned-adm` (via `tuned-ppd`, ja instalado no Fedora) para alternar entre tres modos:
+
+| Perfil | Modo tuned |
+|---|---|
+| Balanceado | balanced |
+| Performance | latency-performance |
+| Economia | powersave |
+
+**Alternancia:** botao `󰓅` no painel do SwayNC (`SUPER + N`) — clica para ciclar entre os modos.
+
+**Indicador na waybar:** icone aparece ao lado da bateria apenas quando o perfil nao e o balanceado (`󱐋` performance, `󰌪` economia).
 
 ---
 
