@@ -15,7 +15,7 @@
   // === MÓDULOS =================================
   "modules-left": ["custom/icon", "hyprland/workspaces", "hyprland/window"],
   "modules-center": ["clock"],
-  "modules-right": ["network", "bluetooth", "pulseaudio", "battery", "tray"],
+  "modules-right": ["network", "bluetooth", "pulseaudio", "custom/power-profile", "battery", "tray"],
 
   // === ÍCONE CUSTOM ============================
   "custom/icon": {
@@ -58,6 +58,7 @@
         "today": "<b>{}</b>"
       }
     },
+    "on-click": "swaync-client -t",
     "actions": {
       "on-click-right": "shift_down",
       "on-click": "shift_up"
@@ -122,6 +123,15 @@
   "format": "",
   "on-click": "wlogout",
   "tooltip": false
+  },
+
+  // === PERFIL DE ENERGIA ========================
+  "custom/power-profile": {
+    "exec": "/home/caetano/.local/bin/power-profile.sh waybar",
+    "exec-if": "/home/caetano/.local/bin/power-profile.sh waybar-check",
+    "interval": 3,
+    "tooltip": true,
+    "tooltip-format": "Perfil de energia ativo"
   }
 }
 

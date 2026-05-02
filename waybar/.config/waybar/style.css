@@ -110,3 +110,11 @@ window#waybar {
 #custom-power:hover {
   background-color: rgba(255,255,255,0.1);
 }
+
+/* === PERFIL DE ENERGIA ========================== */
+#custom-power-profile {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  padding-right: 4px;
+}
