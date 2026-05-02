@@ -80,6 +80,10 @@
         {
           "label": "󰜉",
           "command": "systemctl reboot"
+        },
+        {
+          "label": "󰓅",
+          "command": "/home/caetano/.local/bin/power-profile.sh"
         }
       ]
     }
