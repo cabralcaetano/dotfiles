@@ -73,20 +73,61 @@ Reconecte o receptor USB apos aplicar. O Right Ctrl passara a funcionar como Alt
 
 ## Keybinds principais
 
+**Aplicativos**
+
 | Atalho | Acao |
 |---|---|
-| SUPER + R | Launcher (Fuzzel) |
 | SUPER + Q | Terminal (Kitty) |
 | SUPER + B | Navegador (Brave) |
-| SUPER + N | Central de notificacoes |
-| SUPER + L | Bloqueia a tela |
-| SUPER + C | Fecha janela |
+| SUPER + E | Gerenciador de arquivos (Nautilus) |
+| SUPER + R | Launcher (Hyprlauncher) |
+| SUPER + M | Menu de energia (sair do Hyprland) |
+
+**Janelas**
+
+| Atalho | Acao |
+|---|---|
+| SUPER + C | Fecha janela ativa |
 | SUPER + V | Toggle floating |
-| SUPER + S | Scratchpad |
-| Print | Screenshot tela inteira |
-| SHIFT + Print | Screenshot de area |
-| CTRL + Print | Screenshot para clipboard |
-| CTRL SHIFT + S | Historico de clipboard |
+| SUPER + P | Pseudo-tile (dwindle) |
+| SUPER + J | Alterna direcao do split |
+| SUPER + Setas | Move foco entre janelas |
+
+**Workspaces**
+
+| Atalho | Acao |
+|---|---|
+| SUPER + 1..0 | Vai para workspace 1-10 |
+| SUPER SHIFT + 1..0 | Move janela para workspace 1-10 |
+| SUPER + S | Toggle scratchpad |
+| SUPER SHIFT + S | Move janela para scratchpad |
+| SUPER + Scroll | Navega entre workspaces |
+
+**Mouse**
+
+| Atalho | Acao |
+|---|---|
+| SUPER + Botao esquerdo | Move janela |
+| SUPER + Botao direito | Redimensiona janela |
+
+**Media e hardware**
+
+| Atalho | Acao |
+|---|---|
+| XF86AudioRaiseVolume | Volume +5% |
+| XF86AudioLowerVolume | Volume -5% |
+| XF86AudioMute | Mute audio |
+| XF86AudioMicMute | Mute microfone |
+| XF86MonBrightnessUp | Brilho +5% |
+| XF86MonBrightnessDown | Brilho -5% |
+| XF86AudioNext/Prev | Proxima/anterior faixa |
+| XF86AudioPlay/Pause | Play/pause |
+
+**Screenshot**
+
+| Atalho | Acao |
+|---|---|
+| Print | Screenshot de area (salva em ~/Imagens/Screenshots/) |
 
 ---
 
