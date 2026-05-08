@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "type": "group",
+      "ctime": 1778194136165,
+      "items": [
+        {
+          "type": "file",
+          "ctime": 1778194125404,
+          "path": "work/tasks.md",
+          "title": "tasks-global"
+        },
+        {
+          "type": "file",
+          "ctime": 1778194244887,
+          "path": "wiki/index.md"
+        },
+        {
+          "type": "file",
+          "ctime": 1778194270423,
+          "path": "wiki/overview.md"
+        },
+        {
+          "type": "file",
+          "ctime": 1778194278673,
+          "path": "wiki/syntheses/study-roadmap.md"
+        }
+      ],
+      "title": "Workspace"
+    }
+  ]
+}

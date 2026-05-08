@@ -1,0 +1,223 @@
+{
+  "main": {
+    "id": "7825496d0f1111ce",
+    "type": "split",
+    "children": [
+      {
+        "id": "fd3cf5e9e5f530c4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8a3491e2acc39c49",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Visualização de diagrama de grafo"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "026fc44bbd6e7d63",
+    "type": "split",
+    "children": [
+      {
+        "id": "10f321920ba64814",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "de624081cc9cf655",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Explorador de ficheiros"
+            }
+          },
+          {
+            "id": "c7cd4173789f4473",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Procurar"
+            }
+          },
+          {
+            "id": "791aa417a6503682",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Marcadores"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200,
+    "collapsed": true
+  },
+  "right": {
+    "id": "47f58e1ebcc1e71e",
+    "type": "split",
+    "children": [
+      {
+        "id": "2fecbcf72911d4ee",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "abf6fdce03fada40",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "work/projects/code-creator/code-creator.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks para code-creator"
+            }
+          },
+          {
+            "id": "5dd78245dfc83425",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "wiki/syntheses/lint-report-2026-04-26.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Links externos de lint-report-2026-04-26"
+            }
+          },
+          {
+            "id": "d1e15f299d15062d",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Etiquetas"
+            }
+          },
+          {
+            "id": "565be72a4bec061e",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "Todas as propriedades"
+            }
+          },
+          {
+            "id": "2774b6c59ad0e589",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "wiki/syntheses/lint-report-2026-04-26.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Índice de lint-report-2026-04-26"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Abrir Quick Switcher": false,
+      "graph:Abrir Visualização de diagrama de grafo": false,
+      "canvas:Criar novo Canvas": false,
+      "daily-notes:Abrir nota de hoje": false,
+      "templates:Inserir templates": false,
+      "command-palette:Abrir paleta de comando": false,
+      "bases:Criar nova base": false
+    }
+  },
+  "active": "8a3491e2acc39c49",
+  "lastOpenFiles": [
+    "work/meetings/2026-05-07-meet.md",
+    "learn/learning-methods.md",
+    "learn/materials.md",
+    "wiki/index.md.tmp.161724.e15556d5c4c1",
+    "learn/learning-methods.md.tmp.161724.7067f2313b7b",
+    "learn/study-roadmap.md",
+    "wiki/syntheses/study-roadmap.md",
+    "learn/professor/CLAUDE.md.tmp.161724.d795d209c209",
+    "learn/professor/CLAUDE.md",
+    "learn/professor",
+    "learn",
+    "wiki/learn/materials.md",
+    "wiki/learn/materials.md.tmp.161724.52c58336a263",
+    "wiki/learn/professor/CLAUDE.md.tmp.161724.05cf0481b559",
+    "wiki/index.md.tmp.161724.d8b69f4bf607",
+    "wiki/learn/study-roadmap.md",
+    "wiki/learn/professor/CLAUDE.md",
+    "wiki/learn/professor",
+    "wiki/learn",
+    "wiki/concepts/claude-code-subagents.md",
+    "wiki/concepts/cloud-computing.md",
+    "wiki/concepts/containerization.md",
+    "wiki/entities/codecreator.md",
+    "wiki/concepts/api-design.md",
+    "wiki/concepts/software-design-patterns.md",
+    "wiki/concepts/system-design.md",
+    "wiki/entities/roadmap-sh.md",
+    "wiki/sources/2026-05-08-roadmap-api-design.md",
+    "wiki/sources/2026-05-08-roadmap-system-design.md",
+    "wiki/sources/2026-05-08-roadmap-software-design-architecture.md",
+    "wiki/sources/2026-05-08-roadmap-aws.md",
+    "wiki/sources/2026-05-08-roadmap-kubernetes.md",
+    "wiki/sources/2026-05-08-roadmap-aws-best-practices.md",
+    "wiki/sources/2026-05-08-roadmap-docker.md",
+    "wiki/sources/2026-05-08-roadmap-linux.md",
+    "Pasted image 20260430164405.png",
+    "Sem título.canvas"
+  ]
+}
