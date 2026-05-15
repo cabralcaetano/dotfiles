@@ -91,7 +91,7 @@
   "format-ethernet": "󰈀",
   "format-disconnected": "󰤭",
   "format-icons": ["󰤯", "󰤢", "󰤥", "󰤨"],
-  "on-click": "~/.local/bin/wifi-menu.sh &",
+  "on-click": "/home/caetano/.local/bin/wifi-menu.sh",
   "tooltip-format-wifi": "{essid} {signalStrength}%"
   },
 
