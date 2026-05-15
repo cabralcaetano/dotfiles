@@ -1,14 +1,18 @@
 #!/bin/bash
+MAX=$(brightnessctl max)
+STEP=$(( MAX / 100 ))
+
 case "$1" in
-  up)   brightnessctl -e4 -n2 set 5%+ ;;
-  down) brightnessctl -e4 -n2 set 5%- ;;
+  up)   brightnessctl -n2 set +${STEP} ;;
+  down) brightnessctl -n2 set ${STEP}- ;;
 esac
 
-BRIGHT=$(brightnessctl -m | awk -F',' '{gsub(/%/,"",$4); print $4}')
+CUR=$(brightnessctl get)
+LEVEL=$(( CUR * 100 / MAX ))
 
 notify-send \
   -h string:x-canonical-private-synchronous:brightness \
-  -h int:value:"$BRIGHT" \
+  -h int:value:"$LEVEL" \
   -i "display-brightness" \
   -t 1500 \
-  "Brilho" "$BRIGHT%"
+  "Brilho" "$LEVEL%"
