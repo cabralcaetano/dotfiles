@@ -27,7 +27,7 @@ Configurações pessoais para ambiente Linux com Hyprland no Fedora.
     swaync/     -> config.json, style.css
     fuzzel/     -> fuzzel.ini
     scripts/    -> screenshot.sh, volume.sh, brightness.sh, power-profile.sh
-    udev/       -> regras hwdb de teclado
+    udev/deprecated/ -> configs antigas (nao instalar)
 
 ---
 
@@ -56,18 +56,36 @@ Usa `tuned-adm` (via `tuned-ppd`, ja instalado no Fedora) para alternar entre tr
 
 ---
 
-## Teclado — Right Ctrl como AltGr (AULA F75)
+## Teclado — Alternancia ABNT2 / ANSI
 
-O teclado AULA F75 (Compx 2.4G Wireless Receiver) nao possui tecla AltGr dedicada.
-A solucao usa udev hwdb para remap no nivel do kernel, funcionando em Wayland/Hyprland sem depender de XKB.
+Toggle via `SUPER + K` entre teclado do notebook (BR ABNT2) e teclado mecanico (ANSI US).
 
-**Instalacao manual** (requer root, nao compativel com stow):
+**Layout ANSI customizado (`us-br`):**
 
-    sudo cp udev/90-aula-rctrl-altgr.hwdb /etc/udev/hwdb.d/
-    sudo systemd-hwdb update
-    sudo udevadm trigger --action=change --subsystem-match=input
+| Combo (RCtrl = AltGr) | Saida |
+|---|---|
+| RCtrl + ; | ç |
+| RCtrl + Q | / |
+| RCtrl + W | ? |
+| RCtrl + [ + vogal | acento agudo (á, é, í, ó, ú) |
+| RCtrl + ' + vogal | til (ã, õ) |
 
-Reconecte o receptor USB apos aplicar. O Right Ctrl passara a funcionar como AltGr.
+**Instalacao do variant XKB** (requer root, nao compativel com stow):
+
+    cd xkb/
+    bash install.sh
+
+Ou manualmente:
+
+    sudo tee -a /usr/share/X11/xkb/symbols/us < xkb/us-br.xkb
+
+---
+
+## [DEPRECATED] Teclado — Right Ctrl como AltGr (AULA F75)
+
+> **Deprecated.** O teclado AULA F75 nao esta mais em uso. A config foi movida para
+> `udev/deprecated/90-aula-rctrl-altgr.hwdb` e removida do sistema.
+> Nao instalar.
 
 ---
 

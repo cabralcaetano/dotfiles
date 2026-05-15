@@ -1,0 +1,12 @@
+  partial alphanumeric_keys
+  xkb_symbols "us-br" {
+      name[Group1]= "English (US, BR programmer)";
+
+      key <AC10> { [ semicolon, colon,        ccedilla,   Ccedilla ] };
+      key <AD01> { [ q,         Q,            slash                ] };
+      key <AD02> { [ w,         W,            question             ] };
+      key <AD11> { [ bracketleft, braceleft,  dead_acute           ] };
+      key <AC11> { [ apostrophe, quotedbl,    dead_tilde           ] };
+
+      include "level3(ralt_switch)"
+  };
