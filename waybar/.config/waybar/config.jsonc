@@ -81,7 +81,8 @@
   "tray": {
     "icon-size": 16,
     "spacing": 5,
-    "show-passive-items": true
+    "show-passive-items": true,
+    "ignore-pattern": "nm-applet"
   },
 
   // === REDE ====================================
@@ -90,7 +91,7 @@
   "format-ethernet": "󰈀",
   "format-disconnected": "󰤭",
   "format-icons": ["󰤯", "󰤢", "󰤥", "󰤨"],
-  "on-click": "nm-applet",
+  "on-click": "~/.local/bin/wifi-menu.sh &",
   "tooltip-format-wifi": "{essid} {signalStrength}%"
   },
 
