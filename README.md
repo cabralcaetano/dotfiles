@@ -14,7 +14,7 @@ Configurações pessoais para ambiente Linux com Hyprland no Fedora.
 | Hyprlock | Lockscreen |
 | Hypridle | Daemon de inatividade |
 | Fuzzel | App launcher |
-| Kitty | Terminal |
+| Ghostty | Terminal |
 | Hyprpaper | Wallpaper |
 
 ---
@@ -36,7 +36,7 @@ Configurações pessoais para ambiente Linux com Hyprland no Fedora.
     git clone https://github.com/cabralcaetano/dotfiles.git ~/dotfiles
     cd ~/dotfiles
     sudo dnf install stow
-    stow hypr waybar swaync fuzzel scripts
+    stow hypr waybar swaync fuzzel scripts ghostty
 
 ---
 
@@ -95,7 +95,7 @@ Ou manualmente:
 
 | Atalho | Acao |
 |---|---|
-| SUPER + Q | Terminal (Kitty) |
+| SUPER + Q | Terminal (Ghostty) |
 | SUPER + B | Navegador (Brave) |
 | SUPER + E | Gerenciador de arquivos (Nautilus) |
 | SUPER + R | Launcher (Hyprlauncher) |
