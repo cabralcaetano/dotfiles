@@ -26,6 +26,11 @@ alias pip='pip3'
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
+# === fzf ===
+eval "$(fzf --zsh)"
+export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
+export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :50 {}'"
+
 # === Histórico ===
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
