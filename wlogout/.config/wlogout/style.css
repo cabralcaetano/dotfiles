@@ -1,59 +1,52 @@
-/* === WLOGOUT — tema Adwaita dark =============== */
-
 * {
   background-image: none;
   box-shadow: none;
-  margin: 0;
-  padding: 0;
   font-family: "JetBrainsMono Nerd Font", monospace;
 }
 
 window {
-  background-color: rgba(29, 29, 32, 0.55);
+  background-color: rgba(13, 13, 15, 0.92);
 }
 
 button {
-  color: #a0a0a0;
-  background-color: rgba(42, 42, 46, 0.50);
+  color: rgba(255, 255, 255, 0.5);
+  background-color: transparent;
   background-repeat: no-repeat;
-  background-position: center 36%;
-  background-size: 48px;
+  background-position: center 30%;
+  background-size: 22%;
 
-  border: 1px solid rgba(160, 160, 160, 0.15);
+  border: none;
   border-radius: 8px;
-  margin: 14px;
-  padding: 52px 24px 16px;
+  margin: 10px 18px;
+  padding: 100px 40px 24px;
 
   font-size: 11px;
-  letter-spacing: 0.08em;
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
 
-  min-width: 100px;
-  min-height: 120px;
+  min-width: 130px;
 
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 button:hover {
-  background-color: rgba(50, 50, 54, 0.70);
-  background-size: 52px;
+  background-color: rgba(255, 255, 255, 0.07);
   color: #ffffff;
-  border-color: rgba(160, 160, 160, 0.35);
 }
 
 button:focus {
-  background-color: rgba(50, 50, 54, 0.70);
-  color: #ffffff;
-  border-color: rgba(160, 160, 160, 0.55);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
   outline: none;
 }
 
 button:active {
-  background-color: rgba(42, 42, 46, 0.35);
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
-#lock     { background-image: url("/usr/share/wlogout/icons/lock.png"); }
-#logout   { background-image: url("/usr/share/wlogout/icons/logout.png"); }
-#suspend  { background-image: url("/usr/share/wlogout/icons/suspend.png"); }
-#shutdown { background-image: url("/usr/share/wlogout/icons/shutdown.png"); }
-#reboot   { background-image: url("/usr/share/wlogout/icons/reboot.png"); }
+#lock     { background-image: image(url("/usr/share/wlogout/icons/lock.png"),     url("/usr/local/share/wlogout/icons/lock.png")); }
+#logout   { background-image: image(url("/usr/share/wlogout/icons/logout.png"),   url("/usr/local/share/wlogout/icons/logout.png")); }
+#suspend  { background-image: image(url("/usr/share/wlogout/icons/suspend.png"),  url("/usr/local/share/wlogout/icons/suspend.png")); }
+#shutdown { background-image: image(url("/usr/share/wlogout/icons/shutdown.png"), url("/usr/local/share/wlogout/icons/shutdown.png")); }
+#reboot   { background-image: image(url("/usr/share/wlogout/icons/reboot.png"),   url("/usr/local/share/wlogout/icons/reboot.png")); }

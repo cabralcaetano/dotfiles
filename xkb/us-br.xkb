@@ -7,5 +7,11 @@
           symbols[Group1] = [ ISO_Level3_Shift ]
       };
 
+      // ç via RCtrl+;
       key <AC10> { [ semicolon, colon, ccedilla, Ccedilla ] };
+
+      // Dead keys: ' → dead_acute (á é í ó ú), ` → dead_grave/dead_tilde
+      // Nível 1 = normal, nível 2 = Shift, nível 3 = RCtrl, nível 4 = RCtrl+Shift
+      key <AC11> { [ dead_acute,  dead_diaeresis, apostrophe,    quotedbl   ] };
+      key <TLDE> { [ dead_grave,  dead_tilde,     grave,         asciitilde ] };
   };

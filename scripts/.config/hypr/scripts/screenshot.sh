@@ -10,7 +10,6 @@ case $1 in
     notify-send "Screenshot" "Área selecionada salva"
     ;;
   clipboard)
-    grim -g "$(slurp)" - | wl-copy
-    notify-send "Screenshot" "Copiado para o clipboard"
+    selection=$(slurp) && grim -g "$selection" - | wl-copy --type image/png && notify-send "Screenshot" "Copiado para o clipboard"
     ;;
 esac
