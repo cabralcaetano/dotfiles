@@ -7,6 +7,7 @@ $character"""
 [directory]
 truncation_length = 3
 truncate_to_repo = true
+read_only = " 󰌾"
 
 [git_branch]
 format = ' [$symbol$branch]($style) '
@@ -67,9 +68,6 @@ symbol = " "
 
 [deno]
 symbol = " "
-
-[directory]
-read_only = " 󰌾"
 
 [docker_context]
 symbol = " "
