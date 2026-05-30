@@ -67,13 +67,14 @@ window#waybar {
 /* === TRAY DRAWER ================================ */
 #tray-drawer {
   background: transparent;
+  margin-right: -6px;
 }
 
 #custom-tray-arrow {
   font-size: 15px;
   font-weight: bold;
   color: #ffffff;
-  padding: 0 6px;
+  padding: 0 2px;
 }
 
 #tray {
@@ -83,7 +84,7 @@ window#waybar {
 
 /* === VELOCIDADE DE REDE ========================= */
 #network-speed {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #ffffff;
   padding: 0 8px;
