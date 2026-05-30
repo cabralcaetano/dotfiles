@@ -83,7 +83,7 @@ window#waybar {
 
 /* === VELOCIDADE DE REDE ========================= */
 #network-speed {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   color: #ffffff;
   padding: 0 8px;
