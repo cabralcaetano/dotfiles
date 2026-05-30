@@ -15,7 +15,7 @@
   // === MÓDULOS =================================
   "modules-left": ["custom/icon", "hyprland/workspaces", "hyprland/window"],
   "modules-center": ["clock"],
-  "modules-right": ["cpu", "memory", "network", "bluetooth", "pulseaudio", "custom/power-profile", "battery", "tray"],
+  "modules-right": ["cpu", "memory", "network", "bluetooth", "pulseaudio", "custom/power-profile", "battery", "group/tray-drawer"],
 
   // === CPU =====================================
   "cpu": {
@@ -91,7 +91,21 @@
   "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
   },
 
-  // === TRAY ====================================
+  // === TRAY COM DRAWER =========================
+  "group/tray-drawer": {
+    "orientation": "horizontal",
+    "drawer": {
+      "transition-duration": 400,
+      "transition-left-to-right": false
+    },
+    "modules": ["custom/tray-arrow", "tray"]
+  },
+
+  "custom/tray-arrow": {
+    "format": "&lt;",
+    "tooltip": false
+  },
+
   "tray": {
     "icon-size": 16,
     "spacing": 5,

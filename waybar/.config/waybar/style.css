@@ -64,9 +64,29 @@ window#waybar {
   border-bottom: 1px solid #ffffff;
 }
 
-/* === TRAY ====================================== */
+/* === TRAY DRAWER ================================ */
+#tray-drawer {
+  background: transparent;
+}
+
+#custom-tray-arrow {
+  font-size: 10px;
+  font-weight: bold;
+  color: #606060;
+  padding: 0 4px;
+}
+
+#custom-tray-arrow:hover {
+  color: #ffffff;
+}
+
+#custom-tray-arrow.open {
+  color: #ffffff;
+}
+
 #tray {
   color: #ffffff;
+  padding: 0 2px;
 }
 
 /* === RELÓGIO =================================== */
