@@ -91,6 +91,13 @@
   "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
   },
 
+  // === VELOCIDADE DE REDE =======================
+  "network#speed": {
+    "interval": 2,
+    "format": "↑{bandwidthUpBytes} ↓{bandwidthDownBytes}",
+    "tooltip": false
+  },
+
   // === TRAY COM DRAWER =========================
   "group/tray-drawer": {
     "orientation": "horizontal",
@@ -98,7 +105,7 @@
       "transition-duration": 400,
       "transition-left-to-right": false
     },
-    "modules": ["custom/tray-arrow", "cpu", "memory", "tray"]
+    "modules": ["custom/tray-arrow", "cpu", "memory", "network#speed", "tray"]
   },
 
   "custom/tray-arrow": {

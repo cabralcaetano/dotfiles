@@ -70,15 +70,23 @@ window#waybar {
 }
 
 #custom-tray-arrow {
-  font-size: 10px;
+  font-size: 15px;
   font-weight: bold;
   color: #ffffff;
-  padding: 0 4px;
+  padding: 0 6px;
 }
 
 #tray {
   color: #ffffff;
-  padding: 0 2px;
+  padding: 0 6px;
+}
+
+/* === VELOCIDADE DE REDE ========================= */
+#network-speed {
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffffff;
+  padding: 0 8px;
 }
 
 /* === RELÓGIO =================================== */
@@ -129,7 +137,7 @@ window#waybar {
   font-weight: 700;
   font-size: 13px;
   color: #ffffff;
-  padding-right: 4px;
+  padding: 0 8px;
 }
 
 /* === PERFIL DE ENERGIA ========================== */
