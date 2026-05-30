@@ -18,13 +18,17 @@ eval "$(pyenv init - zsh)"
 eval "$(starship init zsh)"
 
 # Aliases úteis
-alias ls='ls --color=auto'
-alias ll='ls -lah'
+alias ls='eza --icons'
+alias ll='eza -lah --icons --git'
+alias tree='eza --tree --icons'
 alias grep='grep --color=auto'
 alias python='python3'
 alias pip='pip3'
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+# === zoxide ===
+eval "$(zoxide init zsh)"
 
 # === fzf ===
 eval "$(fzf --zsh)"
