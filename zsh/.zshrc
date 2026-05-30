@@ -24,6 +24,8 @@ alias tree='eza --tree --icons'
 alias grep='grep --color=auto'
 alias python='python3'
 alias pip='pip3'
+alias lg='lazygit'
+alias top='btop'
 source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
@@ -33,7 +35,18 @@ eval "$(zoxide init zsh)"
 # === fzf ===
 eval "$(fzf --zsh)"
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git"'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :50 {}'"
+
+# === yazi — cd ao sair ===
+function y() {
+    local tmp="$(mktemp -t yazi-cwd.XXXXXX)" cwd
+    yazi "$@" --cwd-file="$tmp"
+    if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+        builtin cd -- "$cwd"
+    fi
+    rm -f -- "$tmp"
+}
 
 # === Histórico ===
 HISTFILE=~/.zsh_history
