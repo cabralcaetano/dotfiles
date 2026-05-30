@@ -149,6 +149,16 @@ Ou manualmente:
 
 ---
 
+## Audio Ducking
+
+Abaixa automaticamente o volume da música (Spotify) quando áudio do navegador toca — igual ao comportamento do iPhone.
+
+Implementado via script PipeWire + serviço `systemd --user`. Funciona com qualquer app que declare `media.role=phone` (WhatsApp Web, Google Meet, etc.).
+
+Ver guia completo: [[ducking]]
+
+---
+
 ## Licenca
 
 MIT
