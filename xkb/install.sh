@@ -1,6 +1,7 @@
 #!/bin/bash
-# Instala ou atualiza o variant us-br no arquivo XKB do sistema.
-# Requer sudo. Roda após instalar o sistema ou após mudanças no us-br.xkb.
+# DEPRECATED — layout customizado us-br não está mais em uso.
+# Substituído por layouts padrão br(abnt2) e us sem customizações.
+# Não executar.
 
 FILE=/usr/share/X11/xkb/symbols/us
 SCRIPT_DIR="$(dirname "$0")"

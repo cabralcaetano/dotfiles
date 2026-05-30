@@ -190,20 +190,7 @@ Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Indicador aparece na W
 
 ## Teclado — Alternância ABNT2 / ANSI
 
-Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico (ANSI US).
-
-Layout ANSI customizado (`us-br`) com RCtrl como AltGr:
-
-| Combo | Saída |
-|---|---|
-| RCtrl + ; | ç |
-| RCtrl + [ + vogal | acento agudo (á, é, í, ó, ú) |
-| RCtrl + ' + vogal | til (ã, õ) |
-
-Instalação do variant XKB (requer root, não compatível com stow):
-```bash
-cd xkb/ && bash install.sh
-```
+Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB.
 
 ## Audio Ducking
 

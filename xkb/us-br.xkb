@@ -1,3 +1,6 @@
+// DEPRECATED — layout customizado us-br não está mais em uso.
+// Substituído por layouts padrão br(abnt2) e us sem customizações.
+
   partial alphanumeric_keys modifier_keys
   xkb_symbols "us-br" {
       name[Group1]= "English (US, BR programmer)";
