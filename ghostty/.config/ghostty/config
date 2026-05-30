@@ -28,7 +28,7 @@ palette = 15=#f6f5f4
 
 # === Transparência ===
 background-opacity = 0.85
-background-blur-radius = 0
+background-blur-radius = 20
 
 # === Janela ===
 window-padding-x = 12
