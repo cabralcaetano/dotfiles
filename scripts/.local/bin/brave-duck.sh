@@ -42,7 +42,8 @@ fade_in() {
 }
 
 check_brave() {
-  pactl list sink-inputs 2>/dev/null | awk '
+  local brave_audio
+  brave_audio=$(pactl list sink-inputs 2>/dev/null | awk '
     /^Entrada|^Sink Input/ {
       if (brave && playing) count++
       brave=0; playing=0
@@ -53,7 +54,15 @@ check_brave() {
       if (brave && playing) count++
       print count+0
     }
-  '
+  ')
+
+  [ "${brave_audio:-0}" -eq 0 ] && echo 0 && return
+
+  if hyprctl clients 2>/dev/null | grep -qi "title.*whatsapp"; then
+    echo "$brave_audio"
+  else
+    echo 0
+  fi
 }
 
 brave_really_stopped() {
