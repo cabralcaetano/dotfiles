@@ -15,7 +15,7 @@
   // === MÓDULOS =================================
   "modules-left": ["custom/icon", "hyprland/workspaces", "hyprland/window"],
   "modules-center": ["clock"],
-  "modules-right": ["cpu", "memory", "network", "bluetooth", "pulseaudio", "custom/power-profile", "battery", "group/tray-drawer"],
+  "modules-right": ["group/tray-drawer", "network", "bluetooth", "pulseaudio", "custom/power-profile", "battery"],
 
   // === CPU =====================================
   "cpu": {
@@ -98,7 +98,7 @@
       "transition-duration": 400,
       "transition-left-to-right": false
     },
-    "modules": ["custom/tray-arrow", "tray"]
+    "modules": ["custom/tray-arrow", "cpu", "memory", "tray"]
   },
 
   "custom/tray-arrow": {

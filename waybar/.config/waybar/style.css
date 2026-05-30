@@ -72,16 +72,8 @@ window#waybar {
 #custom-tray-arrow {
   font-size: 10px;
   font-weight: bold;
-  color: #606060;
+  color: #ffffff;
   padding: 0 4px;
-}
-
-#custom-tray-arrow:hover {
-  color: #ffffff;
-}
-
-#custom-tray-arrow.open {
-  color: #ffffff;
 }
 
 #tray {
