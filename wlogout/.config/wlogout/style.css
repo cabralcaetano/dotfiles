@@ -1,0 +1,59 @@
+/* === WLOGOUT — tema Adwaita dark =============== */
+
+* {
+  background-image: none;
+  box-shadow: none;
+  margin: 0;
+  padding: 0;
+  font-family: "JetBrainsMono Nerd Font", monospace;
+}
+
+window {
+  background-color: rgba(29, 29, 32, 0.55);
+}
+
+button {
+  color: #a0a0a0;
+  background-color: rgba(42, 42, 46, 0.50);
+  background-repeat: no-repeat;
+  background-position: center 36%;
+  background-size: 48px;
+
+  border: 1px solid rgba(160, 160, 160, 0.15);
+  border-radius: 8px;
+  margin: 14px;
+  padding: 52px 24px 16px;
+
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  min-width: 100px;
+  min-height: 120px;
+
+  transition: all 0.2s ease;
+}
+
+button:hover {
+  background-color: rgba(50, 50, 54, 0.70);
+  background-size: 52px;
+  color: #ffffff;
+  border-color: rgba(160, 160, 160, 0.35);
+}
+
+button:focus {
+  background-color: rgba(50, 50, 54, 0.70);
+  color: #ffffff;
+  border-color: rgba(160, 160, 160, 0.55);
+  outline: none;
+}
+
+button:active {
+  background-color: rgba(42, 42, 46, 0.35);
+}
+
+#lock     { background-image: url("/usr/share/wlogout/icons/lock.png"); }
+#logout   { background-image: url("/usr/share/wlogout/icons/logout.png"); }
+#suspend  { background-image: url("/usr/share/wlogout/icons/suspend.png"); }
+#shutdown { background-image: url("/usr/share/wlogout/icons/shutdown.png"); }
+#reboot   { background-image: url("/usr/share/wlogout/icons/reboot.png"); }
