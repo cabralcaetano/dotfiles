@@ -1,12 +1,15 @@
 #!/bin/bash
 
+mkdir -p ~/Imagens/Screenshots
+
 case $1 in
   full)
-    grim ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png
+    FILE=~/Imagens/Screenshots/$(date +%Y%m%d_%H%M%S).png
+    grim "$FILE" && wl-copy --type image/png < "$FILE"
     notify-send "Screenshot" "Tela completa salva"
     ;;
   area)
-    grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png
+    grim -g "$(slurp)" ~/Imagens/Screenshots/$(date +%Y%m%d_%H%M%S).png
     notify-send "Screenshot" "Área selecionada salva"
     ;;
   clipboard)
