@@ -11,7 +11,7 @@ read_only = " 󰌾"
 
 [git_branch]
 symbol = " "
-format = ' [$symbol$branch]($style) '
+format = '[$symbol$branch]($style) '
 
 [git_commit]
 tag_symbol = '  '
