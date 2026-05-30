@@ -1,17 +1,17 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-$directory$git_branch$git_status$python$nodejs$cmd_duration
+$directory $git_branch$git_status$python$nodejs$cmd_duration
 $character"""
 
 [directory]
 truncation_length = 3
 truncate_to_repo = true
 read_only = " 󰌾"
+format = "[$path]($style)[$read_only]($read_only_style)"
 
 [git_branch]
-symbol = ""
-format = '[$symbol $branch]($style) '
+format = '[$symbol$branch]($style) '
 
 [git_commit]
 tag_symbol = '  '
@@ -26,12 +26,10 @@ untracked = '?$count'
 staged = '+$count'
 
 [python]
-symbol = " "
 format = '[$symbol$version]($style) '
 detect_files = ['requirements.txt', 'pyproject.toml', '.python-version']
 
 [nodejs]
-symbol = " "
 format = '[$symbol$version]($style) '
 detect_files = ['package.json']
 
