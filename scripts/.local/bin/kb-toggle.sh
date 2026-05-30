@@ -1,5 +1,7 @@
 #!/bin/bash
-hyprctl switchxkblayout all next
+hyprctl devices -j | jq -r '.keyboards[].name' | while read -r kb; do
+    hyprctl switchxkblayout "$kb" next
+done
 
 LAYOUT=$(hyprctl devices -j | jq -r '[.keyboards[] | select(.name != "")][0].active_keymap')
 notify-send \

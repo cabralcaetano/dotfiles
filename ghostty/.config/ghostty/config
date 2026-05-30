@@ -41,4 +41,4 @@ cursor-style = bar
 cursor-style-blink = true
 
 # === Scrollback ===
-scrollback-limit = 10000
+scrollback-limit = 50000
