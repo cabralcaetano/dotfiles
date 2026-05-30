@@ -10,8 +10,8 @@ truncate_to_repo = true
 read_only = " 󰌾"
 
 [git_branch]
-symbol = " "
-format = '[$symbol$branch]($style) '
+symbol = ""
+format = '[$symbol $branch]($style) '
 
 [git_commit]
 tag_symbol = '  '
