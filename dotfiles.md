@@ -37,11 +37,22 @@ stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship
 | cliphist | Histórico de clipboard |
 | rofimoji | Emoji picker via Fuzzel |
 | PipeWire | Audio ducking automático |
+| eza | `ls` moderno com ícones e suporte a git |
+| fzf | Fuzzy finder — integrado ao Zsh (Ctrl+R, Ctrl+T) |
+| zoxide | `cd` inteligente com histórico de diretórios |
+| yazi | File manager TUI com navegação em colunas |
+| lazygit | Git TUI |
+| btop | Monitor de recursos |
+| zsh-syntax-highlighting | Highlight de comandos em tempo real |
+| zsh-autosuggestions | Sugestões baseadas em histórico |
+| Spicetify | Customização do cliente Spotify |
 
 ## Estrutura do repo
 
 ```
-hypr/           → hyprland.conf, hypridle.conf, hyprlock.conf, autostart.sh
+hypr/           → hyprland.conf, hypridle.conf, hyprlock.conf, autostart.sh,
+                  hyprpaper.conf (referência — sistema usa swww),
+                  workspace-float.conf (estado do workspace 5 float mode)
 waybar/         → config.jsonc, style.css
 swaync/         → config.json, style.css
 fuzzel/         → fuzzel.ini
@@ -83,11 +94,12 @@ Ordem de inicialização definida no `hyprland.conf`:
 ```
 ~/.config/wallpapers/
 ├── wallpaper_1.jpg   — dark waves (preto, abstrato)
-└── wallpaper_2.jpg   — default no boot
+├── wallpaper_2.jpg   — default no boot
+└── wallpaper_3.png   — terceiro wallpaper no ciclo
 ```
 
 - **Trocar manualmente:** `wallpaper.sh ~/caminho/imagem.jpg`
-- **Alternar entre os dois:** `Super+Shift+W`
+- **Ciclar entre os três:** `Super+Shift+W` — alterna 1→2→3→1
 
 ## Idle / Lock
 
@@ -111,8 +123,8 @@ Sequência do `hypridle.conf`:
 | Super+E | Gerenciador de arquivos (Nautilus) |
 | Super+R | Launcher (Fuzzel) |
 | Super+D | Discord |
+| Super+M | Spotify |
 | Super+O | Obsidian |
-| Super+Shift+M | Spotify |
 | Super+Shift+C | VSCode |
 
 **Janelas**
@@ -181,6 +193,45 @@ Sequência do `hypridle.conf`:
 | XF86AudioNext/Prev | Faixa seguinte/anterior |
 | XF86AudioPlay/Pause | Play/pause |
 
+## Terminal — Ghostty
+
+| Config | Valor |
+|---|---|
+| Fonte | JetBrainsMono Nerd Font 13pt |
+| Tema | Adwaita dark (customizado) |
+| Opacidade | 0.85 |
+| Blur | `background-blur-radius = 20` |
+| Cursor | barra piscante |
+| Scrollback | 50.000 linhas |
+| `gtk-single-instance` | true — uma única instância, novas janelas abrem como tabs |
+| Padding | 12px horizontal, 8px vertical |
+
+## Shell — Zsh
+
+Aliases e ferramentas configuradas no `.zshrc`:
+
+| Alias / Comando | Substitui / Função |
+|---|---|
+| `ls` | `eza --icons` |
+| `ll` | `eza -lah --icons --git` |
+| `tree` | `eza --tree --icons` |
+| `top` | `btop` |
+| `lg` | `lazygit` |
+| `python` / `pip` | `python3` / `pip3` |
+| `y` | `yazi` com `cd` automático ao sair |
+| `copy <cmd>` | Redireciona stdout+stderr para clipboard via `wl-copy` |
+
+**Plugins ativos:**
+- `zsh-syntax-highlighting` — highlight de comandos em tempo real
+- `zsh-autosuggestions` — sugestões de histórico ao digitar
+
+**Integrações:**
+- `pyenv` — gerenciamento de versões Python
+- `starship` — prompt
+- `zoxide` — `z <dir>` para navegar por histórico de diretórios
+- `fzf` — `Ctrl+R` (histórico), `Ctrl+T` (arquivos); preview com `bat`
+- `Spicetify` — `~/.spicetify` no PATH
+
 ## Perfil de energia
 
 Usa `tuned-adm` via `tuned-ppd` para alternar entre três modos:
@@ -235,11 +286,11 @@ Ver guia completo: [[ducking]]
 - **Sem windowrulev2 de workspace** — workspace rules no `exec-once` são apenas para o boot; depois o usuário tem controle total
 - **Sem autostart via `~/.config/autostart/`** — os `.desktop` do GNOME foram deletados, tudo gerenciado pelo Hyprland
 - **Alt+Tab via cyclenext em vez de hyprshitch/hyprswitch** — hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço de janela mudou de hex para decimal na IPC); cyclenext é nativo e confiável
-- **workspace-float.conf gerado em runtime** — não versionado no repo, precisa de `touch ~/.config/hypr/workspace-float.conf` em máquina nova
+- **workspace-float.conf versionado no repo** — contém o estado inicial (`workspace = 5, defaultFloating:1`); em máquina nova o stow o instala automaticamente
 
 ## Notas abertas
 
 - `gesture = 3, horizontal, workspace` no hyprland.conf — sintaxe aparentemente não padrão mas funcionando; investigar se há forma correta
-- Zsh ainda básico — falta fzf, zoxide, eza, bat (a discutir em sessão futura)
 - Starship sem `format` definido — usa default verboso (a discutir em sessão futura)
-- Ghostty `background-blur-radius = 0` — blur desativado intencionalmente por ora
+- `hyprpaper.conf` no repo referencia `default_2.jpg` que não existe — arquivo criado como referência, sistema usa `swww`; ajustar path ou remover se não for usar hyprpaper
+- hyprshell `filter_by: [current_workspace]` atualizado mas ainda inativo (incompatibilidade Hyprland 0.55)
