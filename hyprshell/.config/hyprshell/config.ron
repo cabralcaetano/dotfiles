@@ -8,7 +8,7 @@
         switch: (
             modifier: "alt",
             key: "Tab",
-            filter_by: [],
+            filter_by: [current_workspace],
             switch_workspaces: false,
             exclude_workspaces: "",
             kill_key: 'q',

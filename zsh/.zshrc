@@ -60,3 +60,5 @@ export PATH="$HOME/.local/bin:$PATH"
 copy() {
     "$@" 2>&1 | wl-copy
 }
+
+export PATH=$PATH:/home/caetano/.spicetify
