@@ -73,7 +73,14 @@ FADE_DELAY=0.02
 is_ducked=false
 
 get_spotify_id() {
-  wpctl status | grep -v "caetano\|pid" | grep -i "spotify" | grep -oP '^\s+\K\d+' | head -1
+  local spotify_client
+  spotify_client=$(wpctl status | grep -i "spotify" | grep -oP '^\s+\K\d+' | head -1)
+  [ -z "$spotify_client" ] && return
+
+  pactl list sink-inputs 2>/dev/null | awk -v cid="\"$spotify_client\"" '
+    /client\.id /  { matched = ($3 == cid) }
+    /object\.id /  { if (matched) { gsub(/"/, "", $3); print $3; exit } }
+  '
 }
 
 fade_out() {
@@ -101,7 +108,35 @@ fade_in() {
 }
 
 check_brave() {
-  pw-top -b -n 2 2>/dev/null | grep -c "^R.*Brave"
+  local brave_audio
+  brave_audio=$(pactl list sink-inputs 2>/dev/null | awk '
+    /^Entrada|^Sink Input/ {
+      if (brave && playing) count++
+      brave=0; playing=0
+    }
+    /application\.process\.binary.*"brave"/ { brave=1 }
+    /Cork:.*não|Cork:.*no/ { playing=1 }
+    END {
+      if (brave && playing) count++
+      print count+0
+    }
+  ')
+
+  [ "${brave_audio:-0}" -eq 0 ] && echo 0 && return
+
+  if hyprctl clients 2>/dev/null | grep -qi "title.*whatsapp"; then
+    echo "$brave_audio"
+  else
+    echo 0
+  fi
+}
+
+brave_really_stopped() {
+  for i in 1 2 3; do
+    [ "$(check_brave)" -gt 0 ] && return 1
+    sleep 0.3
+  done
+  return 0
 }
 
 while true; do
@@ -109,15 +144,20 @@ while true; do
   BRAVE_PLAYING=$(check_brave)
 
   if [ "$BRAVE_PLAYING" -gt 0 ] && [ "$is_ducked" = "false" ] && [ -n "$SPOTIFY_ID" ]; then
+    echo "$(date +%T.%N) - Brave tocando, fade_out"
     fade_out "$SPOTIFY_ID"
     is_ducked=true
   elif [ "$BRAVE_PLAYING" -eq 0 ] && [ "$is_ducked" = "true" ]; then
-    SPOTIFY_ID=$(get_spotify_id)
-    [ -n "$SPOTIFY_ID" ] && fade_in "$SPOTIFY_ID"
-    is_ducked=false
+    if brave_really_stopped; then
+      echo "$(date +%T.%N) - Brave parou, fade_in"
+      SPOTIFY_ID=$(get_spotify_id)
+      [ -n "$SPOTIFY_ID" ] && fade_in "$SPOTIFY_ID"
+      echo "$(date +%T.%N) - fade_in concluido"
+      is_ducked=false
+    fi
   fi
 
-  sleep 0.1
+  sleep 0.5
 done
 ```
 
@@ -127,7 +167,9 @@ Salvar: `Ctrl+O`, `Enter`, `Ctrl+X`.
 chmod +x ~/.local/bin/brave-duck.sh
 ```
 
-> **Adaptar para outro navegador:** troque `Brave` por `Firefox`, `Chromium`, etc. na função `check_brave`.
+> **Filtro WhatsApp Web:** o ducking só dispara quando o Brave tem áudio ativo **e** há uma janela com "whatsapp" no título visível no Hyprland. Outros sites com áudio no Brave não ativam o ducking.
+
+> **Debounce:** `brave_really_stopped()` confirma 3× com 0.3s de intervalo antes de fazer o fade_in — evita oscilações em pausas curtas.
 
 ### Passo 4 — Criar serviço systemd para rodar automaticamente
 
@@ -136,7 +178,7 @@ mkdir -p ~/.config/systemd/user/
 
 cat > ~/.config/systemd/user/brave-duck.service << 'EOF'
 [Unit]
-Description=Auto duck audio when browser plays
+Description=Auto duck Brave audio role
 After=pipewire.service wireplumber.service
 
 [Service]

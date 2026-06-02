@@ -250,7 +250,7 @@ Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico ex
 
 ## Audio Ducking
 
-Abaixa automaticamente o volume do Spotify quando áudio do navegador toca — comportamento igual ao iPhone. Implementado via script PipeWire + serviço `systemd --user`. Funciona com qualquer app que declare `media.role=phone` (WhatsApp Web, Google Meet, etc.).
+Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no Brave — comportamento igual ao iPhone. Implementado via script PipeWire + serviço `systemd --user`. O ducking só dispara quando o Brave tem áudio ativo **e** há uma janela com "whatsapp" no título visível no Hyprland (outros sites com áudio no Brave não ativam).
 
 Ver guia completo: [[ducking]]
 
