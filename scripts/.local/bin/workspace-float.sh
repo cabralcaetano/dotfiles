@@ -9,16 +9,18 @@ touch "$FLOAT_CONF"
 WS=$(hyprctl activeworkspace -j | jq '.id')
 
 if grep -q "^workspace = $WS," "$FLOAT_CONF"; then
-    # Desativar: remove a regra e desflota as janelas abertas
+    # Desativar: remove a regra, desflota as janelas e restaura follow_mouse
     sed -i "/^workspace = $WS,/d" "$FLOAT_CONF"
     hyprctl reload
+    hyprctl keyword input:follow_mouse 1
     hyprctl clients -j \
         | jq -r --argjson ws "$WS" '.[] | select(.workspace.id == $ws and .floating == true) | .address' \
         | xargs -I{} hyprctl dispatch togglefloating address:{}
 else
-    # Ativar: adiciona a regra e flota as janelas abertas
+    # Ativar: adiciona a regra, flota as janelas e desativa follow_mouse
     echo "workspace = $WS, defaultFloating:1" >> "$FLOAT_CONF"
     hyprctl reload
+    hyprctl keyword input:follow_mouse 0
     hyprctl clients -j \
         | jq -r --argjson ws "$WS" '.[] | select(.workspace.id == $ws and .floating == false) | .address' \
         | xargs -I{} hyprctl dispatch togglefloating address:{}

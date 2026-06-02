@@ -50,7 +50,9 @@ kitty/          → kitty.conf
 zsh/            → .zshrc
 starship/       → starship.toml
 scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
-                  wifi-menu.sh, wallpaper.sh, wallpaper-toggle.sh, screenshot.sh
+                  wifi-menu.sh, wallpaper.sh, wallpaper-toggle.sh, screenshot.sh,
+                  workspace-float.sh, alttab.sh
+hyprshell/      → config.ron (instalado mas inativo — incompatível com Hyprland 0.55 address format)
 gtk-3/          → settings.ini
 gtk-4/          → settings.ini
 xkb/            → us-br.xkb, install.sh
@@ -111,7 +113,7 @@ Sequência do `hypridle.conf`:
 | Super+D | Discord |
 | Super+O | Obsidian |
 | Super+Shift+M | Spotify |
-| Super+Shift+V | VSCode |
+| Super+Shift+C | VSCode |
 
 **Janelas**
 
@@ -119,6 +121,9 @@ Sequência do `hypridle.conf`:
 |---|---|
 | Super+C | Fecha janela |
 | Super+V | Toggle floating |
+| Super+Shift+V | Toggle workspace float mode (todas as janelas flutuam + cursor não segue ao Alt+Tab) |
+| Alt+Tab | Próxima janela (traz para frente) |
+| Alt+Shift+Tab | Janela anterior |
 | Super+P | Pseudo-tile |
 | Super+J | Alterna split |
 | Super+Setas | Move foco |
@@ -202,9 +207,17 @@ Ver guia completo: [[ducking]]
 
 | App | Regra |
 |---|---|
-| Overskride (Bluetooth) | Float, 600×400, centralizado |
+| Overskride (Bluetooth) | Float, 800×500, centralizado |
+| pavucontrol (áudio) | Float, 800×500, centralizado |
 | Todas as janelas | suppress maximize events |
 | XWayland float sem classe | no_focus (fix drag) |
+
+## Scripts customizados
+
+| Script | Função |
+|---|---|
+| `workspace-float.sh` | Toggle de workspace float mode — flota todas as janelas abertas, novas janelas entram como float, e desativa warp do cursor no Alt+Tab. Lê/escreve `~/.config/hypr/workspace-float.conf` e recarrega o Hyprland. |
+| `alttab.sh` | Alt+Tab com `cyclenext` + `bringactivetotop`. Quando workspace float está ativo, preserva a posição do cursor em vez de deixar o Hyprland warpá-lo para o centro da janela. |
 
 ## Waybar — módulos ativos
 
@@ -221,6 +234,8 @@ Ver guia completo: [[ducking]]
 - **move_when_ready para Spotify/Discord** — `[workspace X silent]` não funciona com apps que têm updater/launcher separado
 - **Sem windowrulev2 de workspace** — workspace rules no `exec-once` são apenas para o boot; depois o usuário tem controle total
 - **Sem autostart via `~/.config/autostart/`** — os `.desktop` do GNOME foram deletados, tudo gerenciado pelo Hyprland
+- **Alt+Tab via cyclenext em vez de hyprshitch/hyprswitch** — hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço de janela mudou de hex para decimal na IPC); cyclenext é nativo e confiável
+- **workspace-float.conf gerado em runtime** — não versionado no repo, precisa de `touch ~/.config/hypr/workspace-float.conf` em máquina nova
 
 ## Notas abertas
 
