@@ -10,10 +10,10 @@ if grep -q "^workspace = $WS," "$FLOAT_CONF" 2>/dev/null; then
     POS=$(hyprctl cursorpos -j)
     X=$(echo "$POS" | jq '.x | floor')
     Y=$(echo "$POS" | jq '.y | floor')
-    hyprctl dispatch cyclenext "$1"
+    hyprctl dispatch cyclenext "${1:-}"
     hyprctl dispatch bringactivetotop
     hyprctl dispatch movecursor "$X" "$Y"
 else
-    hyprctl dispatch cyclenext "$1"
+    hyprctl dispatch cyclenext "${1:-}"
     hyprctl dispatch bringactivetotop
 fi

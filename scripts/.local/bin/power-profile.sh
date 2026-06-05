@@ -3,7 +3,7 @@
 set -uo pipefail
 CURRENT=$(tuned-adm active | awk '{print $NF}')
 
-case "$1" in
+case "${1:-}" in
   waybar)
     case "$CURRENT" in
       latency-performance) echo "󱐋" ;;

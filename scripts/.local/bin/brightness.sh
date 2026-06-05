@@ -4,7 +4,7 @@ MAX=$(brightnessctl max)
 STEP=$(( MAX / 100 ))
 (( STEP < 1 )) && STEP=1   # evita passo zero em backlights de baixa resolução
 
-case "$1" in
+case "${1:-}" in
   up)   brightnessctl -n2 set +${STEP} ;;
   down) brightnessctl -n2 set ${STEP}- ;;
 esac
