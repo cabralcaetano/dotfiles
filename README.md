@@ -98,8 +98,21 @@ Ou manualmente:
 | SUPER + Q | Terminal (Ghostty) |
 | SUPER + B | Navegador (Brave) |
 | SUPER + E | Gerenciador de arquivos (Nautilus) |
-| SUPER + R | Launcher (Hyprlauncher) |
-| SUPER + M | Menu de energia (sair do Hyprland) |
+| SUPER + R | Launcher (Fuzzel) |
+| SUPER + D | Discord |
+| SUPER + O | Obsidian |
+| SUPER + M | Spotify |
+| SUPER + K | Alterna layout de teclado (ABNT2 / ANSI) |
+| SUPER + W | Menu de Wi-Fi |
+| SUPER + N | Toggle painel de notificacoes (SwayNC) |
+| SUPER + . | Seletor de emoji (rofimoji) |
+| SUPER + L | Bloqueia tela (Hyprlock) |
+| SUPER SHIFT + C | VS Code |
+| SUPER SHIFT + W | Alterna wallpaper |
+| SUPER SHIFT + N | Do Not Disturb (SwayNC) |
+| SUPER SHIFT + Q | Menu de energia (wlogout) |
+| ALT + Tab | Alt-tab (janela anterior) |
+| ALT SHIFT + Tab | Alt-tab (janela seguinte) |
 
 **Janelas**
 
@@ -110,6 +123,8 @@ Ou manualmente:
 | SUPER + P | Pseudo-tile (dwindle) |
 | SUPER + J | Alterna direcao do split |
 | SUPER + Setas | Move foco entre janelas |
+| SUPER SHIFT + Setas | Troca janela de posicao |
+| SUPER SHIFT + V | Flutua janela no workspace atual |
 
 **Workspaces**
 
@@ -136,16 +151,25 @@ Ou manualmente:
 | XF86AudioLowerVolume | Volume -5% |
 | XF86AudioMute | Mute audio |
 | XF86AudioMicMute | Mute microfone |
-| XF86MonBrightnessUp | Brilho +5% |
-| XF86MonBrightnessDown | Brilho -5% |
-| XF86AudioNext/Prev | Proxima/anterior faixa |
-| XF86AudioPlay/Pause | Play/pause |
+| XF86MonBrightnessUp / Down | Brilho +/- 5% |
+| SUPER + F6 / F5 | Brilho +/- (alternativa) |
+| XF86AudioNext / Prev | Proxima/anterior faixa |
+| XF86AudioPlay / Pause | Play/pause |
 
 **Screenshot**
 
 | Atalho | Acao |
 |---|---|
-| Print | Screenshot de area (salva em ~/Imagens/Screenshots/) |
+| Print | Screenshot tela inteira |
+| SHIFT + Print | Screenshot de area (salva em ~/Imagens/Screenshots/) |
+| CTRL + Print | Screenshot de area para clipboard |
+
+**Clipboard**
+
+| Atalho | Acao |
+|---|---|
+| CTRL SHIFT + S | Historico de clipboard (cliphist + Fuzzel) |
+| CTRL SHIFT + Delete | Limpa historico de clipboard |
 
 ---
 
