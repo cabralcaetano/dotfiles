@@ -79,7 +79,7 @@ O `grub-btrfs.path` monitora `/.snapshots` e regenera o menu a cada snapshot, ma
 
 ```bash
 sudo cp /etc/fstab /etc/fstab.bak
-echo 'UUID=<UUID-DA-RAIZ> /.snapshots btrfs subvol=root/.snapshots,compress=zstd:1 0 0' \
+echo 'UUID=<UUID-DA-RAIZ> /.snapshots btrfs subvol=root/.snapshots,compress=zstd:1,nofail 0 0' \
   | sudo tee -a /etc/fstab
 sudo findmnt --verify --fstab     # validar ANTES de confiar (fstab quebrado trava o boot)
 sudo systemctl daemon-reload
@@ -89,6 +89,8 @@ sudo systemctl enable --now grub-btrfs.path
 ```
 
 > Pegue o UUID com `findmnt -no UUID /`. O subvol é `root/.snapshots` porque `/.snapshots` foi criado dentro do subvol `root`.
+>
+> A opção **`nofail`** é importante: se o `/.snapshots` falhar ao montar no boot, o sistema continua normalmente em vez de cair em *emergency mode*.
 
 ---
 
