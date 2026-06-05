@@ -70,9 +70,10 @@ O `bootstrap.sh` é **idempotente** — pode rodar quantas vezes quiser, só faz
 4. Aplica os symlinks com `stow --restow`
 5. Instala crates de `packages/cargo.txt` e extensões de `packages/vscode-extensions.txt`
 
-> **Atenção:** dois passos exigem ação manual:
+> **Atenção:** alguns passos exigem ação manual (configs system-wide, fora do stow):
 > - **XKB customizado** (`xkb/`) — requer root, incompatível com stow: `cd xkb && bash install.sh`
 > - **Nerd Fonts** (JetBrainsMono, FiraCode) — instalar manualmente
+> - **Ajustes de sistema** (dnf tuning, snapshots Btrfs com snapper + grub-btrfs) — ver [`docs/system-setup.md`](docs/system-setup.md)
 
 ### Manifestos de pacote
 
