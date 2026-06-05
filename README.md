@@ -58,25 +58,39 @@ O repo fica dentro do wiki-ia — GNU Stow cria symlinks diretamente de lá para
 git clone https://github.com/cabralcaetano/wiki-ia ~/wiki-ia
 cd ~/wiki-ia/personal/projects/dotfiles
 
-# Dependências
-sudo dnf install stow swww ghostty kitty waybar fuzzel swaync hyprlock hypridle \
-  zsh starship eza fzf zoxide yazi lazygit btop bat ripgrep jq podman \
-  capitaine-cursors tuned tuned-ppd pipewire wireplumber
-
-# Aplicar symlinks
-stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship gtk-3 gtk-4
-
-# Fonte
-# Instalar JetBrainsMono e FiraCode Nerd Fonts manualmente ou via repositório Nerd Fonts
+# Instalação idempotente (pacotes + flatpaks + plugins zsh + stow + cargo + extensões)
+bash bootstrap.sh
 ```
 
-> **Atenção:** o XKB customizado (`xkb/`) requer instalação manual com root — não compatível com stow. Rodar `cd xkb && bash install.sh`.
+O `bootstrap.sh` é **idempotente** — pode rodar quantas vezes quiser, só faz o que falta. Ele:
+
+1. Instala pacotes dnf de `packages/dnf.txt`
+2. Garante o remote `flathub` e instala apps de `packages/flatpak.txt`
+3. Clona os plugins Zsh em `~/.zsh` (não versionados no repo)
+4. Aplica os symlinks com `stow --restow`
+5. Instala crates de `packages/cargo.txt` e extensões de `packages/vscode-extensions.txt`
+
+> **Atenção:** dois passos exigem ação manual:
+> - **XKB customizado** (`xkb/`) — requer root, incompatível com stow: `cd xkb && bash install.sh`
+> - **Nerd Fonts** (JetBrainsMono, FiraCode) — instalar manualmente
+
+### Manifestos de pacote
+
+As listas em `packages/` são a fonte da verdade reproduzível (as tabelas deste README são derivadas). Para regerar após instalar/remover algo:
+
+```bash
+flatpak list --app --columns=application | sort > packages/flatpak.txt
+code --list-extensions | sort                > packages/vscode-extensions.txt
+```
 
 ---
 
 ## Estrutura do repo
 
 ```
+bootstrap.sh    → instalação idempotente (pacotes, flatpaks, plugins zsh, stow)
+packages/       → manifestos reproduzíveis: dnf.txt, flatpak.txt, cargo.txt,
+                  vscode-extensions.txt
 hypr/           → hyprland.conf, hypridle.conf, hyprlock.conf, hyprpaper.conf,
                   autostart.sh, workspace-float.conf
 waybar/         → config.jsonc, style.css

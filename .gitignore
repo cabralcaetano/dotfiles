@@ -1,3 +1,16 @@
+# Logs e backups
 *.log
 *.bak
 .DS_Store
+
+# Artefatos do GNU Stow
+.stow-local-ignore
+*.stow
+
+# Estado volátil do Obsidian (muda a cada sessão)
+obsidian/workspace.json
+obsidian/workspace-mobile.json
+
+# Cache / runtime
+*.tmp
+*.swp

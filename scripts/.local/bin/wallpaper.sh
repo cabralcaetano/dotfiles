@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 WALLPAPER="${1:-$HOME/.config/wallpapers/wallpaper_2.jpg}"
 swww img "$WALLPAPER" \
     --transition-type fade \

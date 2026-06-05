@@ -1,0 +1,67 @@
+# Pacotes dnf — curados (não é o dump completo do sistema)
+# Instalar: sudo dnf install $(grep -v '^#' packages/dnf.txt)
+# Atualizado: 2026-06-05 · Fedora 44
+
+# --- Compositor / Wayland ---
+hyprland
+hyprlock
+hypridle
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+waybar
+swaync
+fuzzel
+wlogout
+swww
+
+# --- GNU Stow (gerencia os symlinks deste repo) ---
+stow
+
+# --- Terminais ---
+ghostty
+kitty
+
+# --- Shell / prompt ---
+zsh
+starship
+
+# --- CLI essenciais ---
+eza
+bat
+fzf
+ripgrep
+zoxide
+yazi
+lazygit
+btop
+jq
+podman
+
+# --- Áudio ---
+pipewire
+wireplumber
+playerctl
+
+# --- Utilitários de sistema usados pelos scripts ---
+brightnessctl
+libnotify
+wl-clipboard
+cliphist
+grim
+slurp
+rofimoji
+NetworkManager
+networkmanager-dmenu
+
+# --- Tema / aparência ---
+capitaine-cursors
+adw-gtk3
+gsettings-desktop-schemas
+
+# --- Perfil de energia ---
+tuned
+tuned-ppd
+
+# --- File manager / editor ---
+nautilus
+neovim

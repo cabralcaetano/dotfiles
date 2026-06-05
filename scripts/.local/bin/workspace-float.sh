@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # Toggle defaultFloating para o workspace atual.
 # Ativa: flota todas as janelas abertas + novas janelas entram como float.
 # Desativa: desflota todas as janelas abertas + remove a regra.

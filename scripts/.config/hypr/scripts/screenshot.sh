@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
 mkdir -p ~/Imagens/Screenshots
 
-case $1 in
+case "${1:-}" in
   full)
     FILE=~/Imagens/Screenshots/$(date +%Y%m%d_%H%M%S).png
     grim "$FILE" && wl-copy --type image/png < "$FILE"

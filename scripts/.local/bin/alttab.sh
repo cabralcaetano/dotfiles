@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # Cicla para a próxima janela sem mover o cursor.
 
 FLOAT_CONF="$HOME/.config/hypr/workspace-float.conf"

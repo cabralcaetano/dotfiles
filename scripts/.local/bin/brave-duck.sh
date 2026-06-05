@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Sem `-e`: o loop depende de comandos que retornam não-zero por design (grep sem match).
+set -uo pipefail
 
 DUCK_LEVEL=0.3
 SPOTIFY_NORMAL=1.0

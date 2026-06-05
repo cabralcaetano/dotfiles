@@ -1,4 +1,4 @@
-# ~/.zshrc — Fedora 43 (Caetano)
+# ~/.zshrc — Fedora 44 (Caetano)
 
 # binds
 bindkey "^[[H" beginning-of-line
@@ -26,8 +26,11 @@ alias python='python3'
 alias pip='pip3'
 alias lg='lazygit'
 alias top='btop'
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+# Plugins instalados pelo bootstrap.sh em ~/.zsh (guardas evitam quebra em máquina nova)
+[[ -f ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]] && \
+  source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+[[ -f ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh ]] && \
+  source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # === zoxide ===
 eval "$(zoxide init zsh)"
@@ -61,4 +64,4 @@ copy() {
     "$@" 2>&1 | wl-copy
 }
 
-export PATH=$PATH:/home/caetano/.spicetify
+[[ -d "$HOME/.spicetify" ]] && export PATH="$PATH:$HOME/.spicetify"

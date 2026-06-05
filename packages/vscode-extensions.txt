@@ -1,0 +1,20 @@
+# Extensões do VS Code — gerado de `code --list-extensions`
+# Instalar: cat packages/vscode-extensions.txt | grep -v '^#' | xargs -L1 code --install-extension
+# Regerar:  code --list-extensions | sort > packages/vscode-extensions.txt
+# Atualizado: 2026-06-05
+anthropic.claude-code
+burkeholland.simple-react-snippets
+dsznajder.es7-react-js-snippets
+esbenp.prettier-vscode
+formulahendry.code-runner
+kevinrose.vsc-python-indent
+ms-python.debugpy
+ms-python.python
+ms-python.vscode-pylance
+ms-python.vscode-python-envs
+pranaygp.vscode-css-peek
+ritwickdey.liveserver
+tamasfe.even-better-toml
+usernamehw.errorlens
+xabikos.javascriptsnippets
+zignd.html-css-class-completion

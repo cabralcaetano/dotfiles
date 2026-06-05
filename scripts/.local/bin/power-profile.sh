@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# Sem `-e`: o modo `waybar-check` usa o exit code de um teste como retorno intencional.
+set -uo pipefail
 CURRENT=$(tuned-adm active | awk '{print $NF}')
 
 case "$1" in

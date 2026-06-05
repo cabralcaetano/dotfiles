@@ -1,8 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 if pgrep -x fuzzel > /dev/null; then
     pkill fuzzel
 else
-    export PATH="$PATH:/home/caetano/.local/bin"
+    export PATH="$PATH:$HOME/.local/bin"
     nmcli device wifi rescan 2>/dev/null &
-    /home/caetano/.local/bin/networkmanager-dmenu
+    networkmanager-dmenu
 fi

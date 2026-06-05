@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 hyprctl devices -j | jq -r '.keyboards[].name' | while read -r kb; do
     hyprctl switchxkblayout "$kb" next
 done
