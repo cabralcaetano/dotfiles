@@ -159,6 +159,46 @@ Ver guia completo: [[ducking]]
 
 ---
 
+## Cursor
+
+Tema: **capitaine-cursors** (`dnf install capitaine-cursors`).
+
+Para o cursor ficar consistente em todos os apps (GTK, Electron, Flatpak):
+
+**1. Hyprland** — `hypr/hyprland.conf`:
+
+    env = XCURSOR_THEME,capitaine-cursors
+    env = XCURSOR_SIZE,24
+
+**2. GTK 3** — `gtk-3/.config/gtk-3.0/settings.ini`:
+
+    gtk-cursor-theme-name=capitaine-cursors
+    gtk-cursor-theme-size=24
+
+**3. GTK 4** — `gtk-4/.config/gtk-4.0/settings.ini`:
+
+    gtk-cursor-theme-name=capitaine-cursors
+    gtk-cursor-theme-size=24
+
+**4. `~/.icons/default/index.theme`** (fallback X11/Electron):
+
+    [Icon Theme]
+    Name=Default
+    Comment=Default Cursor Theme
+    Inherits=capitaine-cursors
+
+**5. Flatpak com XWayland** (ex: Obsidian) — rodar em Wayland nativo resolve o cursor inconsistente:
+
+    flatpak override --user \
+      --socket=wayland \
+      --nosocket=x11 \
+      --env=ELECTRON_OZONE_PLATFORM_HINT=wayland \
+      --env=XCURSOR_THEME=capitaine-cursors \
+      --env=XCURSOR_SIZE=24 \
+      <app-id>
+
+---
+
 ## Licenca
 
 MIT
