@@ -56,13 +56,7 @@ check_brave() {
     }
   ')
 
-  [ "${brave_audio:-0}" -eq 0 ] && echo 0 && return
-
-  if hyprctl clients 2>/dev/null | grep -qi "title.*whatsapp"; then
-    echo "$brave_audio"
-  else
-    echo 0
-  fi
+  echo "${brave_audio:-0}"
 }
 
 brave_really_stopped() {
