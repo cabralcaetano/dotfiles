@@ -6,7 +6,7 @@ case "${1:-}" in
   mute) wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
 esac
 
-MUTED=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -c MUTED)
+MUTED=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | grep -c MUTED || true)
 VOL=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{printf "%d", $2 * 100}')
 
 if [ "$MUTED" -gt 0 ]; then
