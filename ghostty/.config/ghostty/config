@@ -42,3 +42,4 @@ cursor-style-blink = true
 
 # === Scrollback ===
 scrollback-limit = 50000
+
