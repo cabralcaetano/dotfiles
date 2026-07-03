@@ -306,7 +306,30 @@ sudo systemctl isolate graphical.target
 
 **Testado com segurança:** `sddm-greeter-qt6 --test-mode --theme <path>` abre o greeter como uma janela normal dentro da sessão Wayland atual — não precisa trocar de VT nem tocar no display manager ativo pra pré-visualizar. Bem mais seguro que o método usado para testar o tuigreet (`greetd --config ... --vt N` numa VT livre).
 
-**Próximo passo:** escolher um preset pronto em vez de customizar o Breeze na mão. Opções levantadas: [Sugar Candy](https://github.com/MarianArlt/sddm-sugar-candy) (mais popular/minimalista), [sddm-astronaut-theme](https://github.com/Keyitdev/sddm-astronaut-theme) (Qt6, 10 presets prontos), [pixie-sddm](https://github.com/xCaptaiN09/pixie-sddm) (minimalista Material You). Catálogos pra navegar: [KDE Store](https://store.kde.org/browse?cat=101&ord=latest), [awesome-sddm](https://github.com/nulladmin1/awesome-sddm).
+**Próximo passo (superado):** escolher um preset pronto em vez de customizar o Breeze na mão. Opções levantadas: [Sugar Candy](https://github.com/MarianArlt/sddm-sugar-candy), [sddm-astronaut-theme](https://github.com/Keyitdev/sddm-astronaut-theme), [pixie-sddm](https://github.com/xCaptaiN09/pixie-sddm). Catálogos: [KDE Store](https://store.kde.org/browse?cat=101&ord=latest), [awesome-sddm](https://github.com/nulladmin1/awesome-sddm). Usuário escolheu **[SilentSDDM](https://github.com/uiriansan/SilentSDDM)** (uiriansan) — tema QML, Qt6, altamente customizável (200+ opções), presets prontos (Nord, Catppuccin, Everforest, etc.), blur nativo no fundo.
+
+### SilentSDDM — tema escolhido e instalado (03/07/2026)
+
+**Instalação** (manual, fora do dnf — repo clonado e copiado para `/usr/share/sddm/themes/silent/`, não gerenciado por pacote):
+
+```bash
+sudo dnf install -y qt6-qtsvg qt6-qtvirtualkeyboard qt6-qtmultimedia qt6-qtimageformats git
+git clone -b main --depth=1 https://github.com/uiriansan/SilentSDDM
+sudo mkdir -p /usr/share/sddm/themes/silent
+sudo cp -rf SilentSDDM/. /usr/share/sddm/themes/silent/
+sudo cp -r /usr/share/sddm/themes/silent/fonts/{redhat,redhat-vf} /usr/share/fonts/
+```
+
+**Config** (`sddm/etc/sddm.conf.d/wiki-ia.conf`, atualizada — substitui a versão com tema `breeze`):
+- `Theme.Current = silent`
+- `General.InputMethod = qtvirtualkeyboard` + `GreeterEnvironment = QML2_IMPORT_PATH=/usr/share/sddm/themes/silent/components/,QT_IM_MODULE=qtvirtualkeyboard` (exigido pelo tema — `InputMethod` sozinho não seta `QT_IM_MODULE` automaticamente)
+
+**Customização do tema** (preset `default.conf`, editado direto em `/usr/share/sddm/themes/silent/configs/default.conf` — cópia de referência versionada em `sddm/silent-theme/default.conf`):
+- Background do `LockScreen` e `LoginScreen` trocado de `smoky.jpg` (padrão do tema) para `wallpaper_3.png` (o wallpaper do próprio usuário, copiado para `/usr/share/sddm/themes/silent/backgrounds/wallpaper_3.png`)
+
+**Testado com `--test-mode`** (mesmo método seguro usado pro Breeze) — sem erros de QML, só logs normais de VA-API/VDPAU (irrelevantes, relacionados a codec de vídeo não utilizado no preset atual).
+
+**Status atual:** tema pronto e validado visualmente pelo usuário. **Ainda não é o display manager ativo** — falta o switch de produção (`greetd` → `sddm`), usando o mesmo procedimento seguro já validado (`disable` do atual antes de `enable` do novo, por causa do conflito de `Alias=display-manager.service`, seguido de `systemctl isolate multi-user.target` + `graphical.target`).
 
 ### Bug — Alt/Super trocados (teclado mecânico Compx/AULA F75)
 
