@@ -248,6 +248,20 @@ Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Indicador aparece na W
 
 Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB.
 
+### Bug — Alt/Super trocados (teclado mecânico Compx/AULA F75)
+
+**Sintoma (03/07/2026):** no teclado mecânico externo (receptor `Compx 2.4G Wireless Receiver`, vendor `3554` product `FA09` — mesmo hardware do AULA F75), a tecla física Alt passou a gerar o scancode de Super (`Super_L`) e vice-versa. Apareceu do nada, sem mudança de config prévia — `kb_options` estava só com `compose:rctrl` e não havia nenhuma regra `udev`/`hwdb` ou variant XKB customizado instalado no sistema (`/etc/udev/hwdb.d/` vazio, variant `us-br` não instalado). Causa raiz não identificada — suspeita de firmware do receptor 2.4G ou da própria mecânica (já houve outro remap de firmware nesse mesmo hardware, ver `udev/deprecated/90-aula-rctrl-altgr.hwdb`, hoje sem uso).
+
+**Diagnóstico:** confirmado via `wev` — tecla física Alt emitindo `sym: Super_L` (keycode 133 / evdev `KEY_LEFTMETA`).
+
+**Fix:** adicionada opção XKB padrão `altwin:swap_alt_win` em `kb_options`, que troca Alt↔Super em nível de software (compositor), efetiva independentemente da causa real ser firmware ou não.
+
+```
+kb_options = compose:rctrl, altwin:swap_alt_win
+```
+
+**Notas abertas:** se o bug reaparecer trocado de novo (ex: firmware "corrigir" sozinho após reconexão do receptor), essa opção passaria a *causar* o problema em vez de corrigi-lo — reavaliar com `wev` antes de assumir que a causa é a mesma.
+
 ## Audio Ducking
 
 Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no Brave — comportamento igual ao iPhone. Implementado via script PipeWire + serviço `systemd --user`. O ducking só dispara quando o Brave tem áudio ativo **e** há uma janela com "whatsapp" no título visível no Hyprland (outros sites com áudio no Brave não ativam).
