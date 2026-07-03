@@ -20,6 +20,7 @@ stow
 # --- Display manager ---
 greetd
 tuigreet
+# sddm, sddm-breeze, sddm-themes — em avaliação, ainda não é o DM ativo
 
 # --- Terminais ---
 ghostty

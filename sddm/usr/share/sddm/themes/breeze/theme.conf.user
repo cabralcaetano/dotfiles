@@ -1,0 +1,8 @@
+[General]
+showlogo=hidden
+showClock=true
+type=image
+color=#a0a0a0
+fontSize=10
+background=/usr/share/backgrounds/wiki-ia-wallpaper.jpg
+needsFullUserModel=false

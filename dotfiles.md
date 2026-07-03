@@ -294,6 +294,20 @@ sudo systemctl isolate graphical.target
 
 **Status atual:** greetd + tuigreet em produção, funcionando. Tema aplicado, F3 troca entre sessões (Hyprland, Hyprland-UWSM, GNOME, GNOME Classic), `--remember-session` lembra a escolha.
 
+### Explorando troca para SDDM (em andamento, 03/07/2026)
+
+`tuigreet` é TUI puro — teto de "bonito" baixo (só cores ANSI, sem imagem de fundo/blur). Usuário quer algo mais visual. Avaliado: SDDM (repo oficial Fedora, recomendado), ReGreet (GTK4, mais parecido com a identidade Adwaita do sistema, mas só disponível via COPR de terceiro não confiável — `psoldunov/regreet`, cuja própria página avisa "todo mundo deveria evitar esse repo"; descartado dado o incidente de boot já registrado acima).
+
+**Instalado:** `sddm`, `sddm-breeze`, `sddm-themes` (via dnf, repo oficial — ainda **não** é o display manager ativo, `greetd` continua em produção).
+
+**Config rascunhada** (versionada, ainda não é a definitiva — tema Breeze padrão testado e considerado ruim pelo usuário):
+- `sddm/etc/sddm.conf.d/wiki-ia.conf` — `DisplayServer=wayland`, tema `breeze`, `SessionDir=/usr/share/wayland-sessions`, lembra último usuário/sessão
+- `sddm/usr/share/sddm/themes/breeze/theme.conf.user` — override sem sobrescrever o pacote: sem logo, relógio visível, cor de destaque `#a0a0a0`, fundo = wallpaper do sistema copiado para `/usr/share/backgrounds/wiki-ia-wallpaper.jpg` (necessário porque o usuário `sddm` não consegue ler `$HOME`, que é `710`)
+
+**Testado com segurança:** `sddm-greeter-qt6 --test-mode --theme <path>` abre o greeter como uma janela normal dentro da sessão Wayland atual — não precisa trocar de VT nem tocar no display manager ativo pra pré-visualizar. Bem mais seguro que o método usado para testar o tuigreet (`greetd --config ... --vt N` numa VT livre).
+
+**Próximo passo:** escolher um preset pronto em vez de customizar o Breeze na mão. Opções levantadas: [Sugar Candy](https://github.com/MarianArlt/sddm-sugar-candy) (mais popular/minimalista), [sddm-astronaut-theme](https://github.com/Keyitdev/sddm-astronaut-theme) (Qt6, 10 presets prontos), [pixie-sddm](https://github.com/xCaptaiN09/pixie-sddm) (minimalista Material You). Catálogos pra navegar: [KDE Store](https://store.kde.org/browse?cat=101&ord=latest), [awesome-sddm](https://github.com/nulladmin1/awesome-sddm).
+
 ### Bug — Alt/Super trocados (teclado mecânico Compx/AULA F75)
 
 **Sintoma (03/07/2026):** no teclado mecânico externo (receptor `Compx 2.4G Wireless Receiver`, vendor `3554` product `FA09` — mesmo hardware do AULA F75), a tecla física Alt passou a gerar o scancode de Super (`Super_L`) e vice-versa. Apareceu do nada, sem mudança de config prévia — `kb_options` estava só com `compose:rctrl` e não havia nenhuma regra `udev`/`hwdb` ou variant XKB customizado instalado no sistema (`/etc/udev/hwdb.d/` vazio, variant `us-br` não instalado). Causa raiz não identificada — suspeita de firmware do receptor 2.4G ou da própria mecânica (já houve outro remap de firmware nesse mesmo hardware, ver `udev/deprecated/90-aula-rctrl-altgr.hwdb`, hoje sem uso).
