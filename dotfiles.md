@@ -264,8 +264,8 @@ user = "greetd"
 ```
 
 - `--remember` / `--remember-session` — lembra último usuário e sessão escolhida
-- `--sessions /usr/share/wayland-sessions` — lista Hyprland, Hyprland-UWSM, GNOME e GNOME Classic (F2/F3 pra trocar)
-- `--theme` — paleta monocromática igual ao `hyprlock.conf`, não a paleta Adwaita azulada da primeira tentativa: `border`/`title`/`prompt`/`action`/`button` = `#a0a0a0` (mesmo cinza de `outer_color`/`check_color`/labels do hyprlock), `container` = `#1d1d20` (mesmo `inner_color` do hyprlock, = background do Ghostty/Kitty), `text`/`input`/`time`/`greet` = `#ffffff` (mesmo `font_color` do hyprlock)
+- `--sessions /usr/share/wayland-sessions` — lista Hyprland, Hyprland-UWSM, GNOME e GNOME Classic (**F3** abre o menu de sessões, **F2** o de comando, **F12** o de power — defaults do tuigreet)
+- `--theme` — **só aceita nomes de cor ANSI, não hex** (`#RRGGBB` é ignorado silenciosamente — foi por isso que o tema não aparecia na primeira versão da config). Paleta monocromática inspirada no `hyprlock.conf`: `border`/`title`/`prompt`/`action`/`button` = `gray` (equivalente mais próximo do cinza `#a0a0a0` do hyprlock), `container` = `black` (equivalente do `#1d1d20`), `text`/`input`/`time`/`greet` = `white`
 
 Rollback: `sudo systemctl enable gdm.service --now && sudo systemctl disable greetd.service --now`
 
