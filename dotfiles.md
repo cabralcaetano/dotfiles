@@ -281,14 +281,18 @@ Rollback: `sudo systemctl enable gdm.service --now && sudo systemctl disable gre
 - Não há evidência de crash-loop do `tuigreet`/`greetd` em si nos logs (nenhuma entrada de erro repetida da unit `greetd`).
 - Conta `root` sem senha (`!` no `/etc/shadow`) é padrão do Fedora Workstation (usa sudo, não login root direto) — não é a causa, só atrapalhou o acesso ao modo rescue/emergency durante o diagnóstico.
 
-**Mudança de abordagem para a próxima tentativa** — trocar os dois `--now` separados por `isolate`, que registra os serviços antes de trocar de target, evitando a janela vazia:
+**Resolvido (03/07/2026):** segunda tentativa funcionou trocando os dois `--now` separados por `isolate`, que registra os serviços antes de trocar de target, evitando a janela vazia. Ordem importa: `gdm.service` e `greetd.service` compartilham o alias `Alias=display-manager.service` no `[Install]` — `enable` não sobrescreve um alias já existente, então é preciso **desabilitar o GDM antes** de habilitar o greetd (senão dá `Failed to enable unit: File '/etc/systemd/system/display-manager.service' already exists`):
 
 ```bash
-sudo systemctl enable greetd.service
 sudo systemctl disable gdm.service
+sudo systemctl enable greetd.service
 sudo systemctl isolate multi-user.target
 sudo systemctl isolate graphical.target
 ```
+
+`disable`/`enable` sozinhos (sem `--now`) só mexem no que inicia no próximo boot — não derrubam a sessão atual. A troca de fato só acontece nos dois `isolate` finais.
+
+**Status atual:** greetd + tuigreet em produção, funcionando. Tema aplicado, F3 troca entre sessões (Hyprland, Hyprland-UWSM, GNOME, GNOME Classic), `--remember-session` lembra a escolha.
 
 ### Bug — Alt/Super trocados (teclado mecânico Compx/AULA F75)
 
