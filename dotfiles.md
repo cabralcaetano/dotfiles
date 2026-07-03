@@ -265,9 +265,30 @@ user = "greetd"
 
 - `--remember` / `--remember-session` — lembra último usuário e sessão escolhida
 - `--sessions /usr/share/wayland-sessions` — lista Hyprland, Hyprland-UWSM, GNOME e GNOME Classic (F2/F3 pra trocar)
-- `--theme` — paleta extraída do próprio sistema: `border`/`title` = `#a0a0a0` (mesmo cinza do `col.active_border` no `hyprland.conf`), `container` = `#1d1d20` (background do Ghostty/Kitty, tema Adwaita dark), `text`/`input`/`greet` = `#deddda` (foreground do Ghostty), `prompt`/`action` = `#62a0ea` (azul Adwaita, palette 4), `button` = `#99c1f1` (palette 12), `time` = `#9a9996` (palette 8)
+- `--theme` — paleta monocromática igual ao `hyprlock.conf`, não a paleta Adwaita azulada da primeira tentativa: `border`/`title`/`prompt`/`action`/`button` = `#a0a0a0` (mesmo cinza de `outer_color`/`check_color`/labels do hyprlock), `container` = `#1d1d20` (mesmo `inner_color` do hyprlock, = background do Ghostty/Kitty), `text`/`input`/`time`/`greet` = `#ffffff` (mesmo `font_color` do hyprlock)
 
 Rollback: `sudo systemctl enable gdm.service --now && sudo systemctl disable greetd.service --now`
+
+### Incidente — boot travado na primeira tentativa de troca (03/07/2026)
+
+**Sintoma:** ao rodar `systemctl disable gdm.service --now` + `systemctl enable greetd.service --now` em produção, o boot seguinte parou num prompt `fedora login:` clássico (getty). A senha era aceita, mas nenhum shell aparecia depois — só mensagens de kernel rolando na tela.
+
+**Recuperação:** GRUB → editar entrada de boot (tecla `e`) → adicionar `rw init=/bin/bash` ao final da linha `linux`, contornando o systemd. Modo rescue/emergency não funcionou (`sulogin` recusava por causa da conta `root` vir bloqueada por padrão no Fedora Workstation — comportamento normal, não é bug). Também foi possível bootar um snapshot do Timeshift anterior à mudança direto pelo menu do GRUB. No fim, o acesso real que resolveu foi trocar de TTY (`Ctrl+Alt+F2`/`F3`) — outros TTYs funcionavam normalmente com login e sudo, só a TTY1 (onde o greetd/tuigreet estava configurado, `vt = 1`) que travava. Rollback aplicado: `systemctl enable gdm.service --now` + `systemctl disable greetd.service --now`.
+
+**Investigação pós-incidente:**
+- Descartado: nenhum script em `.bash_profile`, `.zprofile`, `.bashrc`, `.zshrc` ou `.profile` do usuário tenta iniciar Hyprland automaticamente — não é a causa.
+- `journalctl` mostrou 6 reboots em ~47 minutos durante o ciclo de troubleshooting, com `getty@tty1.service` iniciando e parando sozinho em dois deles — consistente com uma **janela sem nenhum display manager ativo na TTY1** durante a troca (o `disable gdm --now` e o `enable greetd --now` não são atômicos; se não emendam no mesmo instante, o systemd sobe o getty clássico nessa lacuna).
+- Não há evidência de crash-loop do `tuigreet`/`greetd` em si nos logs (nenhuma entrada de erro repetida da unit `greetd`).
+- Conta `root` sem senha (`!` no `/etc/shadow`) é padrão do Fedora Workstation (usa sudo, não login root direto) — não é a causa, só atrapalhou o acesso ao modo rescue/emergency durante o diagnóstico.
+
+**Mudança de abordagem para a próxima tentativa** — trocar os dois `--now` separados por `isolate`, que registra os serviços antes de trocar de target, evitando a janela vazia:
+
+```bash
+sudo systemctl enable greetd.service
+sudo systemctl disable gdm.service
+sudo systemctl isolate multi-user.target
+sudo systemctl isolate graphical.target
+```
 
 ### Bug — Alt/Super trocados (teclado mecânico Compx/AULA F75)
 
