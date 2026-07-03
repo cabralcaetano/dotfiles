@@ -248,6 +248,27 @@ Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Indicador aparece na W
 
 Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB.
 
+## Display manager — greetd + tuigreet
+
+Substituiu o GDM (03/07/2026) — GDM era pesado e o usuário não gostava da experiência. `greetd` + `tuigreet` é o padrão minimalista da comunidade Hyprland: TUI puro, sem dependências GNOME, roda direto na VT.
+
+Config em `greetd/etc/greetd/config.toml` (fora do `$HOME`, não gerenciado pelo Stow — copiar manualmente para `/etc/greetd/config.toml`):
+
+```toml
+[terminal]
+vt = 1
+
+[default_session]
+command = "tuigreet --time --remember --remember-session --sessions /usr/share/wayland-sessions --theme '...'"
+user = "greetd"
+```
+
+- `--remember` / `--remember-session` — lembra último usuário e sessão escolhida
+- `--sessions /usr/share/wayland-sessions` — lista Hyprland, Hyprland-UWSM, GNOME e GNOME Classic (F2/F3 pra trocar)
+- `--theme` — paleta extraída do próprio sistema: `border`/`title` = `#a0a0a0` (mesmo cinza do `col.active_border` no `hyprland.conf`), `container` = `#1d1d20` (background do Ghostty/Kitty, tema Adwaita dark), `text`/`input`/`greet` = `#deddda` (foreground do Ghostty), `prompt`/`action` = `#62a0ea` (azul Adwaita, palette 4), `button` = `#99c1f1` (palette 12), `time` = `#9a9996` (palette 8)
+
+Rollback: `sudo systemctl enable gdm.service --now && sudo systemctl disable greetd.service --now`
+
 ### Bug — Alt/Super trocados (teclado mecânico Compx/AULA F75)
 
 **Sintoma (03/07/2026):** no teclado mecânico externo (receptor `Compx 2.4G Wireless Receiver`, vendor `3554` product `FA09` — mesmo hardware do AULA F75), a tecla física Alt passou a gerar o scancode de Super (`Super_L`) e vice-versa. Apareceu do nada, sem mudança de config prévia — `kb_options` estava só com `compose:rctrl` e não havia nenhuma regra `udev`/`hwdb` ou variant XKB customizado instalado no sistema (`/etc/udev/hwdb.d/` vazio, variant `us-br` não instalado). Causa raiz não identificada — suspeita de firmware do receptor 2.4G ou da própria mecânica (já houve outro remap de firmware nesse mesmo hardware, ver `udev/deprecated/90-aula-rctrl-altgr.hwdb`, hoje sem uso).

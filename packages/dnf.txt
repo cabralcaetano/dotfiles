@@ -17,6 +17,10 @@ swww
 # --- GNU Stow (gerencia os symlinks deste repo) ---
 stow
 
+# --- Display manager ---
+greetd
+tuigreet
+
 # --- Terminais ---
 ghostty
 kitty
