@@ -2,5 +2,5 @@
 vt = 1
 
 [default_session]
-command = "tuigreet --time --remember --remember-session --sessions /usr/share/wayland-sessions --theme 'border=#a0a0a0;text=#deddda;prompt=#62a0ea;time=#9a9996;action=#62a0ea;button=#99c1f1;container=#1d1d20;input=#deddda;title=#a0a0a0;greet=#deddda'"
+command = "tuigreet --time --remember --remember-session --sessions /usr/share/wayland-sessions --theme 'border=#a0a0a0;text=#ffffff;prompt=#a0a0a0;time=#ffffff;action=#a0a0a0;button=#a0a0a0;container=#1d1d20;input=#ffffff;title=#a0a0a0;greet=#ffffff'"
 user = "greetd"
