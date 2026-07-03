@@ -324,12 +324,30 @@ sudo cp -r /usr/share/sddm/themes/silent/fonts/{redhat,redhat-vf} /usr/share/fon
 - `Theme.Current = silent`
 - `General.InputMethod = qtvirtualkeyboard` + `GreeterEnvironment = QML2_IMPORT_PATH=/usr/share/sddm/themes/silent/components/,QT_IM_MODULE=qtvirtualkeyboard` (exigido pelo tema — `InputMethod` sozinho não seta `QT_IM_MODULE` automaticamente)
 
-**Customização do tema** (preset `default.conf`, editado direto em `/usr/share/sddm/themes/silent/configs/default.conf` — cópia de referência versionada em `sddm/silent-theme/default.conf`):
-- Background do `LockScreen` e `LoginScreen` trocado de `smoky.jpg` (padrão do tema) para `wallpaper_3.png` (o wallpaper do próprio usuário, copiado para `/usr/share/sddm/themes/silent/backgrounds/wallpaper_3.png`)
+**Switch de produção concluído (03/07/2026):** `greetd` → `sddm`, mesmo procedimento seguro já validado (`disable greetd` antes de `enable sddm` por causa do conflito de `Alias=display-manager.service`, seguido de `systemctl isolate multi-user.target` + `graphical.target`). Sem incidentes dessa vez — SDDM é o display manager ativo.
 
-**Testado com `--test-mode`** (mesmo método seguro usado pro Breeze) — sem erros de QML, só logs normais de VA-API/VDPAU (irrelevantes, relacionados a codec de vídeo não utilizado no preset atual).
+**Customização do tema — versão final** (preset `default.conf`, editado direto em `/usr/share/sddm/themes/silent/configs/default.conf` — cópia de referência versionada em `sddm/silent-theme/default.conf`), buscando reproduzir o visual do `hyprlock.conf`:
 
-**Status atual:** tema pronto e validado visualmente pelo usuário. **Ainda não é o display manager ativo** — falta o switch de produção (`greetd` → `sddm`), usando o mesmo procedimento seguro já validado (`disable` do atual antes de `enable` do novo, por causa do conflito de `Alias=display-manager.service`, seguido de `systemctl isolate multi-user.target` + `graphical.target`).
+- Background do `LockScreen` e `LoginScreen`: `wallpaper_3.png` (wallpaper do próprio usuário, copiado para `/usr/share/sddm/themes/silent/backgrounds/wallpaper_3.png`). `blur = 24`, `brightness`/`saturation = 0.0` — **cuidado:** valores altos de blur (testado com 64) numa imagem escura/baixo contraste borram tudo até virar preto sólido, parece que "não tem imagem" quando na verdade só está sobre-borrada.
+- Cores: cinza `#A0A0A0` (igual ao `col.active_border`/`check_color` do hyprlock) pra bordas/labels, `#1D1D20` (igual ao `inner_color`) pros fundos dos painéis, branco puro pro texto/relógio — sem nenhum azul (paleta 100% monocromática, como o hyprlock)
+- Fonte: `JetBrainsMono Nerd Font` em todos os componentes
+- Clock (`LockScreen.Clock`): `font-size = 64`, branco — igual ao label `$TIME` do hyprlock. **Só aparece na "lock screen" inicial** (tela de "pressione qualquer tecla"), antes de qualquer input — clicar na janela pra focar já conta como tecla pressionada e pula direto pra "login screen" (avatar+senha, sem relógio). Isso é uma limitação estrutural do tema (duas telas), não um bug.
+- `PasswordInput`: `width=280, height=48` (idêntico ao `input-field` do hyprlock), `border-radius-left/right=24` (pill), borda cinza 1px, fundo `#1D1D20` com `background-opacity=0.5` (mais translúcido que o padrão do tema, que era `0.93`)
+- `Avatar`: `active-size=140, inactive-size=100` — bem maior que o padrão do tema (120/80), a pedido do usuário
+- `WarningMessage`: `error-color = #FF6464` (vermelho, igual ao `fail_color` do hyprlock), `warning-color = #FFCC00` (amarelo, igual ao `capslock_color`)
+- Senha mascarada: dots (`●`) com `font.letterSpacing: 4` — **exige patch direto no QML** (`components/Input.qml`, linha do `font.pixelSize`), não é exposto em `default.conf`. Cópia de referência versionada em `sddm/silent-theme/components/Input.qml`.
+
+**Ícones — trocados para Tabler Icons** (`sddm/silent-theme/icons/`), a pedido do usuário (estilo, não só tamanho/cor):
+
+- Baixados de `github.com/tabler/tabler-icons` (outline set) substituindo os SVGs originais do tema com **o mesmo nome de arquivo** (`password.svg`, `arrow-right.svg`, `keyboard.svg`, `language.svg`, `power.svg`, etc.) — não precisou tocar em QML pra isso.
+- **Bug encontrado e corrigido:** os SVGs do Tabler usam `stroke="currentColor"`, que o Qt resolve para **preto puro** (luminância 0) por padrão. O efeito de colorização do tema (`MultiEffect.colorization`) preserva a luminância da imagem original e só substitui o matiz — luminância zero não vira branco não importa a cor de destino, então os ícones ficavam pretos/invisíveis sobre fundo escuro. Fix: `sed -i 's/stroke="currentColor"/stroke="#ffffff"/'` em todos os SVGs baixados (e `fill="currentColor"` → `fill="#ffffff"` no único ícone do estilo "filled", `shift-fill.svg`).
+- **Ícone de sessão do GNOME trocado** (`icons/sessions/gnome.svg`) — Tabler não tem logos de distro/DE, usado o ícone `layout-grid` (grade 2x2) como substituto neutro, mesmo formato dos demais ícones de sessão (`fill="#fff"`, `width/height=15`, `viewBox 0 0 24 24`).
+
+**Sessões filtradas — sem Plasma:** instalar `sddm-breeze`/`sddm-themes` puxou o **KDE Plasma inteiro** como dependência (pacotes `plasma-desktop`, `plasma-workspace`, etc.), incluindo `plasma.desktop` em `/usr/share/wayland-sessions/`, que passou a aparecer na lista de sessões sem o usuário ter pedido. Resolvido sem desinstalar Plasma (risco desnecessário) — criada uma pasta `/usr/share/sddm/wiki-ia-sessions/` com symlinks só para as sessões desejadas (`hyprland.desktop`, `hyprland-uwsm.desktop`, `gnome.desktop`, `gnome-classic.desktop`), e `Wayland.SessionDir` em `sddm/etc/sddm.conf.d/wiki-ia.conf` apontado pra lá em vez de `/usr/share/wayland-sessions` diretamente.
+
+**Testado em cada iteração com `--test-mode`** (`sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/silent`, com `QML2_IMPORT_PATH` setado) — abre como janela normal na sessão Wayland atual, sem precisar trocar de VT nem mexer no display manager ativo. Método seguro usado durante toda a iteração de design.
+
+**Status atual:** SDDM + SilentSDDM em produção, validado visualmente pelo usuário. Nenhum incidente na troca desta vez.
 
 ### Bug — Alt/Super trocados (teclado mecânico Compx/AULA F75)
 
