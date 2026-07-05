@@ -244,6 +244,8 @@ Usa `tuned-adm` via `tuned-ppd` para alternar entre três modos:
 
 Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Indicador aparece na Waybar apenas quando fora do modo balanceado.
 
+**Persistência no boot:** `tuned` em modo `manual` grava o último perfil em `/etc/tuned/active_profile` e restaura no boot (sem reset para default). O `default=balanced` de `/etc/tuned/ppd.conf` vale só para clientes PPD, não para o toggle. Fixar boot em Balanceado: `tuned-adm profile balanced`.
+
 ## Teclado — Alternância ABNT2 / ANSI
 
 Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB.

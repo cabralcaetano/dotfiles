@@ -312,6 +312,8 @@ Sequência do `hypridle.conf`:
 
 Alternância: botão `󰓅` no painel SwayNC (`Super+N`).
 
+**Persistência no boot:** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — não há reset para um default. O `default=balanced` do `/etc/tuned/ppd.conf` só se aplica a clientes PPD (ex.: painel do GNOME), não ao toggle da Waybar, que usa `tuned-adm profile` direto. Para fixar o boot em Balanceado, aplique uma vez: `tuned-adm profile balanced`.
+
 ---
 
 ## Audio Ducking
