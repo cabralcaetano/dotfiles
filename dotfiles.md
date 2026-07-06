@@ -365,6 +365,11 @@ kb_options = compose:rctrl, altwin:swap_alt_win
 
 **Notas abertas:** se o bug reaparecer trocado de novo (ex: firmware "corrigir" sozinho após reconexão do receptor), essa opção passaria a *causar* o problema em vez de corrigi-lo — reavaliar com `wev` antes de assumir que a causa é a mesma.
 
+**Histórico:**
+- **03/07/2026** — bug detectado, `altwin:swap_alt_win` adicionado (commit `29ae784`).
+- **05/07/2026** — opção removida **acidentalmente** dentro de um commit de docs sobre `tuned` (`586578e`), cuja mensagem não menciona teclado. O sintoma de Alt/Super trocados voltou.
+- **06/07/2026** — `altwin:swap_alt_win` readicionado após confirmação de que as teclas estavam trocadas novamente. Fix ativo de novo.
+
 ## Audio Ducking
 
 Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no Brave — comportamento igual ao iPhone. Implementado via script PipeWire + serviço `systemd --user`. O ducking só dispara quando o Brave tem áudio ativo **e** há uma janela com "whatsapp" no título visível no Hyprland (outros sites com áudio no Brave não ativam).
