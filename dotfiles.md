@@ -1,9 +1,9 @@
 # Dotfiles
 
 **Status:** active
-**Stack:** Hyprland, Waybar, Ghostty, Zsh, Starship, Fuzzel, SwayNC, Hyprlock, Hypridle, swww, PipeWire
+**Stack:** Hyprland, Waybar, Ghostty, Zsh, Starship, Fuzzel, SwayNC, Hyprlock, Hypridle, awww (fork do swww), PipeWire
 **Repo:** https://github.com/cabralcaetano/dotfiles
-**Deploy:** Fedora 43 — `~/wiki-ia/personal/projects/dotfiles/` via GNU Stow
+**Deploy:** Arch Linux — `~/Projects/dotfiles/` via GNU Stow (migrado de Fedora em 2026-07-09, ver `docs/arch-migration.md`)
 
 ## Descrição
 
@@ -12,13 +12,12 @@ Configurações pessoais do ambiente Linux. O repo é a fonte da verdade — GNU
 ## Fluxo de instalação em máquina nova
 
 ```bash
-git clone https://github.com/cabralcaetano/wiki-ia ~/wiki-ia
-cd ~/wiki-ia/personal/projects/dotfiles
-sudo dnf install stow swww
-stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship gtk-3 gtk-4
+git clone https://github.com/cabralcaetano/wiki-ia ~/Projects/wiki-ia
+cd ~/Projects/wiki-ia/personal/projects/dotfiles
+bash bootstrap.sh   # idempotente — detecta pacman e instala tudo de packages/
 ```
 
-> O repo fica em `~/wiki-ia/personal/projects/dotfiles/` — não clonar separado em `~/dotfiles`.
+> O repo fica em `~/Projects/wiki-ia/personal/projects/dotfiles/` — não clonar separado. Ver `docs/arch-migration.md` para pendências e diffs específicos da migração Fedora→Arch.
 
 ## Stack
 

@@ -1,8 +1,10 @@
 # dotfiles — cabralcaetano
 
-Configurações pessoais do ambiente Linux. Fedora 44 · Hyprland · Wayland.
+Configurações pessoais do ambiente Linux. Arch Linux · Hyprland · Wayland.
 
 O repo fica dentro do wiki-ia — GNU Stow cria symlinks diretamente de lá para o sistema.
+
+> Migrado de Fedora para Arch em 2026-07-09. Setup Fedora mantido como referência histórica em [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md); diffs da migração em [`docs/arch-migration.md`](docs/arch-migration.md).
 
 ---
 
@@ -10,8 +12,8 @@ O repo fica dentro do wiki-ia — GNU Stow cria symlinks diretamente de lá para
 
 | Componente | Valor |
 |---|---|
-| OS | Fedora 44 |
-| Kernel | 7.0.10-201.fc44.x86_64 |
+| OS | Arch Linux |
+| Kernel | 7.1.3-arch1-1 |
 | CPU | Intel Core i7-13620H (13ª geração) |
 | GPU | Intel UHD Graphics (Raptor Lake-P) |
 | WM | Hyprland 0.55.2 (Wayland) |
@@ -73,14 +75,15 @@ O `bootstrap.sh` é **idempotente** — pode rodar quantas vezes quiser, só faz
 > **Atenção:** alguns passos exigem ação manual (configs system-wide, fora do stow):
 > - **XKB customizado** (`xkb/`) — requer root, incompatível com stow: `cd xkb && bash install.sh`
 > - **Nerd Fonts** (JetBrainsMono, FiraCode) — instalar manualmente
-> - **Ajustes de sistema** (dnf tuning, snapshots Btrfs com snapper + grub-btrfs) — ver [`docs/system-setup.md`](docs/system-setup.md)
-> - **Migração para Arch Linux** (pacotes que trocaram de nome/binário, gh CLI, pendências) — ver [`docs/arch-migration.md`](docs/arch-migration.md)
+> - **Snapshots Btrfs** (snapper + grub-btrfs no layout Arch) — ver [`docs/arch-migration.md §1.2`](docs/arch-migration.md)
+> - **Setup Fedora** (dnf tuning, snapshots no layout antigo) — histórico, não se aplica mais: [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md)
 
 ### Manifestos de pacote
 
-As listas em `packages/` são a fonte da verdade reproduzível (as tabelas deste README são derivadas). Para regerar após instalar/remover algo:
+As listas em `packages/` são a fonte da verdade reproduzível (as tabelas deste README são derivadas): `pacman.txt`, `aur.txt`, `flatpak.txt`, `cargo.txt`, `vscode-extensions.txt`. Para regerar após instalar/remover algo:
 
 ```bash
+pacman -Qqe                                  | sort > packages/pacman.txt   # revisar antes de commitar — é o dump completo, não só o curado
 flatpak list --app --columns=application | sort > packages/flatpak.txt
 code --list-extensions | sort                > packages/vscode-extensions.txt
 ```
@@ -329,7 +332,7 @@ Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no
 
 ## Cursor
 
-Tema: **capitaine-cursors** (`sudo dnf install capitaine-cursors`).
+Tema: **capitaine-cursors** (`sudo pacman -S capitaine-cursors`).
 
 Configurado em 5 lugares para consistência total (GTK 3, GTK 4, Hyprland env, `~/.icons/default/index.theme`, Flatpak override):
 
@@ -395,7 +398,7 @@ cd xkb && bash install.sh
 
 ## Waybar
 
-**Esquerda:** ícone Fedora → workspaces (i–x) → título da janela ativa
+**Esquerda:** ícone custom (`format` vazio no momento — pendente escolher glyph do Arch, era Fedora antes da migração) → workspaces (i–x) → título da janela ativa
 
 **Centro:** relógio (clique abre SwayNC, tooltip calendário)
 
@@ -405,7 +408,7 @@ cd xkb && bash install.sh
 
 ## Ferramentas instaladas
 
-**CLI essenciais (dnf)**
+**CLI essenciais (pacman)**
 
 | Ferramenta | Versão | Função |
 |---|---|---|
@@ -427,7 +430,7 @@ cd xkb && bash install.sh
 
 | Ferramenta | Função |
 |---|---|
-| gh (v2.92.0) | GitHub CLI — instalado em `~/.local/bin` |
+| gh (v2.96.0) | GitHub CLI — pacote `github-cli` (pacman), autenticado via `gh auth setup-git` |
 | pyenv (2.6.26) | Gerenciamento de versões Python |
 | spicetify | Customização do cliente Spotify |
 | matugen | Geração de paletas de cores (Material You) |
@@ -472,7 +475,7 @@ cd xkb && bash install.sh
 
 | Linguagem / Runtime | Versão | Gerenciador |
 |---|---|---|
-| Node.js | 22.22.2 (LTS) | sistema (dnf) |
+| Node.js | 22.22.2 (LTS) | sistema (pacman) |
 | Python | 3.14.3 | pyenv 2.6.26 |
 | Rust | 1.95.0 | rustup |
 | Bun | 1.3.14 | sistema |

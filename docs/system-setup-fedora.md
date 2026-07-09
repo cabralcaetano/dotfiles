@@ -1,4 +1,6 @@
-# System Setup — configs de sistema (fora do stow)
+# System Setup (Fedora) — ARQUIVADO
+
+> **Histórico.** A máquina migrou de Fedora para Arch Linux em 2026-07-09. Este documento não se aplica mais ao sistema atual — mantido só como referência do setup antigo. Para o equivalente em Arch (snapper + grub-btrfs no layout `@`/`@home`), ver [`arch-migration.md` §1.2](arch-migration.md).
 
 Estes ajustes vivem em `/etc`, no bootloader e no `fstab` — são **system-wide**, exigem root e **não** são gerenciados pelo `stow` nem pelo `bootstrap.sh`. Este documento existe para reproduzi-los numa máquina nova.
 
