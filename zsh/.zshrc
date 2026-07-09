@@ -12,7 +12,7 @@ bindkey "^[[1;5C" forward-word
 # === Pyenv ===
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - zsh)"
+command -v pyenv &>/dev/null && eval "$(pyenv init - zsh)"
 
 # === Starship Prompt ===
 eval "$(starship init zsh)"
