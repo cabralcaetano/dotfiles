@@ -34,6 +34,61 @@ Esses não trocaram de nome — simplesmente não estavam instalados no Arch, en
 | `bun` | runtime JS usado pra buildar plugins Obsidian (ex: `default-zoom-fixer`) | não tinha como buildar plugins Obsidian escritos em TS |
 | `fd` | busca de arquivos usada pelo Telescope/LazyVim | Telescope caía pro `find` como fallback (mais lento) |
 
+## 1.2 Snapshots Btrfs — snapper + grub-btrfs (já configurado, layout diferente do Fedora)
+
+Ao contrário do que o item 3 antigo deste doc dizia, isso **já foi feito** durante a instalação do Arch — não ficou pendente. Layout mais simples que o do Fedora (`docs/system-setup.md`), porque o Arch não aninha `.snapshots` dentro do subvolume raiz.
+
+**Layout Btrfs** (`nvme0n1p8`):
+
+```
+findmnt -no SOURCE,TARGET,OPTIONS /
+/dev/nvme0n1p8[/@]      /       subvol=/@
+/dev/nvme0n1p8[/@home]  /home   subvol=/@home
+```
+
+`@` e `@home` são subvolumes irmãos (não aninhados como o `root`/`root/.snapshots` do Fedora) — por isso `/.snapshots` não precisa de entrada própria no `fstab` nem da opção `nofail` que o Fedora exigia.
+
+**snapper:**
+
+```bash
+sudo pacman -S snapper
+sudo snapper -c root create-config /
+sudo snapper -c root set-config \
+  TIMELINE_CREATE=yes TIMELINE_CLEANUP=yes \
+  TIMELINE_LIMIT_HOURLY=5 TIMELINE_LIMIT_DAILY=7 \
+  TIMELINE_LIMIT_WEEKLY=0 TIMELINE_LIMIT_MONTHLY=0 TIMELINE_LIMIT_YEARLY=0 \
+  NUMBER_LIMIT=10 NUMBER_LIMIT_IMPORTANT=5
+sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer
+sudo snapper -c root create -d "baseline pos-install SDDM+desktop" -c important
+```
+
+**grub-btrfs:**
+
+```bash
+sudo pacman -S grub-btrfs
+sudo systemctl enable --now grub-btrfsd.service   # daemon — não é grub-btrfs.path como no Fedora
+sudo grub-mkconfig -o /boot/grub/grub.cfg          # gera o submenu "Arch Linux snapshots"
+```
+
+No Arch o pacote `grub-btrfs` já vem com o serviço certo pronto (`grub-btrfsd.service`, monitora `/.snapshots` e regenera `/boot/grub/grub-btrfs.cfg` sozinho a cada novo snapshot) — não precisa do COPR nem dos ajustes de path que o Fedora (`docs/system-setup.md`) exigia.
+
+**Status atual** (verificado em produção):
+
+```
+$ sudo snapper -c root list
+0 │ single │ current
+1 │ single │ 2026-07-09 00:57:44 │ important │ baseline pos-install SDDM+desktop
+2 │ single │ 2026-07-09 01:00:02 │ timeline  │ timeline
+3 │ single │ 2026-07-09 02:00:00 │ timeline  │ timeline
+
+$ systemctl is-active snapper-timeline.timer snapper-cleanup.timer grub-btrfsd.service
+active
+active
+active
+```
+
+**Recuperação:** reinicie → menu do GRUB → submenu **"Arch Linux snapshots"** → escolhe o snapshot. Como o layout é flat (sem aninhamento), o rollback aqui tem menos ressalvas que o do Fedora.
+
 ## 2. Autenticação Git
 
 Fedora não tinha `gh` configurado; no Arch:
@@ -48,4 +103,4 @@ gh auth setup-git     # registra o gh como credential.helper do git
 
 - `packages/dnf.txt` ainda é a única lista de pacotes versionada — falta um `packages/pacman.txt` equivalente.
 - `bootstrap.sh` ainda assume `dnf`/`stow` a partir de `~/wiki-ia/personal/projects/dotfiles`; no Arch o repo está em `~/dotfiles` direto, sem stow (symlinks manuais em `~/.config`).
-- `docs/system-setup.md` (dnf tuning, snapper, grub-btrfs) é Fedora-específico — layout de snapshots no Arch (se adotado) precisa de doc própria.
+- `docs/system-setup.md` (dnf tuning) é Fedora-específico — não tem equivalente Arch ainda (snapper/grub-btrfs já documentados na seção 1.2 acima).
