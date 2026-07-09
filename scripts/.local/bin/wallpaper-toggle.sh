@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
-WP1="$HOME/.config/wallpapers/wallpaper_1.jpg"
-WP2="$HOME/.config/wallpapers/wallpaper_2.jpg"
-WP3="$HOME/.config/wallpapers/wallpaper_3.png"
+WALLPAPER_DIR="$HOME/.config/wallpapers"
 
-CURRENT=$(swww query | grep -o 'image: .*' | sed 's/image: //' || true)
+mapfile -t WALLPAPERS < <(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -iname "*.jpg" -o -iname "*.jpeg" -o -iname "*.png" \) | sort)
 
-if [[ "$CURRENT" == "$WP1" ]]; then
-    swww img "$WP2" --transition-type fade --transition-duration 1.5 --transition-fps 60
-elif [[ "$CURRENT" == "$WP2" ]]; then
-    swww img "$WP3" --transition-type fade --transition-duration 1.5 --transition-fps 60
-else
-    swww img "$WP1" --transition-type fade --transition-duration 1.5 --transition-fps 60
-fi
+(( ${#WALLPAPERS[@]} > 0 )) || { notify-send "Wallpaper" "Nenhum wallpaper encontrado em $WALLPAPER_DIR"; exit 1; }
+
+CURRENT=$(awww query | grep -o 'image: .*' | sed 's/image: //' || true)
+
+NEXT="${WALLPAPERS[0]}"
+for i in "${!WALLPAPERS[@]}"; do
+    if [[ "${WALLPAPERS[$i]}" == "$CURRENT" ]]; then
+        NEXT="${WALLPAPERS[$(( (i + 1) % ${#WALLPAPERS[@]} ))]}"
+        break
+    fi
+done
+
+awww img "$NEXT" --transition-type fade --transition-duration 1.5 --transition-fps 60
