@@ -74,6 +74,7 @@ O `bootstrap.sh` é **idempotente** — pode rodar quantas vezes quiser, só faz
 > - **XKB customizado** (`xkb/`) — requer root, incompatível com stow: `cd xkb && bash install.sh`
 > - **Nerd Fonts** (JetBrainsMono, FiraCode) — instalar manualmente
 > - **Ajustes de sistema** (dnf tuning, snapshots Btrfs com snapper + grub-btrfs) — ver [`docs/system-setup.md`](docs/system-setup.md)
+> - **Migração para Arch Linux** (pacotes que trocaram de nome/binário, gh CLI, pendências) — ver [`docs/arch-migration.md`](docs/arch-migration.md)
 
 ### Manifestos de pacote
 

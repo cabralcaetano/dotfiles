@@ -67,7 +67,7 @@
         },
         {
           "label": "󰂯",
-          "command": "flatpak run io.github.kaii_lb.Overskride"
+          "command": "overskride"
         },
         {
           "label": "󰌾",

@@ -135,7 +135,7 @@
   "format": "󰂯",
   "format-connected": "󰂱",
   "format-off": "󰂲",
-  "on-click": "flatpak run io.github.kaii_lb.Overskride",
+  "on-click": "overskride",
   "tooltip": true,
   "tooltip-format-connected": "{device_alias}\nBateria: {device_battery_percentage}%"
   },
