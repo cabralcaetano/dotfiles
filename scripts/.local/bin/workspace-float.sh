@@ -11,7 +11,7 @@ WS=$(hyprctl activeworkspace -j | jq '.id')
 
 if grep -q "^workspace = $WS," "$FLOAT_CONF"; then
     # Desativar: remove a regra, desflota as janelas e restaura follow_mouse
-    sed -i "/^workspace = $WS,/d" "$FLOAT_CONF"
+    sed -i --follow-symlinks "/^workspace = $WS,/d" "$FLOAT_CONF"
     hyprctl reload
     hyprctl keyword input:follow_mouse 1
     hyprctl clients -j \

@@ -204,7 +204,7 @@ Ordem de inicialização definida no `hyprland.conf`:
 | Atalho | Ação |
 |---|---|
 | Print | Screenshot fullscreen |
-| Shift+Print | Screenshot de área → salva em ~/Imagens/Screenshots/ |
+| Shift+Print | Screenshot de área → salva em ~/Pictures/Screenshots/ |
 | Ctrl+Print | Screenshot de área → clipboard |
 
 **Mídia e hardware**

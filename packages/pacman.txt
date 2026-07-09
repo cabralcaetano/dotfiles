@@ -1,0 +1,116 @@
+# Pacotes pacman — curados (não é o dump completo do sistema)
+# Instalar (oficiais): sudo pacman -S --needed $(grep -v '^#' packages/pacman.txt | grep -v '^$')
+# Pacotes AUR ficam em packages/aur.txt — precisam de um AUR helper (yay).
+# Atualizado: 2026-07-09 · Arch Linux
+
+# --- Compositor / Wayland ---
+hyprland
+hyprlock
+hypridle
+xdg-desktop-portal-hyprland
+xdg-desktop-portal-gtk
+waybar
+swaync
+fuzzel
+awww
+# swww não existe no Arch — awww é o fork com CLI compatível
+
+# --- GNU Stow (gerencia os symlinks deste repo) ---
+stow
+
+# --- Display manager ---
+greetd
+greetd-tuigreet
+sddm
+qt6-virtualkeyboard
+qt6-multimedia
+qt6-imageformats
+
+# --- Terminais ---
+ghostty
+kitty
+
+# --- Shell / prompt ---
+zsh
+starship
+
+# --- CLI essenciais ---
+eza
+bat
+fzf
+ripgrep
+zoxide
+yazi
+lazygit
+btop
+jq
+podman
+fd
+tmux
+vim
+neovim
+bun
+
+# --- Áudio ---
+pipewire
+pipewire-alsa
+pipewire-jack
+pipewire-pulse
+wireplumber
+playerctl
+pavucontrol
+gst-plugin-pipewire
+
+# --- Bluetooth ---
+bluez
+bluez-utils
+
+# --- Utilitários de sistema usados pelos scripts ---
+brightnessctl
+libnotify
+wl-clipboard
+cliphist
+grim
+slurp
+rofimoji
+networkmanager
+networkmanager-dmenu
+inotify-tools
+
+# --- Input method / compose key ---
+fcitx5
+fcitx5-gtk
+fcitx5-qt
+fcitx5-configtool
+
+# --- Tema / aparência ---
+capitaine-cursors
+breeze-cursors
+adw-gtk-theme
+
+# --- Perfil de energia ---
+tuned
+tuned-ppd
+
+# --- File manager ---
+nautilus
+
+# --- Snapshots Btrfs (ver docs/arch-migration.md §1.2) ---
+snapper
+grub-btrfs
+btrfs-progs
+
+# --- Git / GitHub ---
+git
+github-cli
+
+# --- Python ---
+pyenv
+
+# --- Diversos ---
+fastfetch
+flatpak
+firefox
+efibootmgr
+grub
+os-prober

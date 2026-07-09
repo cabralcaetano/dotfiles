@@ -1,0 +1,11 @@
+# Pacotes AUR — precisam de um AUR helper (yay)
+# Instalar: yay -S --needed $(grep -v '^#' packages/aur.txt | grep -v '^$')
+# Atualizado: 2026-07-09 · Arch Linux
+
+# --- Apps ---
+brave-bin
+discord
+overskride-bin
+spotify-launcher
+visual-studio-code-bin
+wlogout

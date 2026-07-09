@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-# bootstrap.sh — instalação idempotente do ambiente (Fedora 44 · Hyprland)
-# Uso: cd ~/wiki-ia/personal/projects/dotfiles && bash bootstrap.sh
+# bootstrap.sh — instalação idempotente do ambiente (Fedora 44 ou Arch Linux · Hyprland)
+# Uso: cd ~/dotfiles && bash bootstrap.sh
 #
+# Detecta a distro (dnf vs pacman) e instala os pacotes correspondentes.
 # Pode rodar quantas vezes quiser — só faz o que falta.
 set -euo pipefail
 
@@ -9,18 +10,31 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DOTFILES_DIR"
 
 # Pacotes stow a aplicar (cada um é um diretório no repo)
-STOW_PKGS=(hypr waybar swaync fuzzel scripts ghostty kitty zsh starship gtk-3 gtk-4 wlogout hyprshell)
+STOW_PKGS=(hypr waybar swaync fuzzel scripts ghostty kitty zsh starship gtk-3 gtk-4 wlogout hyprshell nvim)
 
 log()  { printf '\033[1;34m::\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n' "$*"; }
 
-# --- 1. Pacotes dnf ---
+# --- 1. Pacotes do sistema (dnf ou pacman, conforme a distro) ---
 if command -v dnf >/dev/null; then
   log "Instalando pacotes dnf…"
   # shellcheck disable=SC2046
   sudo dnf install -y $(grep -v '^#' packages/dnf.txt | grep -v '^$')
+elif command -v pacman >/dev/null; then
+  log "Instalando pacotes pacman…"
+  # shellcheck disable=SC2046
+  sudo pacman -S --needed --noconfirm $(grep -v '^#' packages/pacman.txt | grep -v '^$')
+
+  if command -v yay >/dev/null; then
+    log "Instalando pacotes AUR…"
+    # shellcheck disable=SC2046
+    yay -S --needed --noconfirm $(grep -v '^#' packages/aur.txt | grep -v '^$')
+  else
+    warn "yay não encontrado — pulando pacotes AUR (packages/aur.txt)."
+    warn "Instale um AUR helper primeiro: https://github.com/Jguer/yay"
+  fi
 else
-  warn "dnf não encontrado — pulando pacotes do sistema."
+  warn "Nem dnf nem pacman encontrados — pulando pacotes do sistema."
 fi
 
 # --- 2. Flatpaks ---
@@ -75,9 +89,13 @@ if command -v code >/dev/null; then
     xargs -L1 code --install-extension >/dev/null 2>&1 || warn "Algumas extensões falharam."
 fi
 
-# --- 7. Teclado XKB custom (requer root, fora do stow) ---
-warn "Layout XKB customizado NÃO é aplicado automaticamente."
-warn "Para instalar: cd xkb && bash install.sh"
+# --- 7. Snapshots Btrfs (Arch — snapper + grub-btrfs, ver docs/arch-migration.md §1.2) ---
+if command -v pacman >/dev/null && command -v snapper >/dev/null; then
+  if ! sudo snapper list-configs 2>/dev/null | grep -q '^root'; then
+    warn "snapper instalado mas sem config \"root\" — não configurado automaticamente."
+    warn "Ver docs/arch-migration.md §1.2 pros comandos de setup."
+  fi
+fi
 
 # --- 8. Shell padrão ---
 if [[ "${SHELL:-}" != *zsh ]]; then

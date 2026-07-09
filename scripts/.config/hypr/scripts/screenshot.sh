@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-mkdir -p ~/Imagens/Screenshots
+mkdir -p ~/Pictures/Screenshots
 
 case "${1:-}" in
   full)
-    FILE=~/Imagens/Screenshots/$(date +%Y%m%d_%H%M%S).png
+    FILE=~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png
     grim "$FILE" && wl-copy --type image/png < "$FILE"
     notify-send "Screenshot" "Tela completa salva"
     ;;
   area)
-    grim -g "$(slurp)" ~/Imagens/Screenshots/$(date +%Y%m%d_%H%M%S).png
+    grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png
     notify-send "Screenshot" "Área selecionada salva"
     ;;
   clipboard)
