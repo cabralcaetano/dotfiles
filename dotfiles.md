@@ -409,6 +409,11 @@ Ver guia completo: [[ducking]]
 - **Sem autostart via `~/.config/autostart/`** — os `.desktop` do GNOME foram deletados, tudo gerenciado pelo Hyprland
 - **Alt+Tab via cyclenext em vez de hyprshitch/hyprswitch** — hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço de janela mudou de hex para decimal na IPC); cyclenext é nativo e confiável
 - **workspace-float.conf versionado no repo** — contém o estado inicial (`workspace = 5, defaultFloating:1`); em máquina nova o stow o instala automaticamente
+- **`ttf-apple-emoji` via AUR** (2026-07-09) — `yay -S ttf-apple-emoji` para emojis estilo iOS/Apple. Extrai `AppleColorEmoji.ttf` (~110MB) de firmware do iOS + config fontconfig (`75-apple-color-emoji.conf`)
+- **npm com prefix de usuário** (2026-07-09) — `npm config set prefix ~/.npm-global` em vez do padrão `/usr`, evita `EACCES` e mantém pacotes globais do Node fora do escopo do `pacman`. `$HOME/.npm-global/bin` no `PATH` via `.zshrc`. Primeiro uso: **Codex CLI** (`@openai/codex`, `codex-cli 0.144.0`)
+- **File manager: Nemo → Nautilus** (2026-07-09) — trocado pra eliminar divergência de toolkit GTK3 vs GTK4/libadwaita entre file manager e outros apps GNOME (Overskride, Pavucontrol). `xdg-mime default org.gnome.Nautilus.desktop inode/directory`
+- **Materia-gtk-theme testado e revertido** (2026-07-09) — voltou pra `adw-gtk3-dark`, que é o clone fiel do libadwaita e bate com os apps GTK4 que não aceitam tema custom
+- **Brave migrado do Fedora** (2026-07-09) — perfil completo (`~/.config/BraveSoftware/Brave-Browser/Default`, bookmarks/senhas/histórico/cookies/extensões) copiado via `cp -a` da partição antiga (`nvme0n1p5`, subvol `home`, montada read-only). Sync não estava configurado em nenhum dos dois lados — sem conflito. Backup do perfil anterior em `Default.bak-20260709-1556`. Detalhes em [[_arch-migration]] (wiki-ia)
 
 ## Notas abertas
 
@@ -416,3 +421,5 @@ Ver guia completo: [[ducking]]
 - Starship sem `format` definido — usa default verboso (a discutir em sessão futura)
 - `hyprpaper.conf` no repo referencia `default_2.jpg` que não existe — arquivo criado como referência, sistema usa `swww`; ajustar path ou remover se não for usar hyprpaper
 - hyprshell `filter_by: [current_workspace]` atualizado mas ainda inativo (incompatibilidade Hyprland 0.55)
+- Theming GTK4/libadwaita (accent color cinza não aplicando via portal nem via `gtk.css` override) — ver `docs/gtk-qt-theming.md`
+- Headset QCY H3 Pro / EasyEffects (LDAC `hq` não forçado, presets pendentes) — ver `docs/headset-easyeffects.md`
