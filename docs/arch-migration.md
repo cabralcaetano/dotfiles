@@ -18,8 +18,21 @@ Alguns apps não têm o mesmo nome de pacote/binário no Arch. Os binds e script
 | networkmanager-dmenu | binário `networkmanager-dmenu` (hífen) | binário `networkmanager_dmenu` (underscore) — mesmo pacote, nome do binário é diferente | `wifi-menu.sh` |
 | pavucontrol | já vinha nos apps do sistema | **não instalado por padrão** — precisa `sudo pacman -S pavucontrol` | `on-click` do pulseaudio na Waybar |
 | swww (wallpaper) | pacote `swww`, binários `swww`/`swww-daemon` | não existe no Arch — o pacote é `awww` (fork com CLI compatível), binários `awww`/`awww-daemon` | `exec-once` do daemon e do wallpaper inicial em `hyprland.conf`, `wallpaper.sh`, `wallpaper-toggle.sh` |
+| Brave | pacote `brave-browser`, binário `brave-browser` | pacote `brave-bin` (AUR), binário `brave` (o `.desktop` até se chama `brave-browser.desktop`, mas o `Exec=` é `brave`) | `$browser` em `hyprland.conf`, exec-once do workspace 1 |
 
 > Obsidian continua igual (flatpak `md.obsidian.Obsidian` funciona nos dois).
+
+## 1.1 Pacotes que sumiram por completo (não vinham pré-instalados)
+
+Esses não trocaram de nome — simplesmente não estavam instalados no Arch, então os `exec-once`/scripts que dependiam deles falhavam silenciosamente.
+
+| Pacote | Pra que serve | Sintoma sem ele |
+|---|---|---|
+| `pavucontrol` | mixer de áudio gráfico | ícone de volume na Waybar não abria nada |
+| `pyenv` | gerenciador de versões Python | `.zshrc` dava `command not found: pyenv` no login do shell (linha do `eval "$(pyenv init - zsh)"`) |
+| `fcitx5-im` (grupo: `fcitx5`, `fcitx5-gtk`, `fcitx5-qt`, `fcitx5-configtool`) | input method — usado só pro compose key (`compose:rctrl` no `kb_options`) | Ctrl direito + tecla não compunha mais acentos/`ç` em nenhum app, principalmente GTK4 (Ghostty) |
+| `bun` | runtime JS usado pra buildar plugins Obsidian (ex: `default-zoom-fixer`) | não tinha como buildar plugins Obsidian escritos em TS |
+| `fd` | busca de arquivos usada pelo Telescope/LazyVim | Telescope caía pro `find` como fallback (mais lento) |
 
 ## 2. Autenticação Git
 
