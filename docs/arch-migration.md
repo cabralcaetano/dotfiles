@@ -130,3 +130,30 @@ O sistema nunca teve `~/Imagens`, `~/Documentos` etc. criados (só `~/Downloads`
 
 - `docs/system-setup.md` (dnf tuning) é Fedora-específico — não tem equivalente Arch ainda (snapper/grub-btrfs já documentados na seção 1.2 acima).
 - `packages/pacman.txt` e `packages/aur.txt` existem mas não são regenerados automaticamente — atualizar manualmente quando instalar algo novo relevante.
+
+## 9. Partição do Fedora apagada e espaço realocado pro Arch (2026-07-09)
+
+Layout final antes disso: `/` e `/home` do Arch viviam só na `nvme0n1p8` (btrfs, 35,25GiB), que chegou a **97% de uso**. O Fedora ainda ocupava a `nvme0n1p5` (btrfs, root+home, ~200GB) e uma `nvme0n1p4` pequena de boot — mantidos intactos desde a migração (ver §5) só como referência, sem uso real.
+
+**Passos executados** (nessa ordem, com snapshot importante do snapper criado antes: `"antes de apagar Fedora / expandir disco"`):
+
+1. `/mnt/fedora` e `/mnt/fedora-home` (subvolumes `root`/`home` da `p5`, montados read-only) — desmontados, já que qualquer coisa útil de lá (wallpapers etc., ver §3) já tinha sido copiada.
+2. `sudo parted /dev/nvme0n1 rm 5` — apagou a partição root do Fedora.
+3. `sudo sgdisk -n 0:0:0 -t 0:8300 -c 0:"ARCH-EXTRA" /dev/nvme0n1` — criou uma partição nova ocupando o espaço livre (ficou com o número `4`, ~207.635MiB ≈ 203GB), rotulada `ARCH-EXTRA`. O `sgdisk` só grava a entrada na tabela de partições — não apaga o conteúdo antigo do disco, então até aqui a partição nova ainda carregava um resíduo de assinatura ext4 (`blkid`/`parted` detectavam `FEDORA_BOOT` nela, sobra da antiga partição de boot).
+4. `reboot` pra confirmar que o sistema segue bootando normal com a nova tabela de partições.
+5. `sudo wipefs -a /dev/nvme0n1p4` — limpou a assinatura ext4 residual.
+6. `sudo btrfs device add /dev/nvme0n1p4 /` — somou a `p4` como segundo device do **mesmo** filesystem btrfs que já é `/` e `/home` (`p8`). Btrfs suporta multi-device nativamente — não precisou redimensionar/mover a partição `p8` nem tocar no bootloader.
+7. `sudo btrfs balance start /` (balance completo, sem filtros) — redistribuiu os dados pelos dois devices.
+
+**Resultado:**
+
+```
+$ df -h / /home
+Sist. Arq.      Tam. Usado Disp. Uso% Montado em
+/dev/nvme0n1p8  239G   34G  205G  14% /
+/dev/nvme0n1p8  239G   34G  205G  14% /home
+```
+
+Pool btrfs único de ~238GB (35,25GiB da `p8` + 202,77GiB da `p4`), uso caiu de 97% pra 14%. O balance concentrou os dados todos na `p4` e deixou a `p8` inteira desalocada — comportamento normal do btrfs, os dois devices continuam formando um único filesystem. Pra tirar a `p4` do pool no futuro seria preciso `btrfs device remove` (com espaço livre suficiente no restante pra migrar os dados de volta).
+
+`nvme0n1p7` (1MiB ext4, sobra isolada sem mountpoint) não foi mexida — inofensiva, não atrapalha nada.
