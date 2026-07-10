@@ -130,3 +130,25 @@ O sistema nunca teve `~/Imagens`, `~/Documentos` etc. criados (só `~/Downloads`
 
 - `docs/system-setup.md` (dnf tuning) é Fedora-específico — não tem equivalente Arch ainda (snapper/grub-btrfs já documentados na seção 1.2 acima).
 - `packages/pacman.txt` e `packages/aur.txt` existem mas não são regenerados automaticamente — atualizar manualmente quando instalar algo novo relevante.
+
+## 9. Bug achado no caminho: fontes faltando quebram sites (glifos sumindo no Brave)
+
+A instalação base do Arch não traz nenhuma fonte sans-serif "de verdade" — só `FreeSans/FreeMono/FreeSerif` (GNU FreeFont, cobertura de glifos capenga), fontes Nerd Font monoespaçadas (JetBrainsMono, AtkynsonMono — pra terminal), `Red Hat Display/Text/Mono` e `Adwaita Sans/Mono`. Nenhuma delas responde pelo nome `Noto Sans`, `Arial`, `Helvetica` etc., que é como a maioria dos sites (GitHub incluso) referencia fontes no CSS.
+
+**Sintoma:** GitHub (e provavelmente outros sites com font-stack tipo `"Mona Sans VF", ..., "Noto Sans", Helvetica, Arial, sans-serif`) renderizava com glifos sumindo — principalmente dígitos (`n8n` virava `n  n`, contadores de followers/following em branco). Só acontecia no Brave/Chromium; Firefox renderizava normal (tem fallback interno mais robusto). Diagnosticado via `document.fonts` (mostrava só 1 FontFace, status `error`) + `fc-match "Noto Sans"` retornando `FreeSans.otf` em vez de uma fonte real.
+
+**Fix:** instalar um conjunto de fontes-fallback padrão (ver `packages/pacman.txt`, seção "Fontes"):
+
+```bash
+sudo pacman -S noto-fonts noto-fonts-emoji ttf-liberation ttf-dejavu ttf-roboto cantarell-fonts
+fc-cache -f
+```
+
+- `noto-fonts` — cobre o nome exato `Noto Sans` que mais aparece em font-stacks como fallback
+- `noto-fonts-emoji` — emoji coloridos (sem isso, `Apple Color Emoji`/`Segoe UI Emoji` também falha)
+- `ttf-liberation` — substitui `Arial`/`Helvetica`/`Times New Roman`/`Courier New` com métricas compatíveis
+- `ttf-dejavu` — fallback de última linha, boa cobertura de símbolos
+- `ttf-roboto` — aparece explícito em sites/apps com identidade Material Design
+- `cantarell-fonts` — fonte padrão de UI do GNOME, leve
+
+`noto-fonts-cjk` (chinês/japonês/coreano) fica de fora por padrão — é pesado (centenas de MB), só instalar se for acessar conteúdo nesses idiomas.

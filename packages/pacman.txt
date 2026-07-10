@@ -107,6 +107,14 @@ github-cli
 # --- Python ---
 pyenv
 
+# --- Fontes (fallback completo p/ navegador — ver docs/arch-migration.md §9) ---
+noto-fonts
+noto-fonts-emoji
+ttf-liberation
+ttf-dejavu
+ttf-roboto
+cantarell-fonts
+
 # --- Diversos ---
 fastfetch
 flatpak
