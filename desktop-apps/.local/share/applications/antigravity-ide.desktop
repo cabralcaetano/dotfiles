@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Antigravity IDE
+Comment=Google Antigravity IDE (Gemini-powered code editor)
+Exec="/home/caetano/.local/opt/Antigravity IDE/antigravity-ide" %U
+Icon=antigravity-ide
+Terminal=false
+Type=Application
+Categories=Development;
+StartupWMClass=antigravity-ide
+MimeType=x-scheme-handler/antigravity-ide;

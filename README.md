@@ -107,6 +107,8 @@ scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
                   screenshot.sh, workspace-float.sh, alttab.sh
 gtk-3/          → settings.ini
 gtk-4/          → settings.ini
+desktop-apps/   → mimeapps.list + .desktop/ícones de apps instalados manualmente
+                  (fora do dnf/flatpak), ex: Antigravity IDE/2.0
 xkb/            → us-br.xkb, install.sh  (instalação manual, requer root)
 hyprshell/      → config.ron  (instalado mas inativo — incompatível com Hyprland 0.55)
 obsidian/       → config do Obsidian (via stow)
@@ -465,6 +467,35 @@ cd xkb && bash install.sh
 | RetroArch | org.libretro.RetroArch |
 | Déjà Dup | org.gnome.DejaDup |
 | IRPF 2022–2025 | br.gov.fazenda.receita.irpf202X |
+
+---
+
+## Apps instalados manualmente (fora de dnf/flatpak)
+
+Apps distribuídos como `.tar.gz` (sem pacote nativo), extraídos manualmente em `~/.local/opt/<nome>/`. Os `.desktop`, ícones e associações de URI scheme desses apps ficam no pacote stow `desktop-apps/`.
+
+| App | Caminho do binário | URI scheme |
+|---|---|---|
+| Antigravity 2.0 (desktop) | `~/.local/opt/Antigravity-x64/antigravity` | `antigravity://` |
+| Antigravity IDE | `~/.local/opt/Antigravity IDE/antigravity-ide` | `antigravity-ide://` |
+
+Passos para reinstalar em máquina nova (o binário em si **não** é versionado no repo, só o `.desktop`/ícone/mimeapps):
+
+```bash
+# 1. Baixar os .tar.gz em antigravity.google e extrair
+mkdir -p ~/.local/opt
+tar -xzf Antigravity.tar.gz -C ~/.local/opt/
+tar -xzf "Antigravity IDE.tar.gz" -C ~/.local/opt/
+
+# 2. Os .desktop já apontam pros caminhos acima — só aplicar o stow
+cd ~/Projects/dotfiles  # ou wiki-ia/personal/projects/dotfiles
+stow --target=$HOME desktop-apps
+
+# 3. Login OAuth no primeiro uso usa o esquema x-scheme-handler/antigravity(-ide),
+#    já registrado via mimeapps.list — não precisa reconfigurar
+```
+
+> Ícones extraídos manualmente do `.asar`/bundle de cada app (`code.png` no caso do IDE, `icon.png` dentro de `resources/app.asar` no caso do 2.0) e salvos em `desktop-apps/.local/share/icons/hicolor/512x512/apps/`.
 
 ---
 

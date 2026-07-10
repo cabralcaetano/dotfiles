@@ -15,7 +15,7 @@ Configurações pessoais do ambiente Linux. O repo é a fonte da verdade — GNU
 git clone https://github.com/cabralcaetano/wiki-ia ~/wiki-ia
 cd ~/wiki-ia/personal/projects/dotfiles
 sudo dnf install stow swww
-stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship gtk-3 gtk-4
+stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship gtk-3 gtk-4 desktop-apps
 ```
 
 > O repo fica em `~/wiki-ia/personal/projects/dotfiles/` — não clonar separado em `~/dotfiles`.
@@ -66,6 +66,8 @@ scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
 hyprshell/      → config.ron (instalado mas inativo — incompatível com Hyprland 0.55 address format)
 gtk-3/          → settings.ini
 gtk-4/          → settings.ini
+desktop-apps/   → mimeapps.list + .desktop/ícones de apps instalados manualmente
+                  (fora do dnf/flatpak), ex: Antigravity IDE/2.0
 xkb/            → us-br.xkb, install.sh
 udev/deprecated → configs antigas (não instalar)
 ```
