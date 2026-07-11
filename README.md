@@ -75,6 +75,7 @@ O `bootstrap.sh` é **idempotente** — pode rodar quantas vezes quiser, só faz
 > - **Nerd Fonts** (JetBrainsMono, FiraCode) — instalar manualmente
 > - **Ajustes de sistema** (dnf tuning, snapshots Btrfs com snapper + grub-btrfs) — ver [`docs/system-setup.md`](docs/system-setup.md)
 > - **Migração para Arch Linux** (pacotes que trocaram de nome/binário, gh CLI, pendências) — ver [`docs/arch-migration.md`](docs/arch-migration.md)
+> - **Network / DNS** (DNS público via nmcli, troubleshooting `DNS_PROBE_POSSIBLE`, Tailscale DNS) — ver [`docs/network.md`](docs/network.md)
 
 ### Manifestos de pacote
 

@@ -1,0 +1,6 @@
+/* Overrides accent color pra bater com o cinza usado no resto do sistema (#a0a0a0),
+   contornando o xdg-desktop-portal-gtk atual, que não repassa accent-color
+   pro namespace org.freedesktop.appearance (só existe blue hardcoded). */
+@define-color accent_color #a0a0a0;
+@define-color accent_bg_color #a0a0a0;
+@define-color accent_fg_color #ffffff;

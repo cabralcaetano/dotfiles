@@ -59,9 +59,15 @@ setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
 setopt SHARE_HISTORY
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.npm-global/bin:$PATH"
 
 copy() {
     "$@" 2>&1 | wl-copy
 }
 
 [[ -d "$HOME/.spicetify" ]] && export PATH="$PATH:$HOME/.spicetify"
+export QMD_FORCE_CPU=1
+export PATH="/home/caetano/.bun/bin:$PATH"
+
+# opencode
+export PATH=/home/caetano/.opencode/bin:$PATH
