@@ -247,7 +247,7 @@ Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Indicador aparece na W
 
 ## Teclado — Alternância ABNT2 / ANSI
 
-Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB.
+Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Layout padrão em ambos; a única customização XKB é o `altwin:swap_alt_win` aplicado só no Aula F75 via `device {}` (ver [Bug — Alt/Super trocados](#bug--altsuper-trocados-teclado-mecânico-compxaula-f75)).
 
 ## Display manager — greetd + tuigreet
 
@@ -356,18 +356,30 @@ sudo cp -r /usr/share/sddm/themes/silent/fonts/{redhat,redhat-vf} /usr/share/fon
 
 **Diagnóstico:** confirmado via `wev` — tecla física Alt emitindo `sym: Super_L` (keycode 133 / evdev `KEY_LEFTMETA`).
 
-**Fix:** adicionada opção XKB padrão `altwin:swap_alt_win` em `kb_options`, que troca Alt↔Super em nível de software (compositor), efetiva independentemente da causa real ser firmware ou não.
+**Fix (atual — per-device):** `altwin:swap_alt_win` aplicado **apenas** no Aula F75, via blocos `device {}` no `hyprland.conf`, e **removido do `input {}` global**. Assim o swap corrige o receptor Compx sem afetar o teclado do notebook (`at-translated-set-2-keyboard`), que fica normal. O receptor enumera várias interfaces HID com dois nomes (`compx-2.4g-wireless-receiver*` e `2.4g-wireless-device*`) — o bloco cobre todas para garantir que a interface que emite os modificadores seja corrigida.
 
 ```
-kb_options = compose:rctrl, altwin:swap_alt_win
+# input {} global — SEM o swap (notebook fica normal)
+kb_options = compose:rctrl
+
+# um device {} por interface do receptor Aula F75:
+device {
+    name       = compx-2.4g-wireless-receiver
+    kb_options = compose:rctrl, altwin:swap_alt_win
+}
+# ...idem para -keyboard, -consumer-control, -system-control,
+#     2.4g-wireless-device, -2, -consumer-control, -system-control
 ```
 
-**Notas abertas:** se o bug reaparecer trocado de novo (ex: firmware "corrigir" sozinho após reconexão do receptor), essa opção passaria a *causar* o problema em vez de corrigi-lo — reavaliar com `wev` antes de assumir que a causa é a mesma.
+Verificar por dispositivo: `hyprctl devices` — o notebook deve mostrar `o "compose:rctrl"` e o Aula `o "compose:rctrl, altwin:swap_alt_win"`.
+
+**Notas abertas:** o fix depende dos **nomes** que o receptor expõe. Se o Aula reenumerar com outro nome, o swap pode não pegar — confirmar com `hyprctl devices` e adicionar um `device {}` correspondente. Se o bug reaparecer trocado de novo (ex: firmware "corrigir" sozinho após reconexão), reavaliar com `wev` antes de assumir que a causa é a mesma.
 
 **Histórico:**
-- **03/07/2026** — bug detectado, `altwin:swap_alt_win` adicionado (commit `29ae784`).
+- **03/07/2026** — bug detectado, `altwin:swap_alt_win` adicionado no global (commit `29ae784`).
 - **05/07/2026** — opção removida **acidentalmente** dentro de um commit de docs sobre `tuned` (`586578e`), cuja mensagem não menciona teclado. O sintoma de Alt/Super trocados voltou.
-- **06/07/2026** — `altwin:swap_alt_win` readicionado após confirmação de que as teclas estavam trocadas novamente. Fix ativo de novo.
+- **06/07/2026** — `altwin:swap_alt_win` readicionado no global após confirmação de que as teclas estavam trocadas novamente.
+- **10/07/2026** — migrado de global para **per-device**: swap movido do `input {}` para blocos `device {}` do Aula F75. Antes, o swap global também trocava Alt/Super no teclado do notebook; agora só o Aula é afetado e o notebook fica normal.
 
 ## Audio Ducking
 
