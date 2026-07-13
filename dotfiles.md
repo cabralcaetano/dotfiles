@@ -1,9 +1,9 @@
 # Dotfiles
 
 **Status:** active
-**Stack:** Hyprland, Waybar, Ghostty, Zsh, Starship, Fuzzel, SwayNC, Hyprlock, Hypridle, awww (fork do swww), PipeWire
+**Stack:** Hyprland, Waybar, Ghostty, Zsh, Starship, Fuzzel, SwayNC, Hyprlock, Hypridle, swww, PipeWire
 **Repo:** https://github.com/cabralcaetano/dotfiles
-**Deploy:** Arch Linux — `~/Projects/dotfiles/` via GNU Stow (migrado de Fedora em 2026-07-09, ver `docs/arch-migration.md`)
+**Deploy:** Fedora 43 — `~/wiki-ia/personal/projects/dotfiles/` via GNU Stow
 
 ## Descrição
 
@@ -12,12 +12,13 @@ Configurações pessoais do ambiente Linux. O repo é a fonte da verdade — GNU
 ## Fluxo de instalação em máquina nova
 
 ```bash
-git clone https://github.com/cabralcaetano/wiki-ia ~/Projects/wiki-ia
-cd ~/Projects/wiki-ia/personal/projects/dotfiles
-bash bootstrap.sh   # idempotente — detecta pacman e instala tudo de packages/
+git clone https://github.com/cabralcaetano/wiki-ia ~/wiki-ia
+cd ~/wiki-ia/personal/projects/dotfiles
+sudo dnf install stow swww
+stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship gtk-3 gtk-4 desktop-apps
 ```
 
-> O repo fica em `~/Projects/wiki-ia/personal/projects/dotfiles/` — não clonar separado. Ver `docs/arch-migration.md` para pendências e diffs específicos da migração Fedora→Arch.
+> O repo fica em `~/wiki-ia/personal/projects/dotfiles/` — não clonar separado em `~/dotfiles`.
 
 ## Stack
 
@@ -31,6 +32,7 @@ bash bootstrap.sh   # idempotente — detecta pacman e instala tudo de packages/
 | Fuzzel | App launcher |
 | Ghostty | Terminal principal |
 | Kitty | Terminal backup |
+| tmux | copy-mode — seleção/cópia de texto via teclado |
 | Zsh + Starship | Shell + prompt |
 | swww | Wallpaper com transições animadas |
 | cliphist | Histórico de clipboard |
@@ -65,6 +67,8 @@ scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
 hyprshell/      → config.ron (instalado mas inativo — incompatível com Hyprland 0.55 address format)
 gtk-3/          → settings.ini
 gtk-4/          → settings.ini
+desktop-apps/   → mimeapps.list + .desktop/ícones de apps instalados manualmente
+                  (fora do dnf/flatpak), ex: Antigravity IDE/2.0
 xkb/            → us-br.xkb, install.sh
 udev/deprecated → configs antigas (não instalar)
 ```
@@ -204,6 +208,21 @@ Sequência do `hypridle.conf`:
 | Scrollback | 50.000 linhas |
 | `gtk-single-instance` | true — uma única instância, novas janelas abrem como tabs |
 | Padding | 12px horizontal, 8px vertical |
+| Scroll via teclado | `Ctrl+Shift+↑/↓` (linha a linha); `Shift+PageUp/PageDown` (página, default) |
+| Seleção via teclado | `Shift+Setas` — estende seleção a partir do cursor (default do Ghostty, `adjust_selection`). Só ajusta seleção existente, não cria uma do zero — para seleção livre iniciada 100% via teclado, ver tmux abaixo |
+
+## Terminal — tmux (copy-mode)
+
+Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualquer trecho da tela/scrollback **100% via teclado**, sem mouse e sem abrir nenhum app externo (nvim, etc.). Motivo: nem Ghostty nem Kitty têm um "copy-mode" nativo capaz de iniciar seleção livre do zero pelo teclado — é uma limitação conhecida de ambos os terminais.
+
+| Atalho (dentro do tmux) | Ação |
+|---|---|
+| `Ctrl+B` `[` | Entra em copy-mode (default do tmux) |
+| `h/j/k/l` ou setas | Navega |
+| `v` | Inicia seleção |
+| `y` | Copia seleção para o clipboard do sistema (`wl-copy`) e sai do copy-mode |
+
+`mode-keys vi` ativo — usa os motions padrão do vim dentro do copy-mode. Config em `tmux/.config/tmux/tmux.conf`. Não inicia automaticamente — rodar `tmux` manualmente quando precisar.
 
 ## Shell — Zsh
 
@@ -247,7 +266,7 @@ Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Indicador aparece na W
 
 ## Teclado — Alternância ABNT2 / ANSI
 
-Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Layout padrão em ambos; a única customização XKB é o `altwin:swap_alt_win` aplicado só no Aula F75 via `device {}` (ver [Bug — Alt/Super trocados](#bug--altsuper-trocados-teclado-mecânico-compxaula-f75)).
+Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB.
 
 ## Display manager — greetd + tuigreet
 
@@ -356,30 +375,18 @@ sudo cp -r /usr/share/sddm/themes/silent/fonts/{redhat,redhat-vf} /usr/share/fon
 
 **Diagnóstico:** confirmado via `wev` — tecla física Alt emitindo `sym: Super_L` (keycode 133 / evdev `KEY_LEFTMETA`).
 
-**Fix (atual — per-device):** `altwin:swap_alt_win` aplicado **apenas** no Aula F75, via blocos `device {}` no `hyprland.conf`, e **removido do `input {}` global**. Assim o swap corrige o receptor Compx sem afetar o teclado do notebook (`at-translated-set-2-keyboard`), que fica normal. O receptor enumera várias interfaces HID com dois nomes (`compx-2.4g-wireless-receiver*` e `2.4g-wireless-device*`) — o bloco cobre todas para garantir que a interface que emite os modificadores seja corrigida.
+**Fix:** adicionada opção XKB padrão `altwin:swap_alt_win` em `kb_options`, que troca Alt↔Super em nível de software (compositor), efetiva independentemente da causa real ser firmware ou não.
 
 ```
-# input {} global — SEM o swap (notebook fica normal)
-kb_options = compose:rctrl
-
-# um device {} por interface do receptor Aula F75:
-device {
-    name       = compx-2.4g-wireless-receiver
-    kb_options = compose:rctrl, altwin:swap_alt_win
-}
-# ...idem para -keyboard, -consumer-control, -system-control,
-#     2.4g-wireless-device, -2, -consumer-control, -system-control
+kb_options = compose:rctrl, altwin:swap_alt_win
 ```
 
-Verificar por dispositivo: `hyprctl devices` — o notebook deve mostrar `o "compose:rctrl"` e o Aula `o "compose:rctrl, altwin:swap_alt_win"`.
-
-**Notas abertas:** o fix depende dos **nomes** que o receptor expõe. Se o Aula reenumerar com outro nome, o swap pode não pegar — confirmar com `hyprctl devices` e adicionar um `device {}` correspondente. Se o bug reaparecer trocado de novo (ex: firmware "corrigir" sozinho após reconexão), reavaliar com `wev` antes de assumir que a causa é a mesma.
+**Notas abertas:** se o bug reaparecer trocado de novo (ex: firmware "corrigir" sozinho após reconexão do receptor), essa opção passaria a *causar* o problema em vez de corrigi-lo — reavaliar com `wev` antes de assumir que a causa é a mesma.
 
 **Histórico:**
-- **03/07/2026** — bug detectado, `altwin:swap_alt_win` adicionado no global (commit `29ae784`).
+- **03/07/2026** — bug detectado, `altwin:swap_alt_win` adicionado (commit `29ae784`).
 - **05/07/2026** — opção removida **acidentalmente** dentro de um commit de docs sobre `tuned` (`586578e`), cuja mensagem não menciona teclado. O sintoma de Alt/Super trocados voltou.
-- **06/07/2026** — `altwin:swap_alt_win` readicionado no global após confirmação de que as teclas estavam trocadas novamente.
-- **10/07/2026** — migrado de global para **per-device**: swap movido do `input {}` para blocos `device {}` do Aula F75. Antes, o swap global também trocava Alt/Super no teclado do notebook; agora só o Aula é afetado e o notebook fica normal.
+- **06/07/2026** — `altwin:swap_alt_win` readicionado após confirmação de que as teclas estavam trocadas novamente. Fix ativo de novo.
 
 ## Audio Ducking
 
@@ -420,11 +427,6 @@ Ver guia completo: [[ducking]]
 - **Sem autostart via `~/.config/autostart/`** — os `.desktop` do GNOME foram deletados, tudo gerenciado pelo Hyprland
 - **Alt+Tab via cyclenext em vez de hyprshitch/hyprswitch** — hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço de janela mudou de hex para decimal na IPC); cyclenext é nativo e confiável
 - **workspace-float.conf versionado no repo** — contém o estado inicial (`workspace = 5, defaultFloating:1`); em máquina nova o stow o instala automaticamente
-- **`ttf-apple-emoji` via AUR** (2026-07-09) — `yay -S ttf-apple-emoji` para emojis estilo iOS/Apple. Extrai `AppleColorEmoji.ttf` (~110MB) de firmware do iOS + config fontconfig (`75-apple-color-emoji.conf`)
-- **npm com prefix de usuário** (2026-07-09) — `npm config set prefix ~/.npm-global` em vez do padrão `/usr`, evita `EACCES` e mantém pacotes globais do Node fora do escopo do `pacman`. `$HOME/.npm-global/bin` no `PATH` via `.zshrc`. Primeiro uso: **Codex CLI** (`@openai/codex`, `codex-cli 0.144.0`)
-- **File manager: Nemo → Nautilus** (2026-07-09) — trocado pra eliminar divergência de toolkit GTK3 vs GTK4/libadwaita entre file manager e outros apps GNOME (Overskride, Pavucontrol). `xdg-mime default org.gnome.Nautilus.desktop inode/directory`
-- **Materia-gtk-theme testado e revertido** (2026-07-09) — voltou pra `adw-gtk3-dark`, que é o clone fiel do libadwaita e bate com os apps GTK4 que não aceitam tema custom
-- **Brave migrado do Fedora** (2026-07-09) — perfil completo (`~/.config/BraveSoftware/Brave-Browser/Default`, bookmarks/senhas/histórico/cookies/extensões) copiado via `cp -a` da partição antiga (`nvme0n1p5`, subvol `home`, montada read-only). Sync não estava configurado em nenhum dos dois lados — sem conflito. Backup do perfil anterior em `Default.bak-20260709-1556`. Detalhes em [[_arch-migration]] (wiki-ia)
 
 ## Notas abertas
 
@@ -432,5 +434,3 @@ Ver guia completo: [[ducking]]
 - Starship sem `format` definido — usa default verboso (a discutir em sessão futura)
 - `hyprpaper.conf` no repo referencia `default_2.jpg` que não existe — arquivo criado como referência, sistema usa `swww`; ajustar path ou remover se não for usar hyprpaper
 - hyprshell `filter_by: [current_workspace]` atualizado mas ainda inativo (incompatibilidade Hyprland 0.55)
-- Theming GTK4/libadwaita (accent color cinza não aplicando via portal nem via `gtk.css` override) — ver `docs/gtk-qt-theming.md`
-- Headset QCY H3 Pro / EasyEffects (LDAC `hq` não forçado, presets pendentes) — ver `docs/headset-easyeffects.md`
