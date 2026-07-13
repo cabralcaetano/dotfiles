@@ -43,3 +43,8 @@ cursor-style-blink = true
 # === Scrollback ===
 scrollback-limit = 50000
 
+# === Scroll via teclado (linha a linha) ===
+# shift+up/down ficam livres para o adjust_selection padrão do Ghostty
+keybind = ctrl+shift+up=scroll_page_lines:-1
+keybind = ctrl+shift+down=scroll_page_lines:1
+
