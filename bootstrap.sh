@@ -10,7 +10,7 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DOTFILES_DIR"
 
 # Pacotes stow a aplicar (cada um é um diretório no repo)
-STOW_PKGS=(hypr waybar swaync fuzzel scripts ghostty kitty zsh starship gtk-3 gtk-4 wlogout hyprshell nvim)
+STOW_PKGS=(hypr waybar swaync fuzzel scripts ghostty kitty zsh starship gtk-3 gtk-4 wlogout hyprshell nvim tmux)
 
 log()  { printf '\033[1;34m::\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n' "$*"; }

@@ -32,6 +32,7 @@ stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship
 | Fuzzel | App launcher |
 | Ghostty | Terminal principal |
 | Kitty | Terminal backup |
+| tmux | copy-mode — seleção/cópia de texto via teclado |
 | Zsh + Starship | Shell + prompt |
 | swww | Wallpaper com transições animadas |
 | cliphist | Histórico de clipboard |
@@ -207,6 +208,21 @@ Sequência do `hypridle.conf`:
 | Scrollback | 50.000 linhas |
 | `gtk-single-instance` | true — uma única instância, novas janelas abrem como tabs |
 | Padding | 12px horizontal, 8px vertical |
+| Scroll via teclado | `Ctrl+Shift+↑/↓` (linha a linha); `Shift+PageUp/PageDown` (página, default) |
+| Seleção via teclado | `Shift+Setas` — estende seleção a partir do cursor (default do Ghostty, `adjust_selection`). Só ajusta seleção existente, não cria uma do zero — para seleção livre iniciada 100% via teclado, ver tmux abaixo |
+
+## Terminal — tmux (copy-mode)
+
+Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualquer trecho da tela/scrollback **100% via teclado**, sem mouse e sem abrir nenhum app externo (nvim, etc.). Motivo: nem Ghostty nem Kitty têm um "copy-mode" nativo capaz de iniciar seleção livre do zero pelo teclado — é uma limitação conhecida de ambos os terminais.
+
+| Atalho (dentro do tmux) | Ação |
+|---|---|
+| `Ctrl+B` `[` | Entra em copy-mode (default do tmux) |
+| `h/j/k/l` ou setas | Navega |
+| `v` | Inicia seleção |
+| `y` | Copia seleção para o clipboard do sistema (`wl-copy`) e sai do copy-mode |
+
+`mode-keys vi` ativo — usa os motions padrão do vim dentro do copy-mode. Config em `tmux/.config/tmux/tmux.conf`. Não inicia automaticamente — rodar `tmux` manualmente quando precisar.
 
 ## Shell — Zsh
 
