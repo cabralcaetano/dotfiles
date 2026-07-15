@@ -48,3 +48,9 @@ scrollback-limit = 50000
 keybind = ctrl+shift+up=scroll_page_lines:-1
 keybind = ctrl+shift+down=scroll_page_lines:1
 
+# === Abas via tmux, não via Ghostty ===
+# solta ctrl+shift+t/w (default: new_tab/close_tab) para o tmux tratar como
+# nova janela / fechar janela — ver tmux.conf
+keybind = ctrl+shift+t=unbind
+keybind = ctrl+shift+w=unbind
+
