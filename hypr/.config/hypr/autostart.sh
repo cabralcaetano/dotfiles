@@ -15,6 +15,6 @@ move_when_ready() {
 }
 
 move_when_ready Spotify 3 &
-move_when_ready discord 4 &
+move_when_ready vesktop 4 &
 
 wait
