@@ -135,9 +135,9 @@ Ordem de inicialização definida no `hyprland.conf`:
 | ghostty | 2 | `[workspace 2 silent]` |
 | obsidian (flatpak) | 2 | `[workspace 2 silent]` |
 | spotify | 3 | exec-once + `autostart.sh` move_when_ready |
-| discord | 4 | exec-once + `autostart.sh` move_when_ready |
+| vesktop | 4 | exec-once + `autostart.sh` move_when_ready |
 
-> Spotify e Discord usam `move_when_ready` porque têm updaters que quebram o `[workspace X silent]`.
+> Spotify e Vesktop usam `move_when_ready` porque têm updaters que quebram o `[workspace X silent]`.
 
 ---
 
@@ -151,7 +151,7 @@ Ordem de inicialização definida no `hyprland.conf`:
 | Super+B | Navegador (Brave) |
 | Super+E | Gerenciador de arquivos (Nautilus) |
 | Super+R | Launcher (Fuzzel) |
-| Super+D | Discord |
+| Super+D | Vesktop |
 | Super+M | Spotify |
 | Super+O | Obsidian |
 | Super+Shift+C | VS Code |
@@ -524,7 +524,7 @@ stow --target=$HOME desktop-apps
 |---|---|
 | swww em vez de hyprpaper | Suporte a transições animadas (fade 1.5s/60fps) |
 | Repo dentro do wiki-ia | Centraliza tudo em um único repositório versionado |
-| move_when_ready para Spotify/Discord | Updaters separados quebram `[workspace X silent]` |
+| move_when_ready para Spotify/Vesktop | Updaters separados quebram `[workspace X silent]` |
 | Alt+Tab via cyclenext (nativo) | hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço IPC mudou de hex para decimal) |
 | workspace-float.conf no repo | Estado inicial (`workspace = 5, defaultFloating:1`) propagado via stow em máquina nova |
 | Flatpaks em Wayland nativo | Resolve cursor inconsistente e melhora integração com compositor |

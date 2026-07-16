@@ -88,9 +88,9 @@ Ordem de inicialização definida no `hyprland.conf`:
 | ghostty | 2 | exec-once `[workspace 2 silent]` |
 | obsidian (flatpak) | 2 | exec-once `[workspace 2 silent]` |
 | spotify | 3 | exec-once + `autostart.sh` move_when_ready |
-| discord | 4 | exec-once + `autostart.sh` move_when_ready |
+| vesktop | 4 | exec-once + `autostart.sh` move_when_ready |
 
-> Spotify e Discord usam `move_when_ready` no `autostart.sh` porque têm launchers/updaters que quebram o `[workspace X silent]` do exec-once.
+> Spotify e Vesktop usam `move_when_ready` no `autostart.sh` porque têm launchers/updaters que quebram o `[workspace X silent]` do exec-once.
 
 ## Wallpapers
 
@@ -125,7 +125,7 @@ Sequência do `hypridle.conf`:
 | Super+B | Navegador (Brave) |
 | Super+E | Gerenciador de arquivos (Nautilus) |
 | Super+R | Launcher (Fuzzel) |
-| Super+D | Discord |
+| Super+D | Vesktop |
 | Super+M | Spotify |
 | Super+O | Obsidian |
 | Super+Shift+C | VSCode |
@@ -422,7 +422,7 @@ Ver guia completo: [[ducking]]
 
 - **swww em vez de hyprpaper** — suporte a transições animadas (fade 1.5s/60fps)
 - **GNU Stow a partir de `~/wiki-ia/...`** — repo dentro do wiki-ia para centralizar tudo em um único lugar versionado
-- **move_when_ready para Spotify/Discord** — `[workspace X silent]` não funciona com apps que têm updater/launcher separado
+- **move_when_ready para Spotify/Vesktop** — `[workspace X silent]` não funciona com apps que têm updater/launcher separado
 - **Sem windowrulev2 de workspace** — workspace rules no `exec-once` são apenas para o boot; depois o usuário tem controle total
 - **Sem autostart via `~/.config/autostart/`** — os `.desktop` do GNOME foram deletados, tudo gerenciado pelo Hyprland
 - **Alt+Tab via cyclenext em vez de hyprshitch/hyprswitch** — hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço de janela mudou de hex para decimal na IPC); cyclenext é nativo e confiável
