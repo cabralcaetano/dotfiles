@@ -21,7 +21,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 | Terminal | Ghostty 1.3.1 (principal) · Kitty (backup) |
 | Editor | VS Code 1.122.1 · Neovim v0.12.2 |
 | Launcher | Fuzzel |
-| Bar | Waybar 0.15.0 |
+| Bar / painel | Waybar 0.15.0 + Quickshell 0.3.0 |
 | Notificações | SwayNC |
 | Lockscreen | Hyprlock |
 | Wallpaper | awww (fork compatível com swww, transições animadas) |
@@ -106,6 +106,7 @@ hypr/           → hyprland.conf, hypridle.conf, hyprlock.conf,
                   autostart.sh, workspace-float.conf
 waybar/         → config.jsonc, style.css
 swaync/         → config.json, style.css
+quickshell/     → clock-panel/shell.qml
 fuzzel/         → fuzzel.ini
 ghostty/        → config
 kitty/          → kitty.conf
@@ -115,7 +116,7 @@ starship/       → starship.toml
 scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
                   wifi-menu.sh, wallpaper.sh, wallpaper-toggle.sh,
                   screenshot.sh, workspace-float.sh, alttab.sh,
-                  battery-conservation.sh
+                  battery-conservation.sh, clock-panel.sh/clock-panel.py
 gtk-3/          → settings.ini
 gtk-4/          → settings.ini + accent_color cinza
 desktop-apps/   → stow manual: mimeapps.list + .desktop/ícones de apps extraídos manualmente
@@ -135,7 +136,7 @@ Ordem de inicialização definida no `hyprland.conf`:
 
 | App | Workspace | Método |
 |---|---|---|
-| waybar, awww-daemon, swaync | — | exec-once imediato |
+| waybar, quickshell clock-panel, awww-daemon, swaync | — | exec-once imediato |
 | hypridle | — | exec-once imediato |
 | wallpaper_5.jpg | — | exec-once com sleep 0.5s |
 | XDG portals | — | exec-once com sleep 1s |
@@ -197,7 +198,7 @@ Ordem de inicialização definida no `hyprland.conf`:
 |---|---|
 | Super+L | Bloqueia tela (Hyprlock) |
 | Super+Shift+Q | Menu de energia (wlogout; desligar/reiniciar pedem confirmação) |
-| Super+N | Toggle notificações (SwayNC) |
+| Super+N | Abre/fecha painel do relógio (Quickshell) |
 | Super+Shift+N | Dismiss notificações |
 | Super+W | Menu WiFi |
 | Super+Shift+W | Alterna wallpaper |
@@ -386,6 +387,9 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 | `brightness.sh` | Controle de brilho |
 | `power-profile.sh` | Alterna perfis tuned-adm |
 | `power-confirm.sh` | Confirma desligamento/reinicialização via Fuzzel antes de chamar `systemctl` |
+| `clock-panel-toggle.sh` | Toggle do painel Quickshell do relógio via IPC |
+| `clock-panel-status.sh` | Métricas do painel Quickshell: CPU, MEM, DISK e GPU em barras |
+| `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell |
 | `wifi-menu.sh` | Menu WiFi via Fuzzel |
 | `kb-toggle.sh` | Alterna layout de teclado ABNT2/ANSI |
 | `workspace-float.sh` | Toggle workspace float mode — flota todas as janelas, desativa warp no Alt+Tab |
@@ -397,9 +401,9 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 
 **Esquerda:** ícone custom (`format` vazio no momento — pendente escolher glyph do Arch, era Fedora antes da migração) → workspaces (i–x) → título da janela ativa
 
-**Centro:** relógio (clique abre SwayNC, tooltip calendário)
+**Centro:** relógio (clique abre painel Quickshell com player, calendário, tempo e status; tooltip mantém calendário nativo)
 
-**Direita:** CPU · RAM · rede · bluetooth · volume · perfil de energia · bateria · tray
+**Direita:** CPU · RAM · rede · bluetooth · volume · perfil de energia · conservação da bateria · tray · hotspot invisível minúsculo no extremo direito para SwayNC
 
 ---
 

@@ -15,7 +15,7 @@
   // === MÓDULOS =================================
   "modules-left": ["custom/icon", "hyprland/workspaces", "hyprland/window"],
   "modules-center": ["clock"],
-  "modules-right": ["group/tray-drawer", "network", "bluetooth", "pulseaudio", "custom/power-profile", "custom/battery-conservation"],
+  "modules-right": ["group/tray-drawer", "network", "bluetooth", "pulseaudio", "custom/power-profile", "custom/battery-conservation", "custom/swaync-hotspot"],
 
   // === CPU =====================================
   "cpu": {
@@ -76,11 +76,9 @@
         "today": "<b>{}</b>"
       }
     },
-    "on-click": "swaync-client -t",
+    "on-click": "$HOME/.local/bin/clock-panel-toggle.sh",
     "actions": {
-      "on-click-right": "shift_down",
-      "on-click": "shift_up"
-      // "on-double-click": "gnome-calendar"
+      "on-click-right": "shift_down"
     }
   },
 
@@ -183,6 +181,13 @@
     "on-click": "$HOME/.local/bin/battery-conservation.sh",
     "tooltip": true,
     "tooltip-format": "Conservação da bateria: clique para alternar Long_Life/100%"
+  },
+
+  // === HOTSPOT INVISÍVEL SWAYNC ==================
+  "custom/swaync-hotspot": {
+    "format": " ",
+    "on-click": "swaync-client -t",
+    "tooltip": false
   }
 }
 

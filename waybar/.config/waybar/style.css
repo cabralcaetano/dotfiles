@@ -10,15 +10,20 @@ window#waybar {
   background-color: alpha(#1d1d20, 0.85);
   border-radius: 0;
   color: #ffffff;
-  padding: 2px 12px;
+  padding: 2px 0 2px 12px;
   transition: 0.3s all;
 }
 
 /* === MÓDULOS =================================== */
 .modules-left,
-.modules-center,
-.modules-right {
+.modules-center {
   padding: 0 1rem;
+  color: #ffffff;
+  border: none;
+}
+
+.modules-right {
+  padding: 0;
   color: #ffffff;
   border: none;
 }
@@ -81,6 +86,16 @@ window#waybar {
   padding: 0 6px;
 }
 
+
+/* === HOTSPOT INVISÍVEL SWAYNC ================== */
+#custom-swaync-hotspot {
+  background: transparent;
+  color: transparent;
+  margin: 0;
+  padding: 0 1px;
+  min-width: 2px;
+  font-size: 1px;
+}
 /* === VELOCIDADE DE REDE ========================= */
 #network-speed {
   font-size: 9px;

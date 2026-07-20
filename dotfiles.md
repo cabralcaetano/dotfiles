@@ -1,7 +1,7 @@
 # Dotfiles
 
 **Status:** histórico / operacional — não é o source of truth atual
-**Stack atual:** Arch Linux, Hyprland, Waybar, Ghostty, Zsh, Starship, Fuzzel, SwayNC, Hyprlock, Hypridle, awww, PipeWire
+**Stack atual:** Arch Linux, Hyprland, Waybar, Quickshell, Ghostty, Zsh, Starship, Fuzzel, SwayNC, Hyprlock, Hypridle, awww, PipeWire
 **Repo:** https://github.com/cabralcaetano/dotfiles
 **Deploy atual:** `~/Projects/dotfiles` via GNU Stow
 
@@ -58,6 +58,7 @@ hypr/           → hyprland.conf, hypridle.conf, hyprlock.conf, autostart.sh,
                   workspace-float.conf (estado do workspace 5 float mode)
 waybar/         → config.jsonc, style.css
 swaync/         → config.json, style.css
+quickshell/     → clock-panel/shell.qml
 fuzzel/         → fuzzel.ini
 ghostty/        → config
 kitty/          → kitty.conf
@@ -81,7 +82,7 @@ Ordem de inicialização definida no `hyprland.conf`:
 
 | App | Workspace | Método |
 |---|---|---|
-| waybar, swww-daemon, swaync | — | exec-once imediato |
+| waybar, quickshell clock-panel, swww-daemon, swaync | — | exec-once imediato |
 | hypridle | — | exec-once imediato |
 | wallpaper_2.jpg | — | exec-once com sleep 0.5s |
 | XDG portals | — | exec-once com sleep 1s |
@@ -153,7 +154,7 @@ Sequência do `hypridle.conf`:
 | Super+L | Bloqueia tela |
 | Super+Shift+Q | wlogout (menu de energia) |
 | Super+M | Sai do Hyprland |
-| Super+N | Toggle notificações (SwayNC) |
+| Super+N | Abre/fecha painel do relógio (Quickshell) |
 | Super+Shift+N | Dismiss notificações |
 | Super+W | Menu WiFi |
 | Super+Shift+W | Alterna wallpaper |
@@ -411,14 +412,18 @@ Ver guia completo: [[ducking]]
 |---|---|
 | `workspace-float.sh` | Toggle de workspace float mode — flota todas as janelas abertas, novas janelas entram como float, e desativa warp do cursor no Alt+Tab. Lê/escreve `~/.config/hypr/workspace-float.conf` e recarrega o Hyprland. |
 | `alttab.sh` | Alt+Tab com `cyclenext` + `bringactivetotop`. Quando workspace float está ativo, preserva a posição do cursor em vez de deixar o Hyprland warpá-lo para o centro da janela. |
+| `clock-panel-toggle.sh` | Toggle do painel Quickshell do relógio via IPC. |
+| `clock-panel-status.sh` | Métricas do painel Quickshell: CPU, MEM, DISK e GPU em barras. |
+| `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell. |
+| `battery-conservation.sh` | Alterna `Long_Life`/`Standard`; em modo conservação o Lenovo para de carregar em 80%. |
 
 ## Waybar — módulos ativos
 
 **Esquerda:** ícone Fedora, workspaces (i–x), nome da janela ativa
 
-**Centro:** relógio com calendário no tooltip (clique abre SwayNC)
+**Centro:** relógio com calendário no tooltip; clique abre painel Quickshell com player, calendário, tempo e status
 
-**Direita:** CPU, RAM, rede, bluetooth, volume, perfil de energia, bateria, tray
+**Direita:** CPU, RAM, rede, bluetooth, volume, perfil de energia, conservação da bateria, tray, hotspot invisível minúsculo no extremo direito para SwayNC
 
 ## Decisões
 

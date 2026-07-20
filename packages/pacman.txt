@@ -10,6 +10,7 @@ hypridle
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
 waybar
+quickshell
 swaync
 fuzzel
 awww
