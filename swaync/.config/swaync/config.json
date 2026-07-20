@@ -35,7 +35,6 @@
     "buttons-grid",
     "dnd",
     "volume",
-    "mpris",
     "notifications"
   ],
   "widget-config": {
@@ -55,10 +54,6 @@
     "volume": {
       "label": "󰕾"
     },
-    "mpris": {
-      "image-size": 56,
-      "image-radius": 6
-    },
     "buttons-grid": {
       "actions": [
         {
@@ -71,7 +66,7 @@
         },
         {
           "label": "󰂄",
-          "command": "battery-conservation.sh"
+          "command": "/home/caetano/.local/bin/battery-conservation.sh"
         },
         {
           "label": "󰐥",
@@ -79,7 +74,7 @@
         },
         {
           "label": "󰓅",
-          "command": "power-profile.sh"
+          "command": "/home/caetano/.local/bin/power-profile.sh"
         }
       ]
     }

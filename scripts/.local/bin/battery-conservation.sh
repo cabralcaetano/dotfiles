@@ -133,10 +133,12 @@ case "${1:-toggle}" in
         ;;
     waybar)
         capacity="$(cat /sys/class/power_supply/BAT0/capacity 2>/dev/null || echo "?")"
-        case "$(current_mode)" in
-            conservation) echo "󰁹 ${capacity}%" ;;
-            full)         echo "󰂄 ${capacity}%" ;;
-            *)            echo "󰂑 ${capacity}%" ;;
+        battery_status="$(cat /sys/class/power_supply/BAT0/status 2>/dev/null || echo unknown)"
+        case "$(current_mode):$battery_status" in
+            *:Charging)       echo "󰂄 ${capacity}%" ;;
+            conservation:*)   echo "󰁹 ${capacity}%" ;;
+            full:*)           echo "󰁹 ${capacity}%" ;;
+            *)                echo "󰂑 ${capacity}%" ;;
         esac
         ;;
     waybar-check)
