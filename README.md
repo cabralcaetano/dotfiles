@@ -4,6 +4,8 @@ Configurações pessoais do ambiente Linux. Arch Linux · Hyprland · Wayland.
 
 O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para o `$HOME`; configs system-wide ficam documentadas como aplicação manual.
 
+> Migrado de Fedora para Arch em 2026-07-09. Setup Fedora mantido como referência histórica em [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md); diffs da migração em [`docs/arch-migration.md`](docs/arch-migration.md).
+
 ---
 
 ## Sistema
@@ -78,14 +80,16 @@ O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma v
 > | **SDDM Silent theme** | `/etc/sddm.conf.d/`, `/usr/share/sddm/` | aplicar manualmente; ver `dotfiles.md`/`sddm/` |
 > | **Battery conservation helper** | `/usr/local/sbin`, `/etc/systemd/system`, `/etc/sudoers.d` | `~/.local/bin/install-battery-conservation-root.sh` |
 > | **Antigravity desktop entries** | `~/.local/share/applications`, `~/.config/mimeapps.list` | `stow --target="$HOME" desktop-apps` após extrair os apps em `~/.local/opt` |
+> | **Snapshots Btrfs** | snapper + grub-btrfs | ver [`docs/arch-migration.md §1.2`](docs/arch-migration.md) |
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
-> | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/system-setup.md`](docs/system-setup.md); não é o caminho primário atual |
+> | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md); não é o caminho primário atual |
 
 ### Manifestos de pacote
 
-As listas em `packages/` são a fonte da verdade reproduzível (as tabelas deste README são derivadas). Para regerar após instalar/remover algo:
+As listas em `packages/` são a fonte da verdade reproduzível (as tabelas deste README são derivadas): `pacman.txt`, `aur.txt`, `flatpak.txt`, `cargo.txt`, `vscode-extensions.txt`. Para regerar após instalar/remover algo:
 
 ```bash
+pacman -Qqe                                  | sort > packages/pacman.txt   # revisar antes de commitar — é o dump completo, não só o curado
 flatpak list --app --columns=application | sort > packages/flatpak.txt
 code --list-extensions | sort                > packages/vscode-extensions.txt
 ```
@@ -332,7 +336,7 @@ Abaixa automaticamente o volume do Spotify quando áudio do Brave toca.
 
 ## Cursor
 
-Tema: **capitaine-cursors** (`sudo dnf install capitaine-cursors`).
+Tema: **capitaine-cursors** (`sudo pacman -S capitaine-cursors`).
 
 Configurado em 5 lugares para consistência total (GTK 3, GTK 4, Hyprland env, `~/.icons/default/index.theme`, Flatpak override):
 
@@ -388,7 +392,7 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 
 ## Waybar
 
-**Esquerda:** ícone Fedora → workspaces (i–x) → título da janela ativa
+**Esquerda:** ícone custom (`format` vazio no momento — pendente escolher glyph do Arch, era Fedora antes da migração) → workspaces (i–x) → título da janela ativa
 
 **Centro:** relógio (clique abre SwayNC, tooltip calendário)
 
@@ -420,7 +424,7 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 
 | Ferramenta | Função |
 |---|---|
-| gh (v2.92.0) | GitHub CLI — instalado em `~/.local/bin` |
+| gh (v2.96.0) | GitHub CLI — pacote `github-cli` (pacman), autenticado via `gh auth setup-git` |
 | pyenv (2.6.26) | Gerenciamento de versões Python |
 | spicetify | Customização do cliente Spotify |
 | matugen | Geração de paletas de cores (Material You) |
@@ -485,7 +489,7 @@ stow --target="$HOME" desktop-apps
 
 | Linguagem / Runtime | Versão | Gerenciador |
 |---|---|---|
-| Node.js | 22.22.2 (LTS) | sistema (dnf) |
+| Node.js | 22.22.2 (LTS) | sistema (pacman) |
 | Python | 3.14.3 | pyenv 2.6.26 |
 | Rust | 1.95.0 | rustup |
 | Bun | 1.3.14 | sistema |

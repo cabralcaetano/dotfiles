@@ -132,6 +132,16 @@ else
   warn "git não encontrado — pulando plugins Zsh e TPM."
 fi
 
+# --- 3.1 TPM (tmux plugin manager) ---
+log "Instalando TPM em ~/.tmux/plugins/tpm…"
+tpm_dest="$HOME/.tmux/plugins/tpm"
+if [[ -d "$tpm_dest/.git" ]]; then
+  git -C "$tpm_dest" pull --ff-only >/dev/null 2>&1 || warn "Falha ao atualizar TPM"
+else
+  git clone --depth 1 https://github.com/tmux-plugins/tpm "$tpm_dest"
+fi
+warn "Plugins do tmux (tmux-power) só instalam na primeira vez que o tmux ler o tmux.conf — se não aparecerem, rode prefix + I dentro de uma sessão tmux."
+
 # --- 4. Symlinks via stow ---
 if command -v stow >/dev/null; then
   log "Aplicando symlinks com stow…"
