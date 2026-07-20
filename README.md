@@ -392,7 +392,7 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 
 ## Waybar
 
-**Esquerda:** ícone Arch (`󰣇`) → workspaces (i–x) → título da janela ativa
+**Esquerda:** ícone custom (`format` vazio no momento — pendente escolher glyph do Arch, era Fedora antes da migração) → workspaces (i–x) → título da janela ativa
 
 **Centro:** relógio (clique abre SwayNC, tooltip calendário)
 
