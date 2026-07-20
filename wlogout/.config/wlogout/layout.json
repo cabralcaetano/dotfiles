@@ -18,13 +18,13 @@
 }
 {
     "label" : "shutdown",
-    "action" : "systemctl poweroff",
+    "action" : "power-confirm.sh poweroff",
     "text" : "Shutdown",
     "keybind" : "p"
 }
 {
     "label" : "reboot",
-    "action" : "systemctl reboot",
+    "action" : "power-confirm.sh reboot",
     "text" : "Reboot",
     "keybind" : "r"
 }

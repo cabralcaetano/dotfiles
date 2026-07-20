@@ -196,7 +196,7 @@ Ordem de inicialização definida no `hyprland.conf`:
 | Atalho | Ação |
 |---|---|
 | Super+L | Bloqueia tela (Hyprlock) |
-| Super+Shift+Q | Menu de energia (wlogout) |
+| Super+Shift+Q | Menu de energia (wlogout; desligar/reiniciar pedem confirmação) |
 | Super+N | Toggle notificações (SwayNC) |
 | Super+Shift+N | Dismiss notificações |
 | Super+W | Menu WiFi |
@@ -385,6 +385,7 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 | `volume.sh` | Controle de volume com notificação |
 | `brightness.sh` | Controle de brilho |
 | `power-profile.sh` | Alterna perfis tuned-adm |
+| `power-confirm.sh` | Confirma desligamento/reinicialização via Fuzzel antes de chamar `systemctl` |
 | `wifi-menu.sh` | Menu WiFi via Fuzzel |
 | `kb-toggle.sh` | Alterna layout de teclado ABNT2/ANSI |
 | `workspace-float.sh` | Toggle workspace float mode — flota todas as janelas, desativa warp no Alt+Tab |
