@@ -59,7 +59,10 @@
   "hyprland/window": {
     "separate-outputs": true,
     "max-length": 20,
-    "format": "{class}"
+    "format": "{class}",
+    "rewrite": {
+      "^com\\.mitchellh\\.ghostty$": "ghostty"
+    }
   },
 
   // === RELÓGIO =================================
