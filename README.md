@@ -109,6 +109,7 @@ swaync/         → config.json, style.css
 fuzzel/         → fuzzel.ini
 ghostty/        → config
 kitty/          → kitty.conf
+btop/           → btop.conf (`theme_background = false` para transparência do terminal)
 zsh/            → .zshrc
 starship/       → starship.toml
 scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
@@ -368,6 +369,7 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 |---|---|
 | Overskride (Bluetooth) | Float, 800×500, centralizado |
 | pavucontrol | Float, 800×500, centralizado |
+| btop via Waybar | Ghostty dedicado, 80×24 efetivo (`window-width=84`, `window-height=25`), sem decoração, float, centralizado |
 | Todas as janelas | suppress maximize events |
 | XWayland float sem classe | no_focus (fix drag) |
 

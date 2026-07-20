@@ -21,7 +21,8 @@
   "cpu": {
     "interval": 5,
     "format": "󰻠 {usage}%",
-    "on-click": "ghostty -e btop"
+    // Ghostty/GTK consome padding: 84×25 entrega terminal efetivo 80×24.
+    "on-click": "ghostty --gtk-single-instance=false --title=btop --window-save-state=never --window-decoration=none --window-width=84 --window-height=25 -e btop"
   },
 
   // === MEMÓRIA ==================================
