@@ -86,7 +86,7 @@ O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma v
 
 ### Manifestos de pacote
 
-As listas em `packages/` são a fonte da verdade reproduzível (as tabelas deste README são derivadas): `pacman.txt`, `aur.txt`, `flatpak.txt`, `cargo.txt`, `vscode-extensions.txt`. Para regerar após instalar/remover algo:
+As listas em `packages/` são a fonte da verdade reproduzível (as tabelas deste README são derivadas): `pacman.txt`, `aur.txt`, `dnf.txt` (legado), `flatpak.txt`, `vscode-extensions.txt`. Para regerar após instalar/remover algo:
 
 ```bash
 pacman -Qqe                                  | sort > packages/pacman.txt   # revisar antes de commitar — é o dump completo, não só o curado
