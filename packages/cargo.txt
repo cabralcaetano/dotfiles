@@ -1,6 +1,0 @@
-# Crates instalados via cargo (fora do rustup toolchain)
-# Instalar: cargo install $(grep -v '^#' packages/cargo.txt)
-# Atualizado: 2026-06-05
-# Nota: hyprshell está inativo (incompatível com Hyprland 0.55) — ver README.
-hyprshell
-window_switcher

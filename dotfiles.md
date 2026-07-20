@@ -1,9 +1,11 @@
 # Dotfiles
 
-**Status:** active
-**Stack:** Hyprland, Waybar, Ghostty, Zsh, Starship, Fuzzel, SwayNC, Hyprlock, Hypridle, swww, PipeWire
+**Status:** histórico / operacional — não é o source of truth atual
+**Stack atual:** Arch Linux, Hyprland, Waybar, Ghostty, Zsh, Starship, Fuzzel, SwayNC, Hyprlock, Hypridle, awww, PipeWire
 **Repo:** https://github.com/cabralcaetano/dotfiles
-**Deploy:** Fedora 43 — `~/wiki-ia/personal/projects/dotfiles/` via GNU Stow
+**Deploy atual:** `~/Projects/dotfiles` via GNU Stow
+
+> Source of truth atual: `README.md`. Este arquivo preserva contexto histórico, decisões e incidentes antigos; se houver conflito entre os dois, preferir o `README.md`.
 
 ## Descrição
 

@@ -47,7 +47,7 @@ service_available() {
 }
 
 run_root() {
-    local askpass="/home/caetano/.local/bin/sudo-askpass-fuzzel.sh"
+    local askpass="$HOME/.local/bin/sudo-askpass-fuzzel.sh"
 
     if command -v sudo >/dev/null 2>&1 && [ -x "$askpass" ] && command -v fuzzel >/dev/null 2>&1; then
         SUDO_ASKPASS="$askpass" sudo -A "$@"

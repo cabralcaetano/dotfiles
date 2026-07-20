@@ -12,6 +12,7 @@ inode/directory=org.gnome.Nautilus.desktop
 x-scheme-handler/claude=claude-desktop.desktop
 x-scheme-handler/antigravity-ide=antigravity-ide.desktop
 x-scheme-handler/antigravity=antigravity.desktop
+x-scheme-handler/discord=vesktop.desktop
 
 [Added Associations]
 image/jpeg=imv.desktop;

@@ -48,6 +48,7 @@ lazygit
 btop
 jq
 podman
+git
 
 # --- Áudio ---
 pipewire
@@ -69,6 +70,7 @@ networkmanager-dmenu
 capitaine-cursors
 adw-gtk3
 gsettings-desktop-schemas
+qt6ct
 
 # --- Perfil de energia ---
 tuned

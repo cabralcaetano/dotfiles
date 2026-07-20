@@ -1,4 +1,4 @@
-# ~/.zshrc — Fedora 44 (Caetano)
+# ~/.zshrc — Arch/Hyprland (Caetano)
 
 # binds
 bindkey "^[[H" beginning-of-line
@@ -15,7 +15,7 @@ export PYENV_ROOT="$HOME/.pyenv"
 command -v pyenv &>/dev/null && eval "$(pyenv init - zsh)"
 
 # === Starship Prompt ===
-eval "$(starship init zsh)"
+command -v starship &>/dev/null && eval "$(starship init zsh)"
 
 # Aliases úteis
 alias ls='eza --icons'
@@ -33,10 +33,10 @@ alias top='btop'
   source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # === zoxide ===
-eval "$(zoxide init zsh)"
+command -v zoxide &>/dev/null && eval "$(zoxide init zsh)"
 
 # === fzf ===
-eval "$(fzf --zsh)"
+command -v fzf &>/dev/null && eval "$(fzf --zsh)"
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git"'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :50 {}'"
@@ -67,7 +67,7 @@ copy() {
 
 [[ -d "$HOME/.spicetify" ]] && export PATH="$PATH:$HOME/.spicetify"
 export QMD_FORCE_CPU=1
-export PATH="/home/caetano/.bun/bin:$PATH"
+export PATH="$HOME/.bun/bin:$PATH"
 
 # opencode
-export PATH=/home/caetano/.opencode/bin:$PATH
+export PATH="$HOME/.opencode/bin:$PATH"

@@ -71,19 +71,15 @@
         },
         {
           "label": "󰂄",
-          "command": "/home/caetano/.local/bin/battery-conservation.sh"
+          "command": "battery-conservation.sh"
         },
         {
           "label": "󰐥",
-          "command": "systemctl poweroff"
-        },
-        {
-          "label": "󰜉",
-          "command": "systemctl reboot"
+          "command": "wlogout --layout ~/.config/wlogout/layout.json --css ~/.config/wlogout/style.css"
         },
         {
           "label": "󰓅",
-          "command": "/home/caetano/.local/bin/power-profile.sh"
+          "command": "power-profile.sh"
         }
       ]
     }

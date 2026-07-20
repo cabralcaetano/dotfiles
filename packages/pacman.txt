@@ -25,6 +25,7 @@ sddm
 qt6-virtualkeyboard
 qt6-multimedia
 qt6-imageformats
+qt6ct
 
 # --- Terminais ---
 ghostty
@@ -87,6 +88,7 @@ fcitx5-configtool
 capitaine-cursors
 breeze-cursors
 adw-gtk-theme
+ttf-jetbrains-mono-nerd
 
 # --- Perfil de energia ---
 tuned

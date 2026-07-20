@@ -1,8 +1,8 @@
 # dotfiles — cabralcaetano
 
-Configurações pessoais do ambiente Linux. Fedora 44 · Hyprland · Wayland.
+Configurações pessoais do ambiente Linux. Arch Linux · Hyprland · Wayland.
 
-O repo fica dentro do wiki-ia — GNU Stow cria symlinks diretamente de lá para o sistema.
+O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para o `$HOME`; configs system-wide ficam documentadas como aplicação manual.
 
 ---
 
@@ -10,8 +10,8 @@ O repo fica dentro do wiki-ia — GNU Stow cria symlinks diretamente de lá para
 
 | Componente | Valor |
 |---|---|
-| OS | Fedora 44 |
-| Kernel | 7.0.10-201.fc44.x86_64 |
+| OS | Arch Linux |
+| Kernel | 7.1.3-arch1-1 |
 | CPU | Intel Core i7-13620H (13ª geração) |
 | GPU | Intel UHD Graphics (Raptor Lake-P) |
 | WM | Hyprland 0.55.2 (Wayland) |
@@ -22,7 +22,7 @@ O repo fica dentro do wiki-ia — GNU Stow cria symlinks diretamente de lá para
 | Bar | Waybar 0.15.0 |
 | Notificações | SwayNC |
 | Lockscreen | Hyprlock |
-| Wallpaper | swww (transições animadas) |
+| Wallpaper | awww (fork compatível com swww, transições animadas) |
 | Áudio | PipeWire + WirePlumber |
 | Cursor | capitaine-cursors |
 
@@ -54,28 +54,32 @@ O repo fica dentro do wiki-ia — GNU Stow cria symlinks diretamente de lá para
 ## Instalação
 
 ```bash
-# O repo fica dentro do wiki-ia — não clonar separado
-git clone https://github.com/cabralcaetano/wiki-ia ~/wiki-ia
-cd ~/wiki-ia/personal/projects/dotfiles
+git clone https://github.com/cabralcaetano/dotfiles ~/Projects/dotfiles
+cd ~/Projects/dotfiles
 
-# Instalação idempotente (pacotes + flatpaks + plugins zsh + stow + cargo + extensões)
+# Instalação idempotente (pacotes + flatpaks + plugins zsh/tmux + stow + extensões)
 bash bootstrap.sh
 ```
 
-O `bootstrap.sh` é **idempotente** — pode rodar quantas vezes quiser, só faz o que falta. Ele:
+O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma vez, mas ainda executa instaladores novamente quando eles próprios já são idempotentes. Ele:
 
-1. Instala pacotes dnf de `packages/dnf.txt`
+1. Detecta a distro via `/etc/os-release` e instala `packages/pacman.txt` + `packages/aur.txt` (Arch) ou `packages/dnf.txt` (Fedora legado)
 2. Garante o remote `flathub` e instala apps de `packages/flatpak.txt`
-3. Clona os plugins Zsh em `~/.zsh` (não versionados no repo)
-4. Aplica os symlinks com `stow --restow`
-5. Instala crates de `packages/cargo.txt` e extensões de `packages/vscode-extensions.txt`
+3. Clona/atualiza plugins Zsh em `~/.zsh` e TPM em `~/.tmux/plugins/tpm`
+4. Valida e aplica symlinks com `stow --restow`
+5. Instala extensões de `packages/vscode-extensions.txt`
 
-> **Atenção:** alguns passos exigem ação manual (configs system-wide, fora do stow):
-> - **XKB customizado** (`xkb/`) — requer root, incompatível com stow: `cd xkb && bash install.sh`
-> - **Nerd Fonts** (JetBrainsMono, FiraCode) — instalar manualmente
-> - **Ajustes de sistema** (dnf tuning, snapshots Btrfs com snapper + grub-btrfs) — ver [`docs/system-setup.md`](docs/system-setup.md)
-> - **Migração para Arch Linux** (pacotes que trocaram de nome/binário, gh CLI, pendências) — ver [`docs/arch-migration.md`](docs/arch-migration.md)
-> - **Network / DNS** (DNS público via nmcli, troubleshooting `DNS_PROBE_POSSIBLE`, Tailscale DNS) — ver [`docs/network.md`](docs/network.md)
+> **Pós-bootstrap manual:** itens fora do `$HOME`, assets pessoais ou apps extraídos manualmente não entram no Stow automático:
+>
+> | Item | Destino | Aplicação |
+> |---|---|---|
+> | **Nerd Fonts** | sistema/usuário | Arch instala `ttf-jetbrains-mono-nerd`; se o pacote falhar, instalar manualmente antes de avaliar a aparência |
+> | **Wallpapers reais** | `~/.config/wallpapers/` | copiar os arquivos pessoais; `wallpaper.sh` usa `wallpaper_5.jpg` como fallback |
+> | **SDDM Silent theme** | `/etc/sddm.conf.d/`, `/usr/share/sddm/` | aplicar manualmente; ver `dotfiles.md`/`sddm/` |
+> | **Battery conservation helper** | `/usr/local/sbin`, `/etc/systemd/system`, `/etc/sudoers.d` | `~/.local/bin/install-battery-conservation-root.sh` |
+> | **Antigravity desktop entries** | `~/.local/share/applications`, `~/.config/mimeapps.list` | `stow --target="$HOME" desktop-apps` após extrair os apps em `~/.local/opt` |
+> | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
+> | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/system-setup.md`](docs/system-setup.md); não é o caminho primário atual |
 
 ### Manifestos de pacote
 
@@ -91,10 +95,10 @@ code --list-extensions | sort                > packages/vscode-extensions.txt
 ## Estrutura do repo
 
 ```
-bootstrap.sh    → instalação idempotente (pacotes, flatpaks, plugins zsh, stow)
-packages/       → manifestos reproduzíveis: dnf.txt, flatpak.txt, cargo.txt,
-                  vscode-extensions.txt
-hypr/           → hyprland.conf, hypridle.conf, hyprlock.conf, hyprpaper.conf,
+bootstrap.sh    → instalação idempotente (pacotes, flatpaks, plugins zsh/tmux, stow)
+packages/       → manifestos reproduzíveis: pacman.txt, aur.txt, dnf.txt,
+                  flatpak.txt, vscode-extensions.txt
+hypr/           → hyprland.conf, hypridle.conf, hyprlock.conf,
                   autostart.sh, workspace-float.conf
 waybar/         → config.jsonc, style.css
 swaync/         → config.json, style.css
@@ -105,16 +109,16 @@ zsh/            → .zshrc
 starship/       → starship.toml
 scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
                   wifi-menu.sh, wallpaper.sh, wallpaper-toggle.sh,
-                  screenshot.sh, workspace-float.sh, alttab.sh
+                  screenshot.sh, workspace-float.sh, alttab.sh,
+                  battery-conservation.sh
 gtk-3/          → settings.ini
-gtk-4/          → settings.ini
-desktop-apps/   → mimeapps.list + .desktop/ícones de apps instalados manualmente
-                  (fora do dnf/flatpak), ex: Antigravity IDE/2.0
-xkb/            → us-br.xkb, install.sh  (instalação manual, requer root)
-hyprshell/      → config.ron  (instalado mas inativo — incompatível com Hyprland 0.55)
-obsidian/       → config do Obsidian (via stow)
+gtk-4/          → settings.ini + accent_color cinza
+desktop-apps/   → stow manual: mimeapps.list + .desktop/ícones de apps extraídos manualmente
+obsidian/       → configs de vault/plugin; não entra no bootstrap automático
 wlogout/        → layout, style.css
-udev/deprecated → configs antigas (não instalar)
+sddm/           → referência system-wide manual do SDDM/SilentSDDM
+greetd/         → legado/rollback system-wide manual
+legacy/         → configs antigas úteis, mas fora do fluxo ativo
 ducking/        → guia completo do audio ducking
 ```
 
@@ -126,12 +130,12 @@ Ordem de inicialização definida no `hyprland.conf`:
 
 | App | Workspace | Método |
 |---|---|---|
-| waybar, swww-daemon, swaync | — | exec-once imediato |
+| waybar, awww-daemon, swaync | — | exec-once imediato |
 | hypridle | — | exec-once imediato |
-| wallpaper_2.jpg | — | exec-once com sleep 0.5s |
+| wallpaper_5.jpg | — | exec-once com sleep 0.5s |
 | XDG portals | — | exec-once com sleep 1s |
 | GTK dark theme | — | exec-once com sleep 2s |
-| brave-browser | 1 | `[workspace 1 silent]` |
+| brave | 1 | `[workspace 1 silent]` |
 | ghostty | 2 | `[workspace 2 silent]` |
 | obsidian (flatpak) | 2 | `[workspace 2 silent]` |
 | spotify | 3 | exec-once + `autostart.sh` move_when_ready |
@@ -279,15 +283,11 @@ Plugins carregados manualmente de `~/.zsh/`:
 
 ## Wallpapers
 
-```
-~/.config/wallpapers/
-├── wallpaper_1.jpg   — dark waves (preto, abstrato)
-├── wallpaper_2.jpg   — default no boot
-└── wallpaper_3.png   — terceiro wallpaper no ciclo
-```
+`~/.config/wallpapers/` não é versionado no repo porque contém assets pessoais. Os scripts descobrem imagens dinamicamente.
 
+- **Wallpaper inicial:** `~/.config/wallpapers/wallpaper_5.jpg`
 - **Trocar manualmente:** `wallpaper.sh ~/caminho/imagem.jpg`
-- **Ciclar (Super+Shift+W):** alterna 1→2→3→1 com transição fade 1.5s/60fps via swww
+- **Ciclar (Super+Shift+W):** percorre todos os `.jpg`, `.jpeg` e `.png` do diretório, ordenados por nome, com transição fade 1.5s/60fps via `awww`
 
 ---
 
@@ -322,11 +322,11 @@ Alternância: botão `󰓅` no painel SwayNC (`Super+N`).
 
 ## Audio Ducking
 
-Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no Brave — comportamento igual ao iPhone.
+Abaixa automaticamente o volume do Spotify quando áudio do Brave toca.
 
-- **Serviço:** `brave-duck.service` (systemd user, rodando em produção)
-- **Implementação:** script PipeWire + detecção de janela com "whatsapp" no título via Hyprland IPC
-- **Guia completo:** `ducking/ducking.md`
+- **Serviço:** `brave-duck.service` (systemd user)
+- **Implementação atual:** script PipeWire/Pulse com polling de áudio do Brave
+- **Pendente:** reconciliar contrato desejado "somente WhatsApp Web" vs comportamento real "qualquer áudio do Brave" — task registrada em `personal/_tasks.md`
 
 ---
 
@@ -350,21 +350,11 @@ flatpak override --user \
 
 ## Teclado
 
-Toggle `Super+K` alterna entre ABNT2 (notebook) e ANSI (teclado mecânico externo).
+Toggle `Super+K` alterna entre ABNT2 (notebook) e ANSI US (teclado mecânico externo).
 
-**Layout ANSI customizado (`us-br`)** — instalação manual em `/usr/share/X11/xkb/symbols/us`:
+O setup ativo usa layouts padrão (`br,us`) com `kb_options = compose:rctrl`. O antigo layout customizado `us-br` foi preservado em `legacy/xkb/`, mas está fora do fluxo ativo e não deve ser instalado por padrão.
 
-| Combo (RCtrl = AltGr) | Saída |
-|---|---|
-| RCtrl + ; | ç |
-| RCtrl + Q | / |
-| RCtrl + W | ? |
-| RCtrl + [ + vogal | acento agudo (á, é, í, ó, ú) |
-| RCtrl + ' + vogal | til (ã, õ) |
-
-```bash
-cd xkb && bash install.sh
-```
+O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `device {}` do Hyprland, porque o receptor enumera Alt/Super trocados. O teclado do notebook segue sem swap.
 
 ---
 
@@ -383,8 +373,8 @@ cd xkb && bash install.sh
 
 | Script | Função |
 |---|---|
-| `wallpaper.sh` | Troca wallpaper via swww com transição |
-| `wallpaper-toggle.sh` | Cicla entre wallpaper_1, _2, _3 |
+| `wallpaper.sh` | Troca wallpaper via awww com transição |
+| `wallpaper-toggle.sh` | Cicla dinamicamente pelas imagens em `~/.config/wallpapers/` |
 | `screenshot.sh` | Screenshots fullscreen/área/clipboard via grim+slurp |
 | `volume.sh` | Controle de volume com notificação |
 | `brightness.sh` | Controle de brilho |
@@ -408,7 +398,7 @@ cd xkb && bash install.sh
 
 ## Ferramentas instaladas
 
-**CLI essenciais (dnf)**
+**CLI essenciais (manifestos Arch/pacman; Fedora mantido como legado)**
 
 | Ferramenta | Versão | Função |
 |---|---|---|
@@ -434,15 +424,6 @@ cd xkb && bash install.sh
 | pyenv (2.6.26) | Gerenciamento de versões Python |
 | spicetify | Customização do cliente Spotify |
 | matugen | Geração de paletas de cores (Material You) |
-
-**Cargo (Rust)**
-
-| Binário | Função |
-|---|---|
-| hyprshell | Switcher de janelas (inativo — incompatível com Hyprland 0.55) |
-| window_switcher | Switcher alternativo |
-| rustup + toolchain | Rust 1.95.0 |
-
 ---
 
 ## Apps (Flatpak)
@@ -488,9 +469,9 @@ mkdir -p ~/.local/opt
 tar -xzf Antigravity.tar.gz -C ~/.local/opt/
 tar -xzf "Antigravity IDE.tar.gz" -C ~/.local/opt/
 
-# 2. Os .desktop já apontam pros caminhos acima — só aplicar o stow
-cd ~/Projects/dotfiles  # ou wiki-ia/personal/projects/dotfiles
-stow --target=$HOME desktop-apps
+# 2. Os .desktop apontam pros caminhos acima — aplicar o stow manual
+cd ~/Projects/dotfiles
+stow --target="$HOME" desktop-apps
 
 # 3. Login OAuth no primeiro uso usa o esquema x-scheme-handler/antigravity(-ide),
 #    já registrado via mimeapps.list — não precisa reconfigurar
@@ -522,11 +503,11 @@ stow --target=$HOME desktop-apps
 
 | Decisão | Motivo |
 |---|---|
-| swww em vez de hyprpaper | Suporte a transições animadas (fade 1.5s/60fps) |
-| Repo dentro do wiki-ia | Centraliza tudo em um único repositório versionado |
+| awww em vez de hyprpaper/swww | No Arch, `awww` substitui `swww` mantendo CLI compatível e transições animadas |
+| Repo standalone em `~/Projects/dotfiles` | Evita depender do submodule dentro do `wiki-ia` para aplicar Stow no sistema |
 | move_when_ready para Spotify/Discord | Updaters separados quebram `[workspace X silent]` |
 | Alt+Tab via cyclenext (nativo) | hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço IPC mudou de hex para decimal) |
-| workspace-float.conf no repo | Estado inicial (`workspace = 5, defaultFloating:1`) propagado via stow em máquina nova |
+| workspace-float.conf no repo | Estado inicial/atual de workspaces floating é preservado via Stow |
 | Flatpaks em Wayland nativo | Resolve cursor inconsistente e melhora integração com compositor |
 | brave-duck.service como systemd user | Persiste entre reinicializações sem intervenção manual |
 

@@ -126,7 +126,7 @@
   "format-ethernet": "󰈀",
   "format-disconnected": "󰤭",
   "format-icons": ["󰤯", "󰤢", "󰤥", "󰤨"],
-  "on-click": "/home/caetano/.local/bin/wifi-menu.sh",
+  "on-click": "wifi-menu.sh",
   "tooltip-format-wifi": "{essid} {signalStrength}%"
   },
 
@@ -163,8 +163,8 @@
 
   // === PERFIL DE ENERGIA ========================
   "custom/power-profile": {
-    "exec": "/home/caetano/.local/bin/power-profile.sh waybar",
-    "exec-if": "/home/caetano/.local/bin/power-profile.sh waybar-check",
+    "exec": "power-profile.sh waybar",
+    "exec-if": "power-profile.sh waybar-check",
     "interval": 3,
     "tooltip": true,
     "tooltip-format": "Perfil de energia ativo"
@@ -172,11 +172,11 @@
   
   // === CONSERVAÇÃO DA BATERIA ===================
   "custom/battery-conservation": {
-    "exec": "/home/caetano/.local/bin/battery-conservation.sh waybar",
-    "exec-if": "/home/caetano/.local/bin/battery-conservation.sh waybar-check",
+    "exec": "battery-conservation.sh waybar",
+    "exec-if": "battery-conservation.sh waybar-check",
     "interval": 5,
     "format": "{}",
-    "on-click": "/home/caetano/.local/bin/battery-conservation.sh",
+    "on-click": "battery-conservation.sh",
     "tooltip": true,
     "tooltip-format": "Conservação da bateria: clique para alternar Long_Life/100%"
   }
