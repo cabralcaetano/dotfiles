@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CHARGE_TYPES_PATH="/sys/class/power_supply/BAT0/charge_types"
+MODE_PATH="/sys/devices/pci0000:00/0000:00:1f.0/PNP0C09:00/VPC2004:00/conservation_mode"
+SERVICE="battery-conservation.service"
+
+fail() {
+    echo "$1" >&2
+    exit 1
+}
+
+require_control_path() {
+    [ -e "$CHARGE_TYPES_PATH" ] || [ -e "$MODE_PATH" ] || fail "Nenhum controle de conservação encontrado neste notebook"
+}
+
+service_available() {
+    systemctl list-unit-files "$SERVICE" --no-legend >/dev/null 2>&1
+}
+
+current_mode() {
+    require_control_path
+
+    if [ -e "$CHARGE_TYPES_PATH" ]; then
+        case "$(cat "$CHARGE_TYPES_PATH")" in
+            *"[Long_Life]"*) echo "conservation" ;;
+            *"[Standard]"*)  echo "full" ;;
+            *)               echo "unknown" ;;
+        esac
+        return
+    fi
+
+    case "$(cat "$MODE_PATH")" in
+        1) echo "conservation" ;;
+        0) echo "full" ;;
+        *) echo "unknown" ;;
+    esac
+}
+
+apply_conservation() {
+    require_control_path
+
+    if [ -e "$CHARGE_TYPES_PATH" ]; then
+        printf 'Long_Life' > "$CHARGE_TYPES_PATH"
+    else
+        printf '1' > "$MODE_PATH"
+    fi
+}
+
+apply_full_charge() {
+    require_control_path
+
+    if [ -e "$CHARGE_TYPES_PATH" ]; then
+        printf 'Standard' > "$CHARGE_TYPES_PATH"
+    else
+        printf '0' > "$MODE_PATH"
+    fi
+}
+
+enable_conservation() {
+    if service_available; then
+        systemctl enable --now "$SERVICE"
+    else
+        apply_conservation
+    fi
+}
+
+disable_conservation() {
+    if service_available; then
+        systemctl disable --now "$SERVICE"
+    else
+        apply_full_charge
+    fi
+}
+
+case "${1:-toggle}" in
+    enable)
+        enable_conservation
+        ;;
+    disable)
+        disable_conservation
+        ;;
+    apply-enable)
+        apply_conservation
+        ;;
+    apply-disable)
+        apply_full_charge
+        ;;
+    toggle)
+        case "$(current_mode)" in
+            conservation) disable_conservation ;;
+            full)         enable_conservation ;;
+            *)            fail "Estado inesperado no controle de conservação" ;;
+        esac
+        ;;
+    status)
+        current_mode
+        ;;
+    *)
+        echo "Uso: ${0##*/} [toggle|enable|disable|apply-enable|apply-disable|status]" >&2
+        exit 2
+        ;;
+esac

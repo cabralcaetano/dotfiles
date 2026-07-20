@@ -147,3 +147,11 @@ window#waybar {
   color: #ffffff;
   padding-right: 4px;
 }
+
+/* === CONSERVAÇÃO DA BATERIA ===================== */
+#custom-battery-conservation {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  padding-right: 4px;
+}

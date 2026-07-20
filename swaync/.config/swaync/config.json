@@ -70,8 +70,8 @@
           "command": "overskride"
         },
         {
-          "label": "󰌾",
-          "command": "hyprlock"
+          "label": "󰂄",
+          "command": "/home/caetano/.local/bin/battery-conservation.sh"
         },
         {
           "label": "󰐥",

@@ -1,0 +1,12 @@
+[Unit]
+Description=Enable Lenovo Battery Conservation Mode
+ConditionPathExists=/usr/local/sbin/battery-conservation-root
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/battery-conservation-root apply-enable
+ExecStop=/usr/local/sbin/battery-conservation-root apply-disable
+
+[Install]
+WantedBy=multi-user.target

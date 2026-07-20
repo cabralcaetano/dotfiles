@@ -15,7 +15,7 @@
   // === MÓDULOS =================================
   "modules-left": ["custom/icon", "hyprland/workspaces", "hyprland/window"],
   "modules-center": ["clock"],
-  "modules-right": ["group/tray-drawer", "network", "bluetooth", "pulseaudio", "custom/power-profile", "battery"],
+  "modules-right": ["group/tray-drawer", "network", "bluetooth", "pulseaudio", "custom/power-profile", "custom/battery-conservation"],
 
   // === CPU =====================================
   "cpu": {
@@ -168,6 +168,17 @@
     "interval": 3,
     "tooltip": true,
     "tooltip-format": "Perfil de energia ativo"
+  },
+  
+  // === CONSERVAÇÃO DA BATERIA ===================
+  "custom/battery-conservation": {
+    "exec": "/home/caetano/.local/bin/battery-conservation.sh waybar",
+    "exec-if": "/home/caetano/.local/bin/battery-conservation.sh waybar-check",
+    "interval": 5,
+    "format": "{}",
+    "on-click": "/home/caetano/.local/bin/battery-conservation.sh",
+    "tooltip": true,
+    "tooltip-format": "Conservação da bateria: clique para alternar Long_Life/100%"
   }
 }
 
