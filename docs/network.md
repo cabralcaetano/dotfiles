@@ -54,15 +54,37 @@ cat /etc/resolv.conf   # deve mostrar 1.1.1.1 e 1.0.0.1
 
 ### Escolha dos servidores
 
-Em uso: **`1.1.1.1` + `1.0.0.1`** — par oficial do Cloudflare. Mais rápido testado desta rede (~10ms), política de privacidade forte (logs descartados em 24h), comportamento 100% consistente entre primário e secundário.
+Em uso (desde 2026-07-21): **`1.1.1.1` + `8.8.8.8`** — ver episódio abaixo.
 
-Alternativa documentada: **`1.1.1.1` + `8.8.8.8`** (Cloudflare + Google) — mistura dois provedores independentes, então uma pane global do Cloudflare (raro, mas já ocorreu) não derruba o DNS inteiro. Custo: fallback com política de privacidade diferente e respostas de CDN ocasionalmente distintas. Trocar para este par se o episódio "os dois DNS caíram juntos" se repetir com o Cloudflare.
+Anterior (2026-07-11 a 2026-07-21): `1.1.1.1` + `1.0.0.1`, par oficial do Cloudflare — mais rápido testado à época (~10ms), política de privacidade forte (logs descartados em 24h), consistência entre primário e secundário. Trocado após o episódio de perda de pacotes específica ao Cloudflare.
 
 | Par | Vantagem | Desvantagem |
 |---|---|---|
-| `1.1.1.1` + `1.0.0.1` (atual) | Consistência, privacidade uniforme | Mesmo provedor: pane global derruba os dois |
-| `1.1.1.1` + `8.8.8.8` | Redundância real entre provedores | Fallback Google com política/respostas diferentes |
+| `1.1.1.1` + `8.8.8.8` (atual) | Redundância real entre provedores | Fallback Google com política/respostas diferentes |
+| `1.1.1.1` + `1.0.0.1` | Consistência, privacidade uniforme | Mesmo provedor: pane/rota ruim derruba os dois |
 | `9.9.9.9` (Quad9) | Bloqueia malware/phishing no resolver | Latência um pouco maior no BR |
+
+### O problema (2026-07-21) — perda de pacotes específica ao Cloudflare
+
+Sintoma: "internet lenta" de forma ampla (não um site específico), mesmo com wifi 5G forte (sinal 94/100, link 1170 Mbit/s) e gateway respondendo normal.
+
+Diagnóstico: `ping -c 10 1.1.1.1` mostrou **30–50% de perda de pacotes**, enquanto `ping` ao gateway (`192.168.100.1`) e a `8.8.8.8` deu **0% de perda** nos dois. Ou seja, não era wifi nem roteador — era a rota do provedor até a rede do Cloudflare especificamente, degradada naquele momento. Como o DNS primário era `1.1.1.1`, toda resolução de DNS (e qualquer site atrás da CDN do Cloudflare) ficava lenta/engasgada, o que se manifesta como "internet lenta" em geral.
+
+```bash
+# isolar o destino problemático
+ping -c 10 1.1.1.1                          # comparar % de perda
+GW=$(ip route | grep default | awk '{print $3}')
+ping -c 6 "$GW"                              # deve ser 0% — descarta wifi/roteador
+ping -c 6 8.8.8.8                            # comparar com outro provedor
+
+# teste de download real (não só ping)
+curl -o /dev/null -s -w "%{time_total}s | %{speed_download} B/s\n" \
+  "https://speed.cloudflare.com/__down?bytes=25000000" --max-time 15
+```
+
+Solução: mesmo comando de `nmcli connection modify` da seção acima, trocando o par para `1.1.1.1 8.8.8.8` (sem precisar de `sudo` — modificar a própria conexão de usuário no NetworkManager não exige root nesta config).
+
+> Se o padrão se repetir (perda de pacotes isolada a um destino específico, resto da rede limpo), é sinal de problema de peering/rota do provedor até aquele destino, não da rede local. Vale reavaliar o par de DNS ou reportar ao provedor se persistir.
 
 ---
 

@@ -83,6 +83,7 @@ O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma v
 > | **Snapshots Btrfs** | snapper + grub-btrfs | ver [`docs/arch-migration.md §1.2`](docs/arch-migration.md) |
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
 > | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md); não é o caminho primário atual |
+> | **Reflector (mirrorlist automático)** | `/etc/xdg/reflector/reflector.conf` | copiar `reflector/etc/xdg/reflector/reflector.conf`; depois `sudo systemctl enable --now reflector.timer` (ranqueia mirrors do Brasil por velocidade, semanalmente) |
 
 ### Manifestos de pacote
 
@@ -124,6 +125,7 @@ obsidian/       → configs de vault/plugin; não entra no bootstrap automático
 wlogout/        → layout, style.css
 sddm/           → referência system-wide manual do SDDM/SilentSDDM
 greetd/         → legado/rollback system-wide manual
+reflector/      → reflector.conf (mirrorlist Brasil, sort rate) + reflector.timer manual
 legacy/         → configs antigas úteis, mas fora do fluxo ativo
 ducking/        → guia completo do audio ducking
 ```

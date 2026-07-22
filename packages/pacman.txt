@@ -103,6 +103,9 @@ snapper
 grub-btrfs
 btrfs-progs
 
+# --- Pacman mirrors ---
+reflector
+
 # --- Git / GitHub ---
 git
 github-cli
@@ -117,6 +120,19 @@ ttf-liberation
 ttf-dejavu
 ttf-roboto
 cantarell-fonts
+
+# --- Virtualização / Windows VM (ver docs/windows-vm-incogniton.md) ---
+qemu-full
+virt-manager
+virt-viewer
+libvirt
+edk2-ovmf
+swtpm
+dnsmasq
+iptables
+openbsd-netcat
+spice-gtk
+libisoburn
 
 # --- Diversos ---
 fastfetch
