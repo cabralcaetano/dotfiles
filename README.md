@@ -38,6 +38,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 - [Keybindings](#keybindings)
 - [Shell — Zsh](#shell--zsh)
 - [Terminal — Ghostty](#terminal--ghostty)
+- [Terminal — tmux](#terminal--tmux)
 - [Wallpapers](#wallpapers)
 - [Idle / Lock](#idle--lock)
 - [Perfil de energia](#perfil-de-energia)
@@ -81,6 +82,7 @@ O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma v
 > | **Battery conservation helper** | `/usr/local/sbin`, `/etc/systemd/system`, `/etc/sudoers.d` | `~/.local/bin/install-battery-conservation-root.sh` |
 > | **Antigravity desktop entries** | `~/.local/share/applications`, `~/.config/mimeapps.list` | `stow --target="$HOME" desktop-apps` após extrair os apps em `~/.local/opt` |
 > | **Snapshots Btrfs** | snapper + grub-btrfs | ver [`docs/arch-migration.md §1.2`](docs/arch-migration.md) |
+> | **Windows VM / Incogniton** | libvirt/QEMU, Windows guest | ver [`docs/windows-vm-incogniton.md`](docs/windows-vm-incogniton.md) |
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
 > | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md); não é o caminho primário atual |
 > | **Reflector (mirrorlist automático)** | `/etc/xdg/reflector/reflector.conf` | copiar `reflector/etc/xdg/reflector/reflector.conf`; depois `sudo systemctl enable --now reflector.timer` (ranqueia mirrors do Brasil por velocidade, semanalmente) |
@@ -110,6 +112,7 @@ swaync/         → config.json, style.css
 quickshell/     → clock-panel/shell.qml
 fuzzel/         → fuzzel.ini
 ghostty/        → config
+tmux/           → tmux.conf, plugins TPM/tmux-power; scrollback por mouse via copy-mode -e
 kitty/          → kitty.conf
 btop/           → btop.conf (`theme_background = false` para transparência do terminal)
 zsh/            → .zshrc
@@ -287,6 +290,32 @@ Plugins carregados manualmente de `~/.zsh/`:
 | Scrollback | 50.000 linhas |
 | `gtk-single-instance` | true — novas janelas abrem como tabs na instância existente |
 | Padding | 12px horizontal, 8px vertical |
+
+---
+
+## Terminal — tmux
+
+`tmux/.config/tmux/tmux.conf` é aplicado via Stow em `~/.config/tmux/tmux.conf`.
+
+### Scroll do mouse no Ghostty
+
+Decisão ativa: `set -g mouse on` e `WheelUpPane` entra em `copy-mode -e` quando o app/pane não está tratando mouse.
+
+Motivo: dentro do tmux, o scrollback do pane pertence ao tmux, não ao Ghostty. Para a rodinha rolar a tela/histórico do pane, o tmux precisa capturar o mouse; o mecanismo interno de scrollback do tmux é `copy-mode`. O `-e` mantém o comportamento de scroll: ao voltar para o final do histórico, o tmux sai do modo automaticamente.
+
+Não trocar para `mouse off` para tentar evitar `copy-mode`: no Ghostty + tmux em `alternate screen`, isso faz a rodinha virar `Up/Down` no shell e navegar pelos últimos comandos em vez de rolar a tela.
+
+Atalhos úteis:
+
+| Atalho | Ação |
+|---|---|
+| Rodinha para cima | Rola o histórico do pane via `copy-mode -e` |
+| Rodinha para baixo até o final | Volta ao final e sai automaticamente do modo |
+| `Ctrl+B` `[` | Entra manualmente em copy-mode |
+| `c` em copy-mode | Inicia seleção |
+| `v` em copy-mode | Copia para `wl-copy` e continua em copy-mode |
+| `y` em copy-mode | Copia para `wl-copy` e sai do copy-mode |
+| `q` em copy-mode | Sai do copy-mode |
 
 ---
 
