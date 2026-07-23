@@ -1,6 +1,6 @@
 # GTK/Qt Theming — Hyprland sem DE completo
 
-**Status:** em andamento — accent color cinza ainda não funcionando
+**Status:** em andamento — Qt6 dark resolvido (2026-07-23); accent color cinza em libadwaita ainda não funcionando
 **Contexto:** Hyprland puro, sem GNOME Shell nem Plasma completo
 
 ## Descrição
@@ -12,7 +12,24 @@ Ajuste de tema para apps GTK3, GTK4/libadwaita e Qt6/Kirigami convivendo no mesm
 - **File manager:** trocado `Nemo` (GTK3, Cinnamon) → `Nautilus` (GTK4/libadwaita), pra eliminar divergência de toolkit entre file manager e outros apps GNOME (Overskride, Pavucontrol). `xdg-mime` setado pra `org.gnome.Nautilus.desktop` em `inode/directory`.
 - **GTK3:** `adw-gtk3-dark` + ícones `Adwaita` — mantido como padrão em vez de `Materia-dark` (testado e revertido) pra bater com libadwaita.
 - **EasyEffects:** upstream (`wwmm/easyeffects`) abandonou GTK4/libadwaita e reescreveu em Qt6/Kirigami a partir da v8.0 — não tem mais build GTK oficial mantido. Fica visualmente "meio Plasma" (Breeze icons, QQC2 controls) sem solução limpa. Tentativa de aproximar via `QT_QUICK_CONTROLS_STYLE=Material` + accent azul GNOME testada e **revertida** (ficou "rosa/estranho").
-- **qt6ct + Kvantum:** instalados, mas config revertida pro padrão (sem tema Kvantum aplicado) — não valia a pena pro ganho visual.
+- **qt6ct + Kvantum:** instalados. Kvantum continua sem uso. O qt6ct ficou sem config nenhuma até 2026-07-23 ("revertido pro padrão") — decisão revista, ver seção abaixo: sem config o qt6ct não é neutro, ele força tema **claro**.
+
+## Resolvido 2026-07-23 — apps Qt6 abriam em tema claro
+
+**Sintoma:** o `hyprland-share-picker` — a janela "Screen / Window / Region" que o `xdg-desktop-portal-hyprland` abre ao compartilhar tela (Discord, Meet, etc.) — aparecia toda branca no meio de um desktop dark.
+
+**Causa:** o picker é **Qt6 Widgets** (`ldd /usr/bin/hyprland-share-picker` → `libQt6Widgets.so.6`). O `hyprland.conf` já exportava `QT_QPA_PLATFORMTHEME=qt6ct` (e a variável chegava até o portal — confirmado em `systemctl --user show-environment`), mas `~/.config/qt6ct/` estava **vazio**. Sem `qt6ct.conf` o plugin não é no-op: ele aplica o default dele, que é Fusion com paleta clara. Ou seja, o `env` sozinho piorava — sem ele o app cairia no default do Qt, com ele caía no default do qt6ct.
+
+**Fix:** pacote stow `qt6ct/` no repo, adicionado ao `STOW_PKGS` do `_dotfiles-lib.sh`:
+
+- `qt6ct/.config/qt6ct/qt6ct.conf` — `style=Fusion`, `custom_palette=true`, `icon_theme=Adwaita`, `color_scheme_path` apontando pro arquivo abaixo.
+- `qt6ct/.config/qt6ct/colors/dotfiles-dark.conf` — paleta dark própria no formato de 21 roles do qt6ct (window `#181819`, base `#1c1c1f`, texto `#e8e8e8`, highlight `#5e81ac`).
+
+Vale para qualquer app Qt6 sem tema próprio, não só o picker. Kvantum ficou de fora de propósito: `Fusion` + paleta custom já resolve, sem mais uma camada.
+
+**Como testar sem abrir compartilhamento de tela real:** `hyprland-share-picker` roda standalone. Não precisa relogar nem reiniciar o portal — a config é lida a cada invocação do picker.
+
+**Gap conhecido:** `qt5ct` não está instalado, então não há config equivalente pra Qt5. Se algum app Qt5 aparecer claro, é por aí.
 
 ## Problema em aberto — accent color cinza não aplica em libadwaita
 
