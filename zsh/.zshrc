@@ -51,6 +51,19 @@ function y() {
     rm -f -- "$tmp"
 }
 
+# === neofetch — ASCII aleatório a cada run ===
+# Sorteia um .ascii de ~/.config/neofetch/ascii/ (caveira, char, arch…).
+# Sem arquivos na pasta, cai no logo padrão do neofetch.
+neofetch() {
+    local dir="$HOME/.config/neofetch/ascii"
+    local files=("$dir"/*.ascii(N))
+    if (( ${#files[@]} )); then
+        command neofetch --source "${files[RANDOM % ${#files[@]} + 1]}" "$@"
+    else
+        command neofetch "$@"
+    fi
+}
+
 # === Histórico ===
 HISTFILE=~/.zsh_history
 HISTSIZE=10000
