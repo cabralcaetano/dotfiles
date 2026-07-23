@@ -18,3 +18,9 @@ obsidian/workspace-mobile.json
 # Plugins do tmux (TPM clona aqui por causa do symlink XDG ~/.config/tmux →
 # este diretório — não versionar, bootstrap.sh recria via TPM)
 tmux/.config/tmux/plugins/
+
+# Plugins de terceiros do Obsidian (builds minificados, reinstaláveis pela loja
+# — community-plugins.json já registra quais habilitar). Plugins de código
+# próprio ficam versionados via exceção abaixo.
+obsidian/plugins/*
+!obsidian/plugins/obsidian-default-zoom-fixer/
