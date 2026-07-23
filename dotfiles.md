@@ -73,6 +73,7 @@ scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
 hyprshell/      → config.ron (instalado mas inativo — incompatível com Hyprland 0.55 address format)
 gtk-3/          → settings.ini
 gtk-4/          → settings.ini
+qt6ct/          → qt6ct.conf + colors/dotfiles-dark.conf (tema dark para apps Qt6)
 desktop-apps/   → mimeapps.list + .desktop/ícones de apps instalados manualmente
                   (fora do dnf/flatpak), ex: Antigravity IDE/2.0
 xkb/            → us-br.xkb, install.sh
@@ -415,6 +416,21 @@ kb_options = compose:rctrl, altwin:swap_alt_win
 - **03/07/2026** — bug detectado, `altwin:swap_alt_win` adicionado (commit `29ae784`).
 - **05/07/2026** — opção removida **acidentalmente** dentro de um commit de docs sobre `tuned` (`586578e`), cuja mensagem não menciona teclado. O sintoma de Alt/Super trocados voltou.
 - **06/07/2026** — `altwin:swap_alt_win` readicionado após confirmação de que as teclas estavam trocadas novamente. Fix ativo de novo.
+
+## Tema — GTK e Qt
+
+**GTK:** `adw-gtk3-dark` + `color-scheme: prefer-dark`, aplicado por `gtk-3/settings.ini`, `gtk-4/settings.ini` e dois `gsettings` no autostart do Hyprland.
+
+**Qt6:** `QT_QPA_PLATFORMTHEME=qt6ct` já vinha setado em `hyprland.conf`, mas **sem `~/.config/qt6ct/qt6ct.conf` o qt6ct cai no default claro** — era por isso que o `hyprland-share-picker` (o seletor de tela do `xdg-desktop-portal-hyprland`, que é Qt6 Widgets) abria em branco no meio de um desktop todo dark. O pacote stow `qt6ct/` corrige:
+
+- `qt6ct.conf` — `style=Fusion`, `custom_palette=true`, `icon_theme=Adwaita`, apontando para a paleta abaixo.
+- `colors/dotfiles-dark.conf` — paleta dark própria (window `#181819`, base `#1c1c1f`, texto `#e8e8e8`, highlight `#5e81ac`), no formato de 21 roles do qt6ct.
+
+Vale para qualquer app Qt6 sem tema próprio, não só o picker. Kvantum está instalado mas não é usado — `Fusion` + paleta custom resolve sem uma camada extra.
+
+Para testar sem abrir um compartilhamento de tela real: `hyprland-share-picker` roda standalone.
+
+> Qt5 não tem config equivalente aqui (`qt5ct` não instalado). Se algum app Qt5 aparecer claro, é esse o gap.
 
 ## Audio Ducking
 

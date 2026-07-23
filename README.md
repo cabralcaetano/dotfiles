@@ -120,6 +120,7 @@ scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
                   battery-conservation.sh, clock-panel.sh/clock-panel.py
 gtk-3/          → settings.ini
 gtk-4/          → settings.ini + accent_color cinza
+qt6ct/          → qt6ct.conf + colors/dotfiles-dark.conf (tema dark para apps Qt6)
 desktop-apps/   → stow manual: mimeapps.list + .desktop/ícones de apps extraídos manualmente
 obsidian/       → configs de vault/plugin; não entra no bootstrap automático
 wlogout/        → layout, style.css
