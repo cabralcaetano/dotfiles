@@ -6,13 +6,8 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$DOTFILES_DIR"
 
-# Pacotes stow automáticos (cada item é um diretório do repo aplicado no $HOME).
-# Itens system-wide/manuais ficam fora daqui: desktop-apps, sddm, greetd, xkb, legacy.
-STOW_PKGS=(hypr waybar quickshell swaync fuzzel scripts ghostty kitty btop zsh starship gtk-3 gtk-4 wlogout nvim tmux)
-
-log()  { printf '\033[1;34m::\033[0m %s\n' "$*"; }
-warn() { printf '\033[1;33m!!\033[0m %s\n' "$*"; }
-die()  { warn "$*"; exit 1; }
+# shellcheck disable=SC1091
+source "$DOTFILES_DIR/scripts/.local/bin/_dotfiles-lib.sh"
 
 manifest_args() {
   grep -Ev '^[[:space:]]*(#|$)' "$1"
