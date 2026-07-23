@@ -18,9 +18,19 @@ ShellRoot {
 
     function refreshAll(): void {
         now = new Date();
-        mediaProc.exec(mediaProc.command);
+        refreshMedia();
         weatherProc.exec(weatherProc.command);
         statusProc.exec(statusProc.command);
+    }
+
+    function refreshMedia(): void {
+        mediaProc.exec(mediaProc.command);
+    }
+
+    function scheduleMediaRefresh(): void {
+        mediaRefreshTimer.stop();
+        mediaRefreshRepeats = 3;
+        mediaRefreshTimer.start();
     }
 
     function updateMedia(raw) {
@@ -98,6 +108,8 @@ ShellRoot {
         return cells;
     }
 
+    property int mediaRefreshRepeats: 0
+
     Timer {
         interval: 1000
         running: true
@@ -110,6 +122,18 @@ ShellRoot {
         running: true
         repeat: true
         onTriggered: root.refreshAll()
+    }
+
+    Timer {
+        id: mediaRefreshTimer
+        interval: 250
+        repeat: true
+        running: false
+        onTriggered: {
+            root.refreshMedia();
+            root.mediaRefreshRepeats--;
+            if (root.mediaRefreshRepeats <= 0) mediaRefreshTimer.stop();
+        }
     }
 
     Process {
@@ -343,13 +367,24 @@ ShellRoot {
             Row {
                 spacing: 8
 
-                ControlButton { minWidth: 58; label: "󰒮"; command: ["playerctl", "previous"] }
+                ControlButton {
+                    minWidth: 58
+                    label: "󰒮"
+                    command: ["playerctl", "previous"]
+                    onClicked: root.scheduleMediaRefresh()
+                }
                 ControlButton {
                     minWidth: 96
                     label: stateText === "Playing" ? "󰏤 pause" : "󰐊 play"
                     command: ["playerctl", "play-pause"]
+                    onClicked: root.scheduleMediaRefresh()
                 }
-                ControlButton { minWidth: 58; label: "󰒭"; command: ["playerctl", "next"] }
+                ControlButton {
+                    minWidth: 58
+                    label: "󰒭"
+                    command: ["playerctl", "next"]
+                    onClicked: root.scheduleMediaRefresh()
+                }
             }
         }
     }
