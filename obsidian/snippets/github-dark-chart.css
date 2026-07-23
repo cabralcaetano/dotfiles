@@ -1,0 +1,4 @@
+.github-dark-chart {
+	filter: invert(1) hue-rotate(180deg);
+	border-radius: 6px;
+}

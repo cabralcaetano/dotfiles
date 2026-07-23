@@ -1,1 +1,5 @@
-["default-zoom-fixer"]
+[
+  "default-zoom-fixer",
+  "dataview",
+  "homepage"
+]
