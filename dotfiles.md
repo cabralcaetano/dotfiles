@@ -250,7 +250,7 @@ Para adicionar mais artes: jogar um `.ascii` novo na pasta (com `${c1}` na prime
 
 `Init` e `Swap` são campos custom via `prin` (não existem como módulo nativo). O `Swap` lê `/proc/meminfo` direto em vez de `free` — o `free` retorna vazio dentro do ambiente do neofetch, e `/proc/meminfo` é independente de locale.
 
-> `WM: sway` no output é falso-positivo do neofetch detectando o socket wlroots — o WM real é Hyprland. Cosmético.
+O neofetch detecta `WM: sway` por causa do socket wlroots. O `print_info` corrige isso: quando `HYPRLAND_INSTANCE_SIGNATURE` está setada, força `WM: Hyprland`; fora da sessão Hyprland cai na detecção nativa, então a config continua portátil.
 
 ## Shell — Zsh
 
