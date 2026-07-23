@@ -46,6 +46,8 @@ stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship
 | yazi | File manager TUI com navegação em colunas |
 | lazygit | Git TUI |
 | btop | Monitor de recursos |
+| neofetch | System info no terminal — ASCII aleatório + info completa (config versionada) |
+| fastfetch | System info alternativo (mais rápido) — instalado, usado junto com neofetch |
 | zsh-syntax-highlighting | Highlight de comandos em tempo real |
 | zsh-autosuggestions | Sugestões baseadas em histórico |
 | Spicetify | Customização do cliente Spotify |
@@ -64,6 +66,7 @@ ghostty/        → config
 kitty/          → kitty.conf
 zsh/            → .zshrc
 starship/       → starship.toml
+neofetch/       → config.conf + ascii/ (skull, char, arch — sorteados a cada run)
 scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
                   wifi-menu.sh, wallpaper.sh, wallpaper-toggle.sh, screenshot.sh,
                   workspace-float.sh, alttab.sh
@@ -226,6 +229,28 @@ Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualqu
 | `y` | Copia seleção para o clipboard do sistema (`wl-copy`) e sai do copy-mode |
 
 `mode-keys vi` ativo — usa os motions padrão do vim dentro do copy-mode. Config em `tmux/.config/tmux/tmux.conf`. Não inicia automaticamente — rodar `tmux` manualmente quando precisar.
+
+## System info — neofetch + fastfetch
+
+Ambos instalados e em uso. `fastfetch` fica no default (mais rápido, sem config versionada). O `neofetch` é o customizado — config versionada em `neofetch/.config/neofetch/`.
+
+**ASCII aleatório:** a cada execução o `neofetch` sorteia uma arte de `~/.config/neofetch/ascii/`:
+
+| Arquivo | Arte |
+|---|---|
+| `skull.ascii` | Caveira |
+| `char.ascii` | Personagem em braille |
+| `arch.ascii` | Logo padrão do Arch |
+
+O sorteio é feito por uma função `neofetch()` no `.zshrc` que passa `--source` com um arquivo aleatório da pasta. Motivo de não usar o suporte nativo do neofetch a diretório em `image_source`: no backend `ascii` ele não sorteia — pega sempre o primeiro em ordem alfabética. `image_source="auto"` fica como fallback (logo do Arch) para quem chamar `command neofetch`.
+
+Para adicionar mais artes: jogar um `.ascii` novo na pasta (com `${c1}` na primeira linha para herdar a cor do tema) — entra no sorteio automaticamente.
+
+**Info exibida** (`print_info` em `config.conf`), além dos defaults: `Init` (system), `CPU Usage`, temperatura da CPU, `GPU Driver`, `Swap`, `Disk`, `Battery`, `Locale`, `Local IP`, `Users`. Memória e swap em GiB com porcentagem; refresh rate junto da resolução.
+
+`Init` e `Swap` são campos custom via `prin` (não existem como módulo nativo). O `Swap` lê `/proc/meminfo` direto em vez de `free` — o `free` retorna vazio dentro do ambiente do neofetch, e `/proc/meminfo` é independente de locale.
+
+> `WM: sway` no output é falso-positivo do neofetch detectando o socket wlroots — o WM real é Hyprland. Cosmético.
 
 ## Shell — Zsh
 
