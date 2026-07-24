@@ -231,6 +231,8 @@ Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualqu
 
 `mode-keys vi` ativo — usa os motions padrão do vim dentro do copy-mode. Config em `tmux/.config/tmux/tmux.conf`. Não inicia automaticamente — rodar `tmux` manualmente quando precisar.
 
+**Persistência de sessão (resurrect/continuum):** plugins `tmux-resurrect` + `tmux-continuum` instalados via TPM. `continuum-restore on` restaura automaticamente janelas/panes/diretório da última sessão salva assim que o tmux abre de novo (ex.: depois de um desligamento inesperado). Salvamento automático a cada 15min (default do continuum) + captura do conteúdo do pane (`resurrect-capture-pane-contents on`). Instalar/atualizar plugin: `prefix + I` dentro do tmux.
+
 ## System info — neofetch + fastfetch
 
 Ambos instalados e em uso. `fastfetch` fica no default (mais rápido, sem config versionada). O `neofetch` é o customizado — config versionada em `neofetch/.config/neofetch/`.
