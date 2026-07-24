@@ -268,7 +268,7 @@ Fork do tmux com animações reais (github.com/jonaburg/tmux-animated) — patch
 
 **Teste:** sessão isolada com socket próprio, pra não misturar com a sessão real: `tmux-animated -L test -f ~/.config/tmux/tmux-animated.conf new-session`.
 
-**Pendente (não implementado nesta sessão):** iniciar o `tmux-animated` no boot — usuário pediu, mas a conversa desviou pro ícone da status bar e pro bug do copy-mode antes de decidir o mecanismo (Hyprland `exec-once` vs systemd user service vs `@continuum-boot` do tmux-continuum, que nem está instalado ainda). Ver Notas abertas.
+**Iniciar no boot:** `tmux-continuum` tem `@continuum-boot`, mas resolve o binário via `command -v tmux` fixo — não dá pra apontar pro `tmux-animated`. Em vez disso, service systemd user dedicado: `scripts/.config/systemd/user/tmux-animated.service`, habilitado via symlink versionado em `default.target.wants/` (mesmo padrão do `brave-duck.service`). Sobe uma sessão `main` detached no socket `-L animated` com `tmux-animated.conf`, testado com `systemctl --user start` (confirmado `active (running)`, sessão criada). Anexar: `tmux-animated -L animated attach`.
 
 ## System info — neofetch + fastfetch
 
@@ -525,4 +525,3 @@ Ver guia completo: [[ducking]]
 - `hyprpaper.conf` no repo referencia `default_2.jpg` que não existe — arquivo criado como referência, sistema usa `swww`; ajustar path ou remover se não for usar hyprpaper
 - hyprshell `filter_by: [current_workspace]` atualizado mas ainda inativo (incompatibilidade Hyprland 0.55)
 - **Falta o comando `hostname`** — `tmux-resurrect` imprime `hostname: comando não encontrado` (stderr, inofensivo) a cada save, porque `resurrect_dir()` roda `$(hostname)` incondicionalmente. Instalar `inetutils` (`sudo pacman -S inetutils`) resolve, se incomodar.
-- **tmux-animated: iniciar no boot** — pedido pelo usuário, não implementado. Decidir mecanismo (Hyprland `exec-once` com `tmux-animated new-session -d`, systemd user service dedicado, ou `@continuum-boot` do tmux-continuum depois que esse plugin for instalado) antes de mexer no `hyprland.conf`.
