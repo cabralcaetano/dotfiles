@@ -41,6 +41,13 @@ export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git"'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :50 {}'"
 
+# Ctrl+T e Alt+C (defaults do fzf) ficam presos dentro do tmux — Ctrl+T é
+# nova janela e Alt+C é copy-mode lá. Ctrl+F/Alt+G viram atalhos extras pros
+# mesmos widgets, sem remover os originais (continuam funcionando fora do
+# tmux normalmente).
+bindkey '^F' fzf-file-widget
+bindkey '^[g' fzf-cd-widget
+
 # === yazi — cd ao sair ===
 function y() {
     local tmp="$(mktemp -t yazi-cwd.XXXXXX)" cwd
