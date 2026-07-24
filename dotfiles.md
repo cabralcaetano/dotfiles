@@ -231,7 +231,8 @@ Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualqu
 | `v` | Copia seleção para o clipboard sem sair do copy-mode |
 | `y` | Copia seleção para o clipboard do sistema (`wl-copy`) e sai do copy-mode |
 | Scroll do mouse (rodinha) | Sobe/desce o histórico do pane igual navegador — entra em copy-mode por baixo dos panos (`copy-mode -e -H`) mas volta sozinho ao normal no final; indicador de posição escondido |
-| Arrastar o mouse + soltar | Marca a seleção — não copia sozinho; apertar `y` (ou `v`) depois pra copiar. Também entra em copy-mode por baixo dos panos (`MouseDrag1Pane`, default do tmux — sem isso não existe seleção de mouse); tentei esconder o indicador de posição com `-H` mas o usuário reportou que ainda "sente" a entrada em copy-mode de algum jeito perceptível — **não totalmente resolvido, investigar depois** (ver Notas abertas) |
+| Arrastar o mouse + soltar | Marca a seleção **dentro do tmux** (copy-mode, via `MouseDrag1Pane` — indicador de posição escondido com `-H`); não copia sozinho, aperta `y` (ou `v`) depois |
+| `Shift` + arrastar | Seleção **nativa do Ghostty**, sem passar pelo tmux/copy-mode em nenhum momento — `Shift` é o modificador universal que os terminais (Ghostty incluso) usam pra ignorar o app e fazer seleção própria, mesmo com `mouse on` no tmux. Copiar com `Ctrl+Shift+C` (atalho nativo do Ghostty). Não precisou mudar nada na config — já funciona assim por padrão. |
 
 `mode-keys vi` ativo — usa os motions padrão do vim dentro do copy-mode. Config em `tmux/.config/tmux/tmux.conf`. Não inicia automaticamente — rodar `tmux` manualmente quando precisar.
 
@@ -523,7 +524,6 @@ Ver guia completo: [[ducking]]
 - Starship sem `format` definido — usa default verboso (a discutir em sessão futura)
 - `hyprpaper.conf` no repo referencia `default_2.jpg` que não existe — arquivo criado como referência, sistema usa `swww`; ajustar path ou remover se não for usar hyprpaper
 - hyprshell `filter_by: [current_workspace]` atualizado mas ainda inativo (incompatibilidade Hyprland 0.55)
-- **tmux: seleção de mouse ainda "sente" entrada em copy-mode** — `MouseDrag1Pane` ganhou `-H` (mesma solução do `WheelUpPane`), mas o usuário reportou que não resolveu por completo. Não investigado a fundo ainda; possíveis próximos passos: checar se o tema/tmux-power mostra algum indicador de modo em outro lugar da status bar, ou se é só percepção do delay/comportamento do próprio drag.
 - **tmux-resurrect/tmux-continuum não instalados** — declarados no `tmux.conf` mas nunca instalados de fato (falta `prefix + I` numa sessão tmux real). Persistência de sessão não está funcionando ainda apesar de configurada.
 - **tmux-animated: iniciar no boot** — pedido pelo usuário, não implementado. Decidir mecanismo (Hyprland `exec-once` com `tmux-animated new-session -d`, systemd user service dedicado, ou `@continuum-boot` do tmux-continuum depois que esse plugin for instalado) antes de mexer no `hyprland.conf`.
 - **fzf `Ctrl+T` (file widget do Zsh) vs tmux `Ctrl+T` (nova janela)** — dentro do tmux o bind `-n` do tmux intercepta primeiro; não confirmado como problema real, só uma observação de conflito potencial.
