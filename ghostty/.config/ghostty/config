@@ -54,3 +54,10 @@ keybind = ctrl+shift+down=scroll_page_lines:1
 keybind = ctrl+shift+t=unbind
 keybind = ctrl+shift+w=unbind
 
+# === Copiar via tmux, não via Ghostty ===
+# com mouse on, a seleção é do tmux — o Ghostty não tem seleção própria pra
+# copiar, então ctrl+shift+c (copy_to_clipboard) copiava vazio. Desbindado
+# pra que a tecla chegue no tmux, que copia a seleção do copy-mode com
+# wl-copy — ver tmux.conf
+keybind = ctrl+shift+c=unbind
+
