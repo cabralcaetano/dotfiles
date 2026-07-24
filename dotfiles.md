@@ -225,15 +225,49 @@ Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualqu
 | Atalho (dentro do tmux) | Ação |
 |---|---|
 | `Ctrl+B` `[` | Entra em copy-mode (default do tmux) |
+| `Alt+C` | Atalho direto pra copy-mode, sem prefixo |
 | `h/j/k/l` ou setas | Navega |
 | `c` | Inicia seleção |
 | `v` | Copia seleção para o clipboard sem sair do copy-mode |
 | `y` | Copia seleção para o clipboard do sistema (`wl-copy`) e sai do copy-mode |
-| Arrastar o mouse + soltar | Marca a seleção — não copia sozinho; apertar `y` (ou `v`) depois pra copiar |
+| Scroll do mouse (rodinha) | Sobe/desce o histórico do pane igual navegador — entra em copy-mode por baixo dos panos (`copy-mode -e -H`) mas volta sozinho ao normal no final; indicador de posição escondido |
+| Arrastar o mouse + soltar | Marca a seleção — não copia sozinho; apertar `y` (ou `v`) depois pra copiar. Também entra em copy-mode por baixo dos panos (`MouseDrag1Pane`, default do tmux — sem isso não existe seleção de mouse); tentei esconder o indicador de posição com `-H` mas o usuário reportou que ainda "sente" a entrada em copy-mode de algum jeito perceptível — **não totalmente resolvido, investigar depois** (ver Notas abertas) |
 
 `mode-keys vi` ativo — usa os motions padrão do vim dentro do copy-mode. Config em `tmux/.config/tmux/tmux.conf`. Não inicia automaticamente — rodar `tmux` manualmente quando precisar.
 
-**Persistência de sessão (resurrect/continuum):** plugins `tmux-resurrect` + `tmux-continuum` instalados via TPM. `continuum-restore on` restaura automaticamente janelas/panes/diretório da última sessão salva assim que o tmux abre de novo (ex.: depois de um desligamento inesperado). Salvamento automático a cada 15min (default do continuum) + captura do conteúdo do pane (`resurrect-capture-pane-contents on`). Instalar/atualizar plugin: `prefix + I` dentro do tmux.
+**Persistência de sessão (resurrect/continuum):** plugins `tmux-resurrect` + `tmux-continuum` **declarados** no `tmux.conf` (`continuum-restore on`, `resurrect-capture-pane-contents on`) mas **ainda não instalados de fato** — só `tpm` e `tmux-power` existem em `~/.config/tmux/plugins/`. Falta rodar `prefix + I` dentro de uma sessão tmux real pra baixar os dois. Depois de instalado: salva a sessão a cada 15min e restaura automaticamente ao abrir o tmux de novo (ex.: depois de desligamento inesperado).
+
+### Navegação/gestão de janelas (abas)
+
+| Atalho | Ação |
+|---|---|
+| `Ctrl+T` | Nova janela |
+| `Ctrl+W` | Fecha a janela atual |
+| `Ctrl+Shift+T` | Reabre a última janela fechada — restaura diretório e reroda o comando em foreground, **só se ele ainda estivesse rodando** no momento do `Ctrl+W` (não recupera comandos rápidos já terminados, tipo `neofetch`; funciona bem com `htop`, `vim`, `sleep`, `ssh` etc.) |
+| `Alt+1..9,0` | Vai direto pra janela 1–10 |
+| `Alt+Shift+1..9,0` | Reordena: move/troca a janela atual pro slot N |
+
+**Trade-off aceito:** `Ctrl+T`/`Ctrl+W` sem shift tomam o lugar do `unix-word-rubout` do readline (apagar palavra anterior no prompt) — decisão consciente do usuário, que não usa esse atalho.
+
+**Possível conflito não confirmado:** o `fzf` integra `Ctrl+T` ao Zsh (file widget) — dentro do tmux, o `Ctrl+T` é capturado primeiro pelo bind `-n` do tmux e nunca chega no shell. Não veio à tona como reclamação nesta sessão; só uma observação pra se um dia o fzf parecer "não responder" dentro do tmux.
+
+**Mecanismo do reabrir (`Ctrl+Shift+T`):** `Ctrl+W` roda `tmux-close-window.sh` (empilha diretório + comando completo, lido de `/proc/<pid>/cmdline` já que `#{pane_current_command}` só dá o nome do processo sem argumentos) antes do `kill-window`; `Ctrl+Shift+T` roda `tmux-reopen-window.sh`, que desempilha e recria a janela. Pilha em `~/.tmux/closed-windows.stack`, delimitador `\x1f` (unit separator) — **não usar `\t`**: bash trata tab como "IFS whitespace" e colapsa campos vazios entre delimitadores repetidos, quebrando o caso de janela idle (sem comando).
+
+## tmux-animated (experimental)
+
+Fork do tmux com animações reais (github.com/jonaburg/tmux-animated) — patch em cima do tmux upstream que anima troca de janela (conteúdo desliza + destaque da aba na status bar), split, resize e close de pane. Instalado como binário **separado** em `~/.local/bin/tmux-animated` (não substitui o `tmux` normal, sem alias — decisão consciente do usuário: roda manualmente por enquanto, `tmux` continua sendo o binário padrão pro dia a dia).
+
+**Riscos conhecidos, aceitos pelo usuário:** projeto pequeno (25 estrelas, 0 forks), última atualização de código real mais de um mês atrás na data da instalação; sync automático com upstream tmux estava quebrado pras últimas 3 releases (3.7, 3.7a, 3.7b) — o binário instalado roda sobre uma base ~3.6b, atrás da versão oficial 3.7b do sistema. Já teve um bug de seg fault no `kill-window` (fechado/corrigido, mas mostra instabilidade histórica justamente na ação mais usada do fluxo, o `Ctrl+W`).
+
+**Config separada:** `tmux/.config/tmux/tmux-animated.conf` — carregada só via `tmux-animated -f ~/.config/tmux/tmux-animated.conf ...`, nunca pelo `tmux` normal. Faz `source-file` do `tmux.conf` principal (todo bind compartilhado já vale nos dois automaticamente) e:
+
+- Desliga animação por padrão (`animation-window-switch off`, `animation-status-highlight off`) — `Alt+N` (troca de janela normal) fica sem efeito, igual o tmux normal.
+- `Alt+Shift+N` (reordenar) roda `tmux-swap-window-animated.sh <slot>`: liga a animação, faz o swap, dá uma "espiada" rápida na janela que foi deslocada (que ficou no índice antigo) e volta, desliga a animação de novo. Necessário porque `swap-window`/`move-window` só realocam índice — o conteúdo exibido não muda, então o tmux-animated não tem "troca" pra animar sozinho; a espiada força esse "troca" artificialmente.
+- **Por que não ficou tudo dentro de `if-shell` no `tmux.conf` direto:** `#{window_index}` (e formatos em geral) só expandem dentro de comandos com expansão explícita (`run-shell`, `display-message -F`, a condição `-F` do próprio `if-shell`) — dentro da *ação* de um `if-shell`/`se-shell`, o `#{}` não expande e vira "syntax error" em runtime (não no load da config, só ao disparar o bind). Por isso virou um script dedicado.
+
+**Teste:** sessão isolada com socket próprio, pra não misturar com a sessão real: `tmux-animated -L test -f ~/.config/tmux/tmux-animated.conf new-session`.
+
+**Pendente (não implementado nesta sessão):** iniciar o `tmux-animated` no boot — usuário pediu, mas a conversa desviou pro ícone da status bar e pro bug do copy-mode antes de decidir o mecanismo (Hyprland `exec-once` vs systemd user service vs `@continuum-boot` do tmux-continuum, que nem está instalado ainda). Ver Notas abertas.
 
 ## System info — neofetch + fastfetch
 
@@ -461,6 +495,9 @@ Ver guia completo: [[ducking]]
 | `clock-panel-status.sh` | Métricas do painel Quickshell: CPU, MEM, DISK e GPU em barras. |
 | `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell. |
 | `battery-conservation.sh` | Alterna `Long_Life`/`Standard`; em modo conservação o Lenovo para de carregar em 80%. |
+| `tmux-close-window.sh` | Bind de `Ctrl+W` no tmux — empilha diretório + comando completo (via `/proc/<pid>/cmdline`) + nome da janela em `~/.tmux/closed-windows.stack` antes do `kill-window`. |
+| `tmux-reopen-window.sh` | Bind de `Ctrl+Shift+T` no tmux — desempilha a última janela fechada e recria no mesmo diretório, rerodando o comando se ainda estava ativo. |
+| `tmux-swap-window-animated.sh` | Só em `tmux-animated.conf` (tmux-animated) — bind de `Alt+Shift+N`: liga a animação, faz swap-window com espiada na janela deslocada (força a animação de troca), desliga de novo. |
 
 ## Waybar — módulos ativos
 
@@ -486,3 +523,7 @@ Ver guia completo: [[ducking]]
 - Starship sem `format` definido — usa default verboso (a discutir em sessão futura)
 - `hyprpaper.conf` no repo referencia `default_2.jpg` que não existe — arquivo criado como referência, sistema usa `swww`; ajustar path ou remover se não for usar hyprpaper
 - hyprshell `filter_by: [current_workspace]` atualizado mas ainda inativo (incompatibilidade Hyprland 0.55)
+- **tmux: seleção de mouse ainda "sente" entrada em copy-mode** — `MouseDrag1Pane` ganhou `-H` (mesma solução do `WheelUpPane`), mas o usuário reportou que não resolveu por completo. Não investigado a fundo ainda; possíveis próximos passos: checar se o tema/tmux-power mostra algum indicador de modo em outro lugar da status bar, ou se é só percepção do delay/comportamento do próprio drag.
+- **tmux-resurrect/tmux-continuum não instalados** — declarados no `tmux.conf` mas nunca instalados de fato (falta `prefix + I` numa sessão tmux real). Persistência de sessão não está funcionando ainda apesar de configurada.
+- **tmux-animated: iniciar no boot** — pedido pelo usuário, não implementado. Decidir mecanismo (Hyprland `exec-once` com `tmux-animated new-session -d`, systemd user service dedicado, ou `@continuum-boot` do tmux-continuum depois que esse plugin for instalado) antes de mexer no `hyprland.conf`.
+- **fzf `Ctrl+T` (file widget do Zsh) vs tmux `Ctrl+T` (nova janela)** — dentro do tmux o bind `-n` do tmux intercepta primeiro; não confirmado como problema real, só uma observação de conflito potencial.
