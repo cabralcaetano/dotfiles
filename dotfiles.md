@@ -236,7 +236,7 @@ Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualqu
 
 `mode-keys vi` ativo — usa os motions padrão do vim dentro do copy-mode. Config em `tmux/.config/tmux/tmux.conf`. Não inicia automaticamente — rodar `tmux` manualmente quando precisar.
 
-**Persistência de sessão (resurrect/continuum):** plugins `tmux-resurrect` + `tmux-continuum` **declarados** no `tmux.conf` (`continuum-restore on`, `resurrect-capture-pane-contents on`) mas **ainda não instalados de fato** — só `tpm` e `tmux-power` existem em `~/.config/tmux/plugins/`. Falta rodar `prefix + I` dentro de uma sessão tmux real pra baixar os dois. Depois de instalado: salva a sessão a cada 15min e restaura automaticamente ao abrir o tmux de novo (ex.: depois de desligamento inesperado).
+**Persistência de sessão (resurrect/continuum):** plugins `tmux-resurrect` + `tmux-continuum` instalados (`continuum-restore on`, `resurrect-capture-pane-contents on`) e testados — `save.sh` rodado direto (sem precisar de `prefix + I` na sessão real) confirmou snapshot criado com sucesso, incluindo captura do conteúdo dos panes. Salva a sessão a cada 15min e restaura automaticamente ao abrir o tmux de novo (ex.: depois de desligamento inesperado). Path de instalação real é `~/.config/tmux/plugins/` (XDG), não `~/.tmux/plugins/` — há uma variável de ambiente `TMUX_PLUGIN_MANAGER_PATH` redirecionando, origem não rastreada; resurrect também salva em `~/.local/share/tmux/resurrect/` (XDG data), não no `~/.tmux/resurrect` clássico.
 
 ### Navegação/gestão de janelas (abas)
 
@@ -524,5 +524,5 @@ Ver guia completo: [[ducking]]
 - Starship sem `format` definido — usa default verboso (a discutir em sessão futura)
 - `hyprpaper.conf` no repo referencia `default_2.jpg` que não existe — arquivo criado como referência, sistema usa `swww`; ajustar path ou remover se não for usar hyprpaper
 - hyprshell `filter_by: [current_workspace]` atualizado mas ainda inativo (incompatibilidade Hyprland 0.55)
-- **tmux-resurrect/tmux-continuum não instalados** — declarados no `tmux.conf` mas nunca instalados de fato (falta `prefix + I` numa sessão tmux real). Persistência de sessão não está funcionando ainda apesar de configurada.
+- **Falta o comando `hostname`** — `tmux-resurrect` imprime `hostname: comando não encontrado` (stderr, inofensivo) a cada save, porque `resurrect_dir()` roda `$(hostname)` incondicionalmente. Instalar `inetutils` (`sudo pacman -S inetutils`) resolve, se incomodar.
 - **tmux-animated: iniciar no boot** — pedido pelo usuário, não implementado. Decidir mecanismo (Hyprland `exec-once` com `tmux-animated new-session -d`, systemd user service dedicado, ou `@continuum-boot` do tmux-continuum depois que esse plugin for instalado) antes de mexer no `hyprland.conf`.
