@@ -1,0 +1,13 @@
+[Unit]
+Description=tmux-animated sessão padrão (detached, no boot)
+Documentation=man:tmux(1)
+ConditionPathExists=%h/.local/bin/tmux-animated
+
+[Service]
+Type=forking
+ExecStart=%h/.local/bin/tmux-animated -L animated -f %h/.config/tmux/tmux-animated.conf new-session -d -s main
+ExecStop=%h/.local/bin/tmux-animated -L animated kill-server
+RemainAfterExit=yes
+
+[Install]
+WantedBy=default.target
