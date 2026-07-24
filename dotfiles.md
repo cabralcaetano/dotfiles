@@ -41,7 +41,7 @@ stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship
 | rofimoji | Emoji picker via Fuzzel |
 | PipeWire | Audio ducking automático |
 | eza | `ls` moderno com ícones e suporte a git |
-| fzf | Fuzzy finder — integrado ao Zsh (Ctrl+R, Ctrl+T/Ctrl+F, Alt+C/Alt+G) |
+| fzf | Fuzzy finder — integrado ao Zsh (Ctrl+R, Ctrl+T/Ctrl+G, Alt+C/Alt+G) |
 | zoxide | `cd` inteligente com histórico de diretórios |
 | yazi | File manager TUI com navegação em colunas |
 | lazygit | Git TUI |
@@ -250,7 +250,7 @@ Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualqu
 
 **Trade-off aceito:** `Ctrl+T`/`Ctrl+W` sem shift tomam o lugar do `unix-word-rubout` do readline (apagar palavra anterior no prompt) — decisão consciente do usuário, que não usa esse atalho.
 
-**Conflito confirmado com fzf:** `Ctrl+T` (file widget) e `Alt+C` (cd fuzzy, este último criado nesta mesma sessão pelo bind de copy-mode) do fzf ficam presos pelo `-n` do tmux e nunca chegam no shell. Resolvido com atalhos extras no `.zshrc`: `Ctrl+F` (file widget) e `Alt+G` (cd fuzzy) — aliases pros mesmos widgets, os originais continuam intactos fora do tmux.
+**Conflito confirmado com fzf:** `Ctrl+T` (file widget) e `Alt+C` (cd fuzzy, este último criado nesta mesma sessão pelo bind de copy-mode) do fzf ficam presos pelo `-n` do tmux e nunca chegam no shell. Resolvido com atalhos extras no `.zshrc`: `Ctrl+G` (file widget) e `Alt+G` (cd fuzzy) — aliases pros mesmos widgets, os originais continuam intactos fora do tmux. **Não usar `Ctrl+F`** pra isso: `forward-char` está em `ZSH_AUTOSUGGEST_ACCEPT_WIDGETS` (aceita a sugestão inline do `zsh-autosuggestions`), não é só mover o cursor — tentativa inicial quebrou essa funcionalidade, corrigida pra `Ctrl+G`.
 
 **Mecanismo do reabrir (`Ctrl+Shift+T`):** `Ctrl+W` roda `tmux-close-window.sh` (empilha diretório + comando completo, lido de `/proc/<pid>/cmdline` já que `#{pane_current_command}` só dá o nome do processo sem argumentos) antes do `kill-window`; `Ctrl+Shift+T` roda `tmux-reopen-window.sh`, que desempilha e recria a janela. Pilha em `~/.tmux/closed-windows.stack`, delimitador `\x1f` (unit separator) — **não usar `\t`**: bash trata tab como "IFS whitespace" e colapsa campos vazios entre delimitadores repetidos, quebrando o caso de janela idle (sem comando).
 
@@ -315,7 +315,7 @@ Aliases e ferramentas configuradas no `.zshrc`:
 - `pyenv` — gerenciamento de versões Python
 - `starship` — prompt
 - `zoxide` — `z <dir>` para navegar por histórico de diretórios
-- `fzf` — `Ctrl+R` (histórico), `Ctrl+T`/`Ctrl+F` (arquivos), `Alt+C`/`Alt+G` (cd fuzzy); preview com `bat`. `Ctrl+F`/`Alt+G` existem porque `Ctrl+T`/`Alt+C` ficam presos pelo tmux quando dentro de uma sessão (ver seção tmux) — os originais continuam funcionando fora do tmux.
+- `fzf` — `Ctrl+R` (histórico), `Ctrl+T`/`Ctrl+G` (arquivos), `Alt+C`/`Alt+G` (cd fuzzy); preview com `bat`. `Ctrl+G`/`Alt+G` existem porque `Ctrl+T`/`Alt+C` ficam presos pelo tmux quando dentro de uma sessão (ver seção tmux) — os originais continuam funcionando fora do tmux.
 - `Spicetify` — `~/.spicetify` no PATH
 
 ## Perfil de energia

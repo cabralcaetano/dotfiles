@@ -42,10 +42,13 @@ export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git"'
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --line-range :50 {}'"
 
 # Ctrl+T e Alt+C (defaults do fzf) ficam presos dentro do tmux — Ctrl+T é
-# nova janela e Alt+C é copy-mode lá. Ctrl+F/Alt+G viram atalhos extras pros
+# nova janela e Alt+C é copy-mode lá. Ctrl+G/Alt+G viram atalhos extras pros
 # mesmos widgets, sem remover os originais (continuam funcionando fora do
-# tmux normalmente).
-bindkey '^F' fzf-file-widget
+# tmux normalmente). Ctrl+F não dá — já é usado pelo zsh-autosuggestions
+# pra aceitar a sugestão inline (forward-char está em
+# ZSH_AUTOSUGGEST_ACCEPT_WIDGETS), não só mover o cursor. Ctrl+G hoje é só
+# send-break (Ctrl+C já cobre isso na prática).
+bindkey '^G' fzf-file-widget
 bindkey '^[g' fzf-cd-widget
 
 # === yazi — cd ao sair ===
