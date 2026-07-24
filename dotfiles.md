@@ -41,7 +41,7 @@ stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship
 | rofimoji | Emoji picker via Fuzzel |
 | PipeWire | Audio ducking automático |
 | eza | `ls` moderno com ícones e suporte a git |
-| fzf | Fuzzy finder — integrado ao Zsh (Ctrl+R, Ctrl+T) |
+| fzf | Fuzzy finder — integrado ao Zsh (Ctrl+R, Ctrl+T/Ctrl+F, Alt+C/Alt+G) |
 | zoxide | `cd` inteligente com histórico de diretórios |
 | yazi | File manager TUI com navegação em colunas |
 | lazygit | Git TUI |
@@ -250,7 +250,7 @@ Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualqu
 
 **Trade-off aceito:** `Ctrl+T`/`Ctrl+W` sem shift tomam o lugar do `unix-word-rubout` do readline (apagar palavra anterior no prompt) — decisão consciente do usuário, que não usa esse atalho.
 
-**Possível conflito não confirmado:** o `fzf` integra `Ctrl+T` ao Zsh (file widget) — dentro do tmux, o `Ctrl+T` é capturado primeiro pelo bind `-n` do tmux e nunca chega no shell. Não veio à tona como reclamação nesta sessão; só uma observação pra se um dia o fzf parecer "não responder" dentro do tmux.
+**Conflito confirmado com fzf:** `Ctrl+T` (file widget) e `Alt+C` (cd fuzzy, este último criado nesta mesma sessão pelo bind de copy-mode) do fzf ficam presos pelo `-n` do tmux e nunca chegam no shell. Resolvido com atalhos extras no `.zshrc`: `Ctrl+F` (file widget) e `Alt+G` (cd fuzzy) — aliases pros mesmos widgets, os originais continuam intactos fora do tmux.
 
 **Mecanismo do reabrir (`Ctrl+Shift+T`):** `Ctrl+W` roda `tmux-close-window.sh` (empilha diretório + comando completo, lido de `/proc/<pid>/cmdline` já que `#{pane_current_command}` só dá o nome do processo sem argumentos) antes do `kill-window`; `Ctrl+Shift+T` roda `tmux-reopen-window.sh`, que desempilha e recria a janela. Pilha em `~/.tmux/closed-windows.stack`, delimitador `\x1f` (unit separator) — **não usar `\t`**: bash trata tab como "IFS whitespace" e colapsa campos vazios entre delimitadores repetidos, quebrando o caso de janela idle (sem comando).
 
@@ -315,7 +315,7 @@ Aliases e ferramentas configuradas no `.zshrc`:
 - `pyenv` — gerenciamento de versões Python
 - `starship` — prompt
 - `zoxide` — `z <dir>` para navegar por histórico de diretórios
-- `fzf` — `Ctrl+R` (histórico), `Ctrl+T` (arquivos); preview com `bat`
+- `fzf` — `Ctrl+R` (histórico), `Ctrl+T`/`Ctrl+F` (arquivos), `Alt+C`/`Alt+G` (cd fuzzy); preview com `bat`. `Ctrl+F`/`Alt+G` existem porque `Ctrl+T`/`Alt+C` ficam presos pelo tmux quando dentro de uma sessão (ver seção tmux) — os originais continuam funcionando fora do tmux.
 - `Spicetify` — `~/.spicetify` no PATH
 
 ## Perfil de energia
@@ -526,4 +526,3 @@ Ver guia completo: [[ducking]]
 - hyprshell `filter_by: [current_workspace]` atualizado mas ainda inativo (incompatibilidade Hyprland 0.55)
 - **tmux-resurrect/tmux-continuum não instalados** — declarados no `tmux.conf` mas nunca instalados de fato (falta `prefix + I` numa sessão tmux real). Persistência de sessão não está funcionando ainda apesar de configurada.
 - **tmux-animated: iniciar no boot** — pedido pelo usuário, não implementado. Decidir mecanismo (Hyprland `exec-once` com `tmux-animated new-session -d`, systemd user service dedicado, ou `@continuum-boot` do tmux-continuum depois que esse plugin for instalado) antes de mexer no `hyprland.conf`.
-- **fzf `Ctrl+T` (file widget do Zsh) vs tmux `Ctrl+T` (nova janela)** — dentro do tmux o bind `-n` do tmux intercepta primeiro; não confirmado como problema real, só uma observação de conflito potencial.
