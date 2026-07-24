@@ -226,8 +226,10 @@ Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualqu
 |---|---|
 | `Ctrl+B` `[` | Entra em copy-mode (default do tmux) |
 | `h/j/k/l` ou setas | Navega |
-| `v` | Inicia seleção |
+| `c` | Inicia seleção |
+| `v` | Copia seleção para o clipboard sem sair do copy-mode |
 | `y` | Copia seleção para o clipboard do sistema (`wl-copy`) e sai do copy-mode |
+| Arrastar o mouse + soltar | Marca a seleção — não copia sozinho; apertar `y` (ou `v`) depois pra copiar |
 
 `mode-keys vi` ativo — usa os motions padrão do vim dentro do copy-mode. Config em `tmux/.config/tmux/tmux.conf`. Não inicia automaticamente — rodar `tmux` manualmente quando precisar.
 
