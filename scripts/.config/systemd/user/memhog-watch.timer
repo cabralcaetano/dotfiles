@@ -1,0 +1,11 @@
+[Unit]
+Description=Amostra memhog-watch a cada 30s
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=30s
+AccuracySec=5s
+Unit=memhog-watch.service
+
+[Install]
+WantedBy=timers.target

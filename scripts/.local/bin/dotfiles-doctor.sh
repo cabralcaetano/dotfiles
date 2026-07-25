@@ -108,7 +108,7 @@ check_module_drift() {
   log "Verificando módulos fora de STOW_PKGS…"
   [[ -d "$DOTFILES_DIR" ]] || return
   local declared=" ${STOW_PKGS[*]} "
-  local known_manual=" desktop-apps sddm greetd xkb legacy docs packages ducking reflector udev obsidian "
+  local known_manual=" desktop-apps sddm greetd xkb legacy docs packages ducking reflector udev obsidian system "
   local drift=()
   local entry name
   for entry in "$DOTFILES_DIR"/*; do

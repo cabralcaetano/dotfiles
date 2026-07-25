@@ -1,0 +1,11 @@
+[Unit]
+Description=memhog-watch — registra processos com RSS alto e pouca memória disponível
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/memhog-watch.sh
+Nice=10
+# Nunca deixar o próprio monitor virar parte do problema.
+MemoryMax=64M
+# earlyoom e o OOM killer devem preferir qualquer outra coisa a este processo.
+OOMScoreAdjust=-500

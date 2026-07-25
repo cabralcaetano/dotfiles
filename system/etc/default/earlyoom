@@ -1,0 +1,44 @@
+# earlyoom — configuração do OOM killer preventivo (ARCH-32)
+#
+# Instalar com:
+#   sudo install -Dm644 system/etc/default/earlyoom /etc/default/earlyoom
+#   sudo systemctl restart earlyoom
+#
+# POR QUE ISSO NÃO É O DEFAULT
+# ----------------------------
+# O earlyoom exige AND entre as duas condições:
+#
+#   sending SIGTERM when mem avail <= 10.00% and swap free <= 10.00%
+#
+# Com swap em zram e vm.swappiness baixo, o swap simplesmente nunca é tocado.
+# Log real de 9h de uptime nesta máquina (2026-07-25), antes do fix:
+#
+#   mem avail: 10439 of 13676 MiB (76.33%), swap free: 4095 of 4095 MiB (100.00%)
+#   mem avail:  8412 of 13056 MiB (64.43%), swap free: 4095 of 4095 MiB (100.00%)
+#   mem avail:  7857 of 12944 MiB (60.70%), swap free: 4095 of 4095 MiB (100.00%)
+#
+# "swap free" nunca sai de 100%, então a segunda condição nunca é satisfeita e o
+# daemon nunca mata nada. Nos travamentos de 23/07 e 24/07 (runaway de 9,7 GB) o
+# earlyoom estava `active` e apenas assistiu o sistema entrar em thrashing.
+#
+# -s 100,100 neutraliza a condição de swap nos DOIS thresholds, deixando só a RAM
+# decidir. É o comportamento que se espera de fato num sistema com zram.
+#
+# ATENÇÃO — o segundo valor é obrigatório: quando se passa só `-s 100`, o
+# earlyoom deriva o threshold de SIGKILL como metade, virando `swap free <= 50%`.
+# Verificado em 2026-07-25 com `earlyoom -m 8 -s 100 -r 1 -p`:
+#
+#   sending SIGTERM when mem avail <=  8.00% and swap free <= 100.00%
+#           SIGKILL when mem avail <=  4.00% and swap free <=  50.00%
+#
+# Com o swap parado em 100% livre, o SIGKILL nunca satisfaria a condição — só o
+# SIGTERM funcionaria, e um processo travado em thrashing costuma ignorar
+# SIGTERM. `-s 100,100` deixa as duas linhas em 100.00%.
+#
+# -m 8: SIGTERM a 8% de RAM disponível, SIGKILL a 4% (metade, implícito — aqui
+#       tudo bem, porque é o comportamento desejado para memória).
+# --prefer: mira browser/Electron primeiro — são os que incham e os mais baratos
+#           de perder (restauram sessão sozinhos).
+# --avoid:  Hyprland entra aqui pra não derrubar a sessão gráfica inteira.
+
+EARLYOOM_ARGS="-r 3600 -n -m 8 -s 100,100 --avoid '(^|/)(init|systemd|Hyprland|sshd)$' --prefer '(^|/)(brave|electron|Discord|node|bun|chrome|chromium|spotify)$'"
