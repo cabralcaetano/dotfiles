@@ -234,9 +234,9 @@ Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualqu
 | Arrastar o mouse + soltar | Marca a seleção **dentro do tmux** (copy-mode, via `MouseDrag1Pane` — indicador de posição escondido com `-H`); não copia sozinho, aperta `y` (ou `v`) depois |
 | `Shift` + arrastar | Seleção **nativa do Ghostty**, sem passar pelo tmux/copy-mode em nenhum momento — `Shift` é o modificador universal que os terminais (Ghostty incluso) usam pra ignorar o app e fazer seleção própria, mesmo com `mouse on` no tmux. Copiar com `Ctrl+Shift+C` (atalho nativo do Ghostty). Não precisou mudar nada na config — já funciona assim por padrão. |
 
-`mode-keys vi` ativo — usa os motions padrão do vim dentro do copy-mode. Config em `tmux/.config/tmux/tmux.conf`. Não inicia automaticamente — rodar `tmux` manualmente quando precisar.
+`mode-keys vi` ativo — usa os motions padrão do vim dentro do copy-mode. Config em `tmux/.config/tmux/tmux.conf`. É o binário padrão do sistema (decisão reafirmada em 2026-07-25, depois do experimento com `tmux-animated` — ver seção abaixo) e agora inicia sozinho no boot: service systemd user `scripts/.config/systemd/user/tmux.service` (habilitado via symlink em `default.target.wants/`, mesmo padrão do `tmux-animated.service` antigo), sobe uma sessão `main` detached no socket default. Anexar: `tmux attach -t main`.
 
-**Persistência de sessão (resurrect/continuum):** plugins `tmux-resurrect` + `tmux-continuum` instalados (`continuum-restore on`, `resurrect-capture-pane-contents on`) e testados — `save.sh` rodado direto (sem precisar de `prefix + I` na sessão real) confirmou snapshot criado com sucesso, incluindo captura do conteúdo dos panes. Salva a sessão a cada 15min e restaura automaticamente ao abrir o tmux de novo (ex.: depois de desligamento inesperado). Path de instalação real é `~/.config/tmux/plugins/` (XDG), não `~/.tmux/plugins/` — há uma variável de ambiente `TMUX_PLUGIN_MANAGER_PATH` redirecionando, origem não rastreada; resurrect também salva em `~/.local/share/tmux/resurrect/` (XDG data), não no `~/.tmux/resurrect` clássico.
+**Persistência de sessão (resurrect/continuum):** plugins `tmux-resurrect` + `tmux-continuum` instalados (`resurrect-capture-pane-contents on`) e testados — `save.sh` rodado direto (sem precisar de `prefix + I` na sessão real) confirmou snapshot criado com sucesso, incluindo captura do conteúdo dos panes. Salva a sessão a cada 15min. **Restauração automática desligada** (`continuum-restore off`, mudado de `on` em 2026-07-25) — restaurar agora é manual via `prefix + ctrl-r`. Path de instalação real é `~/.config/tmux/plugins/` (XDG), não `~/.tmux/plugins/` — há uma variável de ambiente `TMUX_PLUGIN_MANAGER_PATH` redirecionando, origem não rastreada; resurrect também salva em `~/.local/share/tmux/resurrect/` (XDG data), não no `~/.tmux/resurrect` clássico.
 
 ### Navegação/gestão de janelas (abas)
 
@@ -254,9 +254,11 @@ Camada opcional dentro do Ghostty/Kitty para selecionar e copiar texto de qualqu
 
 **Mecanismo do reabrir (`Ctrl+Shift+T`):** `Ctrl+W` roda `tmux-close-window.sh` (empilha diretório + comando completo, lido de `/proc/<pid>/cmdline` já que `#{pane_current_command}` só dá o nome do processo sem argumentos) antes do `kill-window`; `Ctrl+Shift+T` roda `tmux-reopen-window.sh`, que desempilha e recria a janela. Pilha em `~/.tmux/closed-windows.stack`, delimitador `\x1f` (unit separator) — **não usar `\t`**: bash trata tab como "IFS whitespace" e colapsa campos vazios entre delimitadores repetidos, quebrando o caso de janela idle (sem comando).
 
-## tmux-animated (experimental)
+## tmux-animated (arquivado 2026-07-25 — retomar depois)
 
-Fork do tmux com animações reais (github.com/jonaburg/tmux-animated) — patch em cima do tmux upstream que anima troca de janela (conteúdo desliza + destaque da aba na status bar), split, resize e close de pane. Instalado como binário **separado** em `~/.local/bin/tmux-animated` (não substitui o `tmux` normal, sem alias — decisão consciente do usuário: roda manualmente por enquanto, `tmux` continua sendo o binário padrão pro dia a dia).
+Fork do tmux com animações reais (github.com/jonaburg/tmux-animated) — patch em cima do tmux upstream que anima troca de janela (conteúdo desliza + destaque da aba na status bar), split, resize e close de pane. Instalado como binário **separado** em `~/.local/bin/tmux-animated` (não substitui o `tmux` normal, sem alias — decisão consciente do usuário: `tmux` continua sendo o binário padrão pro dia a dia).
+
+**Status atual (2026-07-25): arquivado.** `tmux-animated.service` parado e desabilitado (`systemctl --user disable --now`, symlink removido de `default.target.wants/` tanto no live `~/.config/systemd/user/` quanto no repo) — não sobe mais no boot. O binário, a config (`tmux-animated.conf`) e o arquivo de service continuam no repo intactos para retomar depois: há bugs conhecidos a investigar/corrigir (ver riscos abaixo) antes de reabilitar. O `tmux.service` (tmux normal) assumiu o lugar dele como sessão `main` no boot.
 
 **Riscos conhecidos, aceitos pelo usuário:** projeto pequeno (25 estrelas, 0 forks), última atualização de código real mais de um mês atrás na data da instalação; sync automático com upstream tmux estava quebrado pras últimas 3 releases (3.7, 3.7a, 3.7b) — o binário instalado roda sobre uma base ~3.6b, atrás da versão oficial 3.7b do sistema. Já teve um bug de seg fault no `kill-window` (fechado/corrigido, mas mostra instabilidade histórica justamente na ação mais usada do fluxo, o `Ctrl+W`).
 
@@ -436,6 +438,38 @@ sudo cp -r /usr/share/sddm/themes/silent/fonts/{redhat,redhat-vf} /usr/share/fon
 **Testado em cada iteração com `--test-mode`** (`sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/silent`, com `QML2_IMPORT_PATH` setado) — abre como janela normal na sessão Wayland atual, sem precisar trocar de VT nem mexer no display manager ativo. Método seguro usado durante toda a iteração de design.
 
 **Status atual:** SDDM + SilentSDDM em produção, validado visualmente pelo usuário. Nenhum incidente na troca desta vez.
+
+### Ajuste fino de brightness/blur — bater exatamente com o hyprlock (25/07/2026)
+
+**Sintoma:** usuário relatou que o SDDM estava "semelhando" (parecido) mas não idêntico ao `hyprlock`. Comparando os dois configs lado a lado: `hyprlock.conf` usa `brightness = 0.6` (**multiplicativo** — escurece a imagem pra 60% do brilho original) + `blur_size = 7` `blur_passes = 3` (kawase, leve) sobre um `path = screenshot` (captura ao vivo da tela). O `default.conf` do SilentSDDM estava com `blur = 24` `brightness = 0.0` — ou seja, sem nenhum escurecimento e com blur mais pesado, resultando num fundo visivelmente mais claro/nítido que o hyprlock real.
+
+**Causa raiz:** os dois temas não usam o mesmo modelo de efeito. O `brightness` do SilentSDDM (`Config.qml`, via `QtQuick.Effects.MultiEffect`) é **aditivo** (-1.0 a 1.0, 0 = inalterado, -1 = preto), não multiplicativo como o do hyprlock — não dá pra copiar o valor `0.6` direto pro `default.conf`, precisa de calibração.
+
+**Método usado (sem travar a sessão real):**
+1. `awww query` confirmou que o wallpaper ativo (`wallpaper_3.png`, textura de linhas topográficas quase preta) já é exatamente o mesmo usado no fundo do SDDM — sem drift aí.
+2. Simulado o efeito real do hyprlock via `ffmpeg` sobre o `wallpaper_3.png`: `colorchannelmixer=rr=0.6:gg=0.6:bb=0.6` (equivalente exato ao `brightness` multiplicativo) + `gblur=sigma=3` (aproximação do kawase leve) + `noise=alls=4:allf=t` — gerou uma imagem de referência do "look" do hyprlock sem precisar travar a tela de verdade.
+3. Copiado o tema inteiro pra um diretório de scratch (`cp -r /usr/share/sddm/themes/silent ...`) pra poder iterar sem `sudo` a cada teste.
+4. Renderizado o greeter várias vezes com `sddm-greeter-qt6 --test-mode --theme <scratch>` (mesmo método seguro já validado), capturando a janela com `grim -g "x,y WxH"` (geometria obtida via `hyprctl clients -j`).
+5. Comparado lado a lado (`ffmpeg hstack`) a referência simulada vs. os valores antigos vs. candidatos — `brightness = -0.12` `blur = 14` foi o que mais se aproximou visualmente da referência (escurecimento perceptível igual ao hyprlock, sem virar preto sólido).
+
+**Valores finais** (`[LockScreen]` e `[LoginScreen]`, ambos): `blur = 24` → `14`, `brightness = 0.0` → `-0.12`. `saturation` mantido em `0.0`.
+
+**Limitação conhecida, sem solução:** `contrast` e `noise` (grão de filme) do hyprlock não são expostos pelo `Config.qml` do SilentSDDM — não tem como reproduzir 1:1, só a aproximação de brightness+blur. Como o `hyprlock` usa `path = screenshot` (conteúdo real da tela no momento do lock) e o SDDM só pode usar uma imagem estática, também não há equivalência perfeita possível nesse ponto — é a aproximação mais próxima viável dado os dois motores de efeito serem diferentes.
+
+**Aplicado em:** `sddm/silent-theme/default.conf` (cópia de referência, sincronizada no clone `~/Projects/dotfiles` e no submodule `wiki-ia`) → copiado com `sudo` para `/usr/share/sddm/themes/silent/configs/default.conf` (tema ativo).
+
+**Segunda rodada — posição do campo de senha (25/07/2026):** usuário apontou que, mesmo com brightness/blur ajustados, "o local onde bota a senha tá diferente" do hyprlock. Medido com precisão (via `grim` + crop/grid no `hyprlock-real.png` travado de verdade, e no greeter renderizado com `sddm-greeter-qt6 --test-mode`, ambos convertidos pra a mesma escala lógica):
+
+- hyprlock: campo de senha (`input-field`, `position = 0, -100`) fica **80px lógicos abaixo do centro vertical da tela**.
+- SDDM (`[LoginScreen.LoginArea] position = "center" margin = -1`, o padrão do tema): o bloco inteiro (avatar 140px + nome + campo) é centralizado como unidade, o que empurra o campo de senha pra **~235px abaixo do centro** — **155px mais baixo** que o hyprlock, por causa do avatar ocupar espaço acima.
+
+**Causa:** `margin = -1` é um valor especial do SilentSDDM que centraliza o bloco inteiro pelo seu `verticalCenter`; qualquer outro valor de `margin` passa a ancorar o bloco pelo **topo da tela** (`anchors.top = parent.top; anchors.topMargin = margin`), não mais pelo centro. Sem visibilidade da altura real do bloco (avatar+nome+campo), o padrão do tema não tem como saber onde isso deixa o campo de senha.
+
+**Correção:** medido o topo real do avatar em `margin = -1` (446px do topo, em coordenada lógica 1536×960) e calculado o novo `margin` necessário pra mover o campo de senha 155px pra cima: `446 - 155 = 291`. Aplicado `[LoginScreen.LoginArea] margin = 291` (era `-1`).
+
+**Nota de confiabilidade:** o valor foi calculado a partir de uma medição real confirmada (pixel a pixel, `margin = -1`), mas a segunda rodada de testes pra confirmar visualmente o resultado com `margin = 291` ficou instável no ambiente do agente (o processo `sddm-greeter-qt6 --test-mode` fechava sozinho ou renderizava como janela flutuante translúcida em vez de tela cheia, em tentativas sucessivas de captura). A matemática do anchor do Qt (`topMargin` é um deslocamento linear e determinístico) dá confiança alta no valor sem essa segunda confirmação visual — mas vale conferir ao vivo (`sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/silent`) depois de aplicar.
+
+**Diferenças remanescentes, aceitas como limitação de tema (não mexidas):** o campo de senha do SilentSDDM tem um ícone de cadeado à esquerda e um botão de login circular separado à direita, com os pontinhos da senha alinhados à esquerda (não centralizados); o hyprlock não tem ícone, não tem botão separado (Enter confirma), e os pontinhos ficam centralizados no pill. Isso é estrutural do QML do tema (`Input.qml`/`LoginScreen.qml`), não é exposto via `default.conf`.
 
 ### Bug — Alt/Super trocados (teclado mecânico Compx/AULA F75)
 
