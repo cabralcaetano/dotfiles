@@ -18,13 +18,13 @@
 }
 {
     "label" : "shutdown",
-    "action" : "power-confirm.sh poweroff",
+    "action" : "/home/caetano/.local/bin/power-confirm.sh poweroff",
     "text" : "Shutdown",
     "keybind" : "p"
 }
 {
     "label" : "reboot",
-    "action" : "power-confirm.sh reboot",
+    "action" : "/home/caetano/.local/bin/power-confirm.sh reboot",
     "text" : "Reboot",
     "keybind" : "r"
 }
