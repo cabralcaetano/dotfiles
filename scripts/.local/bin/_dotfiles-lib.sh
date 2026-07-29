@@ -10,7 +10,7 @@ DOTFILES_DIR="${DOTFILES_DIR:-$HOME/Projects/dotfiles}"
 # obsidian (perfil portátil sincronizado manualmente por vault, sem path fixo em $HOME),
 # system (espelha /etc — earlyoom, sysctl.d, zram-generator; instalado via
 # `install -Dm644` com root, ver system/README.md).
-STOW_PKGS=(hypr waybar quickshell swaync fuzzel scripts ghostty kitty btop zsh starship gtk-3 gtk-4 qt6ct wlogout nvim tmux networkmanager-dmenu neofetch)
+STOW_PKGS=(hypr waybar quickshell swaync fuzzel scripts ghostty kitty btop zsh starship gtk-3 gtk-4 qt6ct wlogout nvim tmux networkmanager-dmenu neofetch claude)
 
 log()  { printf '\033[1;34m::\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m!!\033[0m %s\n' "$*"; }
