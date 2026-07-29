@@ -68,8 +68,8 @@ zsh/            → .zshrc
 starship/       → starship.toml
 neofetch/       → config.conf + ascii/ (skull, char, arch — sorteados a cada run)
 scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
-                  wifi-menu.sh, wallpaper.sh, wallpaper-toggle.sh, screenshot.sh,
-                  workspace-float.sh, alttab.sh
+                  wifi-menu.sh, bt-codec-toggle.sh, wallpaper.sh, wallpaper-toggle.sh,
+                  screenshot.sh, workspace-float.sh, alttab.sh
 hyprshell/      → config.ron (instalado mas inativo — incompatível com Hyprland 0.55 address format)
 gtk-3/          → settings.ini
 gtk-4/          → settings.ini
@@ -160,7 +160,7 @@ Sequência do `hypridle.conf`:
 | Super+M | Sai do Hyprland |
 | Super+N | Abre/fecha painel do relógio (Quickshell) |
 | Super+Shift+N | Dismiss notificações |
-| Super+W | Menu WiFi |
+| Super+W | Alterna codec do fone Bluetooth (LDAC ↔ mSBC) |
 | Super+Shift+W | Alterna wallpaper |
 | Super+K | Alterna layout de teclado (ABNT2 ↔ ANSI) |
 | Super+. | Emoji picker (rofimoji) |
@@ -530,6 +530,7 @@ Ver guia completo: [[ducking]]
 | `clock-panel-status.sh` | Métricas do painel Quickshell: CPU, MEM, DISK e GPU em barras. |
 | `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell. |
 | `battery-conservation.sh` | Alterna `Long_Life`/`Standard`; em modo conservação o Lenovo para de carregar em 80%. |
+| `bt-codec-toggle.sh` | Bind de `Super+W` — alterna o profile do card `bluez_card.*` (auto-detectado via `pactl`) entre `a2dp-sink` (LDAC, hi-fi, sem mic) e `headset-head-unit` (mSBC, com mic para chamadas). Notificação via `notify-send`. Troca de profile inteira, não downgrade de codec — LDAC/AAC/SBC só existem no perfil A2DP (unidirecional); qualquer uso de microfone força o Bluetooth a trocar pra HFP, que só suporta CVSD/mSBC (limitação do protocolo Bluetooth Classic, não do fone). |
 | `tmux-close-window.sh` | Bind de `Ctrl+W` no tmux — empilha diretório + comando completo (via `/proc/<pid>/cmdline`) + nome da janela em `~/.tmux/closed-windows.stack` antes do `kill-window`. |
 | `tmux-reopen-window.sh` | Bind de `Ctrl+Shift+T` no tmux — desempilha a última janela fechada e recria no mesmo diretório, rerodando o comando se ainda estava ativo. |
 | `tmux-swap-window-animated.sh` | Só em `tmux-animated.conf` (tmux-animated) — bind de `Alt+Shift+N`: liga a animação, faz swap-window com espiada na janela deslocada (força a animação de troca), desliga de novo. |
@@ -554,6 +555,7 @@ Ver guia completo: [[ducking]]
 
 ## Notas abertas
 
+- **Menu WiFi sem atalho** — `wifi-menu.sh` continua no repo mas perdeu o bind `Super+W` (29/07/2026, substituído pelo toggle de codec Bluetooth). Rebindar em outra tecla se fizer falta.
 - `gesture = 3, horizontal, workspace` no hyprland.conf — sintaxe aparentemente não padrão mas funcionando; investigar se há forma correta
 - Starship sem `format` definido — usa default verboso (a discutir em sessão futura)
 - `hyprpaper.conf` no repo referencia `default_2.jpg` que não existe — arquivo criado como referência, sistema usa `swww`; ajustar path ou remover se não for usar hyprpaper
