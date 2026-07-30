@@ -10,7 +10,8 @@ case "${1:-}" in
     notify-send "Screenshot" "Tela completa salva"
     ;;
   area)
-    grim -g "$(slurp)" ~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png
+    FILE=~/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png
+    grim -g "$(slurp)" "$FILE" && wl-copy --type image/png < "$FILE"
     notify-send "Screenshot" "Área selecionada salva"
     ;;
   clipboard)
