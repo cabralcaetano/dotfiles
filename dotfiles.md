@@ -181,6 +181,12 @@ Sequência do `hypridle.conf`:
 | Print | Screenshot fullscreen |
 | Shift+Print | Screenshot de área selecionada |
 | Ctrl+Print | Screenshot para clipboard |
+| Alt+S | Screenshot fullscreen (salva + copia) |
+| Alt+Shift+S | Screenshot de área selecionada (salva + copia) |
+
+> `Alt+S`/`Alt+Shift+S` existem porque o teclado AULA F75 não tem tecla
+> `Print` dedicada e o `Fn`-layer dele não dá pra usar aqui — ver
+> "Fn-layer sem modificador diferenciável" abaixo.
 
 **Workspaces**
 
@@ -489,6 +495,32 @@ kb_options = compose:rctrl, altwin:swap_alt_win
 - **03/07/2026** — bug detectado, `altwin:swap_alt_win` adicionado (commit `29ae784`).
 - **05/07/2026** — opção removida **acidentalmente** dentro de um commit de docs sobre `tuned` (`586578e`), cuja mensagem não menciona teclado. O sintoma de Alt/Super trocados voltou.
 - **06/07/2026** — `altwin:swap_alt_win` readicionado após confirmação de que as teclas estavam trocadas novamente. Fix ativo de novo.
+
+### Fn-layer sem modificador diferenciável (mesmo receptor Compx/AULA F75)
+
+**Contexto (30/07/2026):** ao tentar mapear `Fn+S` (print fullscreen) e
+`Fn+Shift+S` (print de área) direto no teclado, as duas combos vieram
+idênticas — sem jeito de diferenciar no compositor.
+
+**Diagnóstico:** sem `libinput`-CLI/`evtest` instalados (só a lib), o
+diagnóstico foi feito lendo `/dev/input/eventN` cru via um script Python
+(`struct`+`select`, só stdlib) monitorando as ~6 interfaces HID que esse
+receptor expõe (`event9`–`event14`: base, Consumer Control, System
+Control, Keyboard, Mouse). Resultado: tanto `Fn+S` quanto `Fn+Shift+S`
+emitem exatamente o mesmo evento — `KEY_S` (code 31) down/up na
+interface base, sem nenhum keycode de `Shift` (code 42/54) junto e nada
+nas interfaces Consumer/System Control. O firmware descarta o Shift
+físico quando combinado com a camada `Fn` nesse hardware.
+
+**Ctrl direito também não serve** de modificador alternativo aqui:
+`kb_options` já usa `compose:rctrl` (ver acima), que remapeia essa tecla
+pra `Multi_key` (Compose) — ela sai do mapa de modificadores do XKB, um
+bind `CTRL, ...` não dispara só com o direito pressionado.
+
+**Decisão:** abandonado o `Fn`-layer pra essa função. Bind direto em
+`Alt+S`/`Alt+Shift+S` (livre — `$mainMod+S`/`+Shift+S` é scratchpad,
+`Ctrl+Shift+S` é cliphist, `Ctrl+S` é Save universal e quebraria apps se
+virasse bind global). Ver tabela de atalhos, seção Screenshots.
 
 ## Tema — GTK e Qt
 
