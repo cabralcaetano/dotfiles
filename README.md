@@ -435,7 +435,7 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 
 **Centro:** relógio (clique abre painel Quickshell com player, calendário, tempo e status; tooltip mantém calendário nativo)
 
-**Direita:** CPU · RAM · rede · bluetooth · volume · perfil de energia · conservação da bateria · tray · hotspot invisível minúsculo no extremo direito para SwayNC
+**Direita:** drawer da tray (ícone `<` revela velocidade de rede + tray ao clicar) · CPU · RAM · rede · bluetooth · volume · perfil de energia · conservação da bateria · hotspot invisível minúsculo no extremo direito para SwayNC
 
 ---
 
