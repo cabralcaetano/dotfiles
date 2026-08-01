@@ -564,7 +564,7 @@ Ver guia completo: [[ducking]]
 | `clock-panel-toggle.sh` | Toggle do painel Quickshell do relógio via IPC. |
 | `waybar-calendar.sh` | Launcher/focus do GNOME Calendar usado pelo título do calendário no painel Quickshell. |
 | `media-open-spotify.sh` | Clique na capa do álbum no painel Quickshell: foca o Spotify se já existir; senão abre `spotify-launcher`. |
-| `clock-panel-status.sh` | Card sistema do painel Quickshell: quotas Claude/OpenAI em barras via `ai-usagebar` com cache de 5min, mais CPU e MEM; uso de disco/GPU removido. |
+| `clock-panel-status.sh` | Card sistema do painel Quickshell: quotas Claude/OpenAI em barras (`CLD5h`, `CLD7d`, `OAI7d`) via `ai-usagebar` com cache de 5min, mais CPU e MEM. |
 | `clock-panel-weather.sh` | Tempo atual + previsão compacta dos próximos dois horários para o painel Quickshell. |
 | `battery-conservation.sh` | Alterna `Long_Life`/`Standard`; em modo conservação o Lenovo para de carregar em 80%. |
 | `bt-codec-toggle.sh` | Bind de `Super+W` — alterna o profile do card `bluez_card.*` (auto-detectado via `pactl`) entre `a2dp-sink` (LDAC, hi-fi, sem mic) e `headset-head-unit` (mSBC, com mic para chamadas). Notificação via `notify-send`. Troca de profile inteira, não downgrade de codec — LDAC/AAC/SBC só existem no perfil A2DP (unidirecional); qualquer uso de microfone força o Bluetooth a trocar pra HFP, que só suporta CVSD/mSBC (limitação do protocolo Bluetooth Classic, não do fone). |

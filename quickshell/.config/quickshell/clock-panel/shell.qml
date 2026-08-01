@@ -267,7 +267,7 @@ ShellRoot {
             Rectangle {
                 id: panel
                 width: 520
-                height: 430
+                height: 400
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 anchors.topMargin: 0
@@ -283,14 +283,6 @@ ShellRoot {
                     anchors.margins: 14
                     spacing: 10
 
-                    Text {
-                        width: parent.width
-                        color: "#ffffff"
-                        font.family: "JetBrainsMono Nerd Font"
-                        font.pixelSize: 18
-                        font.bold: true
-                        text: "󰥔 " + Qt.formatTime(root.now, "HH:mm:ss") + "  ·  󰃭 " + root.titleDate()
-                    }
 
                     Row {
                         width: parent.width

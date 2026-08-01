@@ -44,7 +44,7 @@ usage_bar_line() {
   local reset="$3"
 
   if [[ ! "$used_pct" =~ ^[0-9]+$ ]]; then
-    printf '%-4s %s %4s %s\n' "$label" "$(bar "?")" "n/d" "--"
+    printf '%-5s %s %4s %s\n' "$label" "$(bar "?")" "n/d" "--"
     return
   fi
 
@@ -52,7 +52,7 @@ usage_bar_line() {
   if (( free_pct < 0 )); then free_pct=0; fi
   if (( free_pct > 100 )); then free_pct=100; fi
 
-  printf '%-4s %s %3s%% %s\n' "$label" "$(bar "$used_pct")" "$free_pct" "$(compact_reset "$reset")"
+  printf '%-5s %s %3s%% %s\n' "$label" "$(bar "$used_pct")" "$free_pct" "$(compact_reset "$reset")"
 }
 
 usagebar_text() {
@@ -88,12 +88,12 @@ read_ai_usage() {
 
   tmp="$(mktemp)"
   {
-    usage_bar_line "CLD5" "$a_session_pct" "$a_session_reset"
-    usage_bar_line "CLD7" "$a_weekly_pct" "$a_weekly_reset"
+    usage_bar_line "CLD5h" "$a_session_pct" "$a_session_reset"
+    usage_bar_line "CLD7d" "$a_weekly_pct" "$a_weekly_reset"
     if [[ -n "$o_session_pct" ]]; then
-      usage_bar_line "OAI5" "$o_session_pct" "$o_session_reset"
+      usage_bar_line "OAI5h" "$o_session_pct" "$o_session_reset"
     else
-      usage_bar_line "OAI7" "$o_weekly_pct" "$o_weekly_reset"
+      usage_bar_line "OAI7d" "$o_weekly_pct" "$o_weekly_reset"
     fi
   } > "$tmp"
   mv "$tmp" "$cache"
@@ -114,14 +114,12 @@ fi
 
 mem_pct="$(awk '/MemTotal:/ { total=$2 } /MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.0f", (total - avail) / total * 100; else printf "?" }' /proc/meminfo)"
 
-cpu_value="${cpu_pct}%"
-mem_value="${mem_pct}%"
 
 mapfile -t ai_usage < <(read_ai_usage)
 
-printf '%s\n%s\n%s\n󰻠 %-4s %4s  %s\n󰍛 %-4s %4s  %s\n' \
-  "${ai_usage[0]:-CLD5 ░░░░░░░░░░  n/d --}" \
-  "${ai_usage[1]:-CLD7 ░░░░░░░░░░  n/d --}" \
-  "${ai_usage[2]:-OAI7 ░░░░░░░░░░  n/d --}" \
-  "CPU" "$cpu_value" "$(bar "$cpu_pct")" \
-  "MEM" "$mem_value" "$(bar "$mem_pct")"
+printf '%s\n%s\n%s\n%-5s %s %3s%%\n%-5s %s %3s%%\n' \
+  "${ai_usage[0]:-CLD5h ░░░░░░░░░░  n/d --}" \
+  "${ai_usage[1]:-CLD7d ░░░░░░░░░░  n/d --}" \
+  "${ai_usage[2]:-OAI7d ░░░░░░░░░░  n/d --}" \
+  "CPU" "$(bar "$cpu_pct")" "$cpu_pct" \
+  "MEM" "$(bar "$mem_pct")" "$mem_pct"
