@@ -645,9 +645,11 @@ ShellRoot {
         border.width: 1
 
         Column {
+            id: systemColumn
             anchors.fill: parent
             anchors.margins: 10
             spacing: 8
+            property var lines: systemText.length > 0 ? systemText.split("\n") : []
 
             Text {
                 width: parent.width
@@ -659,14 +661,45 @@ ShellRoot {
                 elide: Text.ElideRight
             }
 
-            Text {
-                width: parent.width
-                color: "#ffffff"
-                font.family: "JetBrainsMono Nerd Font"
-                font.pixelSize: 13
-                lineHeight: 1.12
-                wrapMode: Text.NoWrap
-                text: systemText.split("\n").slice(0, -1).join("\n")
+            Repeater {
+                model: systemColumn.lines.slice(0, Math.max(0, systemColumn.lines.length - 1))
+
+                Row {
+                    id: systemRow
+                    width: parent.width
+                    height: 18
+                    spacing: 3
+                    property var fields: modelData.split("|")
+
+                    Text {
+                        id: labelText
+                        width: 40
+                        color: "#ffffff"
+                        font.family: "JetBrainsMono Nerd Font"
+                        font.pixelSize: 13
+                        text: (systemRow.fields[0] || "") + " " + (systemRow.fields[1] || "")
+                    }
+
+                    Text {
+                        id: barText
+                        width: systemRow.width - labelText.width - pctText.width - systemRow.spacing * 2
+                        color: "#ffffff"
+                        font.family: "JetBrainsMono Nerd Font"
+                        font.pixelSize: 13
+                        clip: true
+                        text: systemRow.fields[2] || ""
+                    }
+
+                    Text {
+                        id: pctText
+                        width: 36
+                        color: "#ffffff"
+                        font.family: "JetBrainsMono Nerd Font"
+                        font.pixelSize: 13
+                        horizontalAlignment: Text.AlignRight
+                        text: systemRow.fields[3] || ""
+                    }
+                }
             }
 
             Text {
@@ -677,7 +710,10 @@ ShellRoot {
                 font.bold: true
                 wrapMode: Text.NoWrap
                 elide: Text.ElideRight
-                text: systemText.split("\n").slice(-1)[0]
+                text: {
+                    const fields = systemColumn.lines.length > 0 ? systemColumn.lines[systemColumn.lines.length - 1].split("|") : [];
+                    return fields.length >= 4 ? fields[0] + " " + fields.slice(1).join("  ") : "";
+                }
             }
         }
     }
