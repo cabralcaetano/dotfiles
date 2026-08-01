@@ -266,7 +266,7 @@ ShellRoot {
 
             Rectangle {
                 id: panel
-                width: 520
+                width: 650
                 height: 400
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
@@ -289,7 +289,7 @@ ShellRoot {
                         spacing: 10
 
                         Column {
-                            width: 252
+                            width: 315
                             spacing: 10
 
                             MediaBox {
@@ -313,7 +313,7 @@ ShellRoot {
                         }
 
                         Column {
-                            width: 230
+                            width: 297
                             spacing: 10
 
                             WeatherBox {
