@@ -40,7 +40,7 @@ for day in days[:2]:
             continue
         hourlies.append((hour_24, hour))
 
-forecast = hourlies[:4]
+forecast = hourlies[:2]
 current_desc = desc(current)
 temp = current.get("temp_C", "?")
 humidity = current.get("humidity", "?")
@@ -49,9 +49,9 @@ wind = current.get("windspeedKmph", "?")
 print(f"󰖐 {current_desc}")
 print(f" +{temp}° · 󰖎 {humidity}% · 󰖝 {wind}km/h")
 if forecast:
-    print("")
-    print("󰅐 próximas horas")
+    parts = []
     for hour, item in forecast:
         item_temp = item.get("tempC", "?")
-        print(f"{hour:02d}h  +{item_temp}°  {short(desc(item))}")
+        parts.append(f"{hour:02d}h +{item_temp}°")
+    print("󰅐 " + " · ".join(parts))
 '

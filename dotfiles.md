@@ -565,7 +565,7 @@ Ver guia completo: [[ducking]]
 | `waybar-calendar.sh` | Launcher/focus do GNOME Calendar usado pelo título do calendário no painel Quickshell. |
 | `media-open-spotify.sh` | Clique na capa do álbum no painel Quickshell: foca o Spotify se já existir; senão abre `spotify-launcher`. |
 | `clock-panel-status.sh` | Métricas do painel Quickshell em barras: GPU, CPU e MEM; uso de disco removido do widget. |
-| `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell. |
+| `clock-panel-weather.sh` | Tempo atual + previsão compacta dos próximos dois horários para o painel Quickshell. |
 | `battery-conservation.sh` | Alterna `Long_Life`/`Standard`; em modo conservação o Lenovo para de carregar em 80%. |
 | `bt-codec-toggle.sh` | Bind de `Super+W` — alterna o profile do card `bluez_card.*` (auto-detectado via `pactl`) entre `a2dp-sink` (LDAC, hi-fi, sem mic) e `headset-head-unit` (mSBC, com mic para chamadas). Notificação via `notify-send`. Troca de profile inteira, não downgrade de codec — LDAC/AAC/SBC só existem no perfil A2DP (unidirecional); qualquer uso de microfone força o Bluetooth a trocar pra HFP, que só suporta CVSD/mSBC (limitação do protocolo Bluetooth Classic, não do fone). |
 | `tmux-close-window.sh` | Bind de `Ctrl+W` no tmux — empilha diretório + comando completo (via `/proc/<pid>/cmdline`) + nome da janela em `~/.tmux/closed-windows.stack` antes do `kill-window`. |
