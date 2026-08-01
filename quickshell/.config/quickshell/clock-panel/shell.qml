@@ -97,6 +97,10 @@ ShellRoot {
         calendarProc.exec(calendarProc.command);
     }
 
+    function openSpotify(): void {
+        spotifyProc.exec(spotifyProc.command);
+    }
+
     function monthTitle() {
         const date = calendarDate();
         return "󰃭 " + date.toLocaleDateString(Qt.locale("pt_BR"), "MMMM yyyy");
@@ -183,6 +187,11 @@ ShellRoot {
         command: ["/home/caetano/.local/bin/waybar-calendar.sh"]
     }
 
+    Process {
+        id: spotifyProc
+        command: ["/home/caetano/.local/bin/media-open-spotify.sh"]
+    }
+
     IpcHandler {
         target: "clockPanel"
 
@@ -222,6 +231,10 @@ ShellRoot {
 
         function openCalendar(): void {
             root.openCalendar();
+        }
+
+        function openSpotify(): void {
+            root.openSpotify();
         }
     }
 
@@ -357,9 +370,9 @@ ShellRoot {
                 spacing: 10
 
                 Rectangle {
-                    width: 72
-                    height: 72
-                    radius: 8
+                    width: 88
+                    height: 88
+                    radius: 9
                     clip: true
                     color: "#991d1d20"
                     border.color: "#26a0a0a0"
@@ -377,14 +390,22 @@ ShellRoot {
                         visible: artUrl.length === 0
                         color: "#a0a0a0"
                         font.family: "JetBrainsMono Nerd Font"
-                        font.pixelSize: 28
+                        font.pixelSize: 32
                         text: "󰝚"
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.openSpotify()
                     }
                 }
 
                 Column {
-                    width: parent.width - 82
-                    spacing: 4
+                    width: parent.width - 98
+                    height: 88
+                    spacing: 5
 
                     Text {
                         width: parent.width
@@ -392,7 +413,10 @@ ShellRoot {
                         font.family: "JetBrainsMono Nerd Font"
                         font.pixelSize: 13
                         font.bold: true
+                        maximumLineCount: 2
+                        wrapMode: Text.Wrap
                         elide: Text.ElideRight
+                        lineHeight: 1.05
                         text: `${stateIcon} ${titleText}`
                     }
 
@@ -417,22 +441,29 @@ ShellRoot {
             }
 
             Row {
-                spacing: 8
+                width: parent.width
+                spacing: 7
+                property int sideButtonWidth: 58
+                property int playButtonWidth: width - sideButtonWidth * 2 - spacing * 2
+                anchors.horizontalCenter: parent.horizontalCenter
 
                 ControlButton {
-                    minWidth: 58
+                    fixedWidth: parent.sideButtonWidth
+                    buttonHeight: 28
                     label: "󰒮"
                     command: ["playerctl", "previous"]
                     onClicked: root.scheduleMediaRefresh()
                 }
                 ControlButton {
-                    minWidth: 96
+                    fixedWidth: parent.playButtonWidth
+                    buttonHeight: 28
                     label: stateText === "Playing" ? "󰏤 pause" : "󰐊 play"
                     command: ["playerctl", "play-pause"]
                     onClicked: root.scheduleMediaRefresh()
                 }
                 ControlButton {
-                    minWidth: 58
+                    fixedWidth: parent.sideButtonWidth
+                    buttonHeight: 28
                     label: "󰒭"
                     command: ["playerctl", "next"]
                     onClicked: root.scheduleMediaRefresh()
@@ -633,10 +664,12 @@ ShellRoot {
         property string label
         property var command: []
         property int minWidth: 104
+        property int fixedWidth: 0
+        property int buttonHeight: 34
         signal clicked
 
-        width: Math.max(minWidth, buttonText.implicitWidth + 24)
-        height: 34
+        width: fixedWidth > 0 ? fixedWidth : Math.max(minWidth, buttonText.implicitWidth + 24)
+        height: buttonHeight
         radius: 8
         color: clickArea.containsMouse ? "#33a0a0a0" : "#cc2a2a2e"
         border.color: "#26a0a0a0"

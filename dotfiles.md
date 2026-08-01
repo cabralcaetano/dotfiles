@@ -563,6 +563,7 @@ Ver guia completo: [[ducking]]
 | `alttab.sh` | Alt+Tab com `cyclenext` + `bringactivetotop`. Quando workspace float está ativo, preserva a posição do cursor em vez de deixar o Hyprland warpá-lo para o centro da janela. |
 | `clock-panel-toggle.sh` | Toggle do painel Quickshell do relógio via IPC. |
 | `waybar-calendar.sh` | Launcher/focus do GNOME Calendar usado pelo título do calendário no painel Quickshell. |
+| `media-open-spotify.sh` | Clique na capa do álbum no painel Quickshell: foca o Spotify se já existir; senão abre `spotify-launcher`. |
 | `clock-panel-status.sh` | Métricas do painel Quickshell em barras: GPU, CPU e MEM; uso de disco removido do widget. |
 | `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell. |
 | `battery-conservation.sh` | Alterna `Long_Life`/`Standard`; em modo conservação o Lenovo para de carregar em 80%. |
