@@ -563,7 +563,7 @@ Ver guia completo: [[ducking]]
 | `alttab.sh` | Alt+Tab com `cyclenext` + `bringactivetotop`. Quando workspace float está ativo, preserva a posição do cursor em vez de deixar o Hyprland warpá-lo para o centro da janela. |
 | `clock-panel-toggle.sh` | Toggle do painel Quickshell do relógio via IPC. |
 | `waybar-calendar.sh` | Launcher/focus do GNOME Calendar usado pelo título do calendário no painel Quickshell. |
-| `clock-panel-status.sh` | Métricas do painel Quickshell: CPU, MEM, DISK e GPU em barras. |
+| `clock-panel-status.sh` | Métricas do painel Quickshell em barras: GPU, CPU e MEM; uso de disco removido do widget. |
 | `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell. |
 | `battery-conservation.sh` | Alterna `Long_Life`/`Standard`; em modo conservação o Lenovo para de carregar em 80%. |
 | `bt-codec-toggle.sh` | Bind de `Super+W` — alterna o profile do card `bluez_card.*` (auto-detectado via `pactl`) entre `a2dp-sink` (LDAC, hi-fi, sem mic) e `headset-head-unit` (mSBC, com mic para chamadas). Notificação via `notify-send`. Troca de profile inteira, não downgrade de codec — LDAC/AAC/SBC só existem no perfil A2DP (unidirecional); qualquer uso de microfone força o Bluetooth a trocar pra HFP, que só suporta CVSD/mSBC (limitação do protocolo Bluetooth Classic, não do fone). |

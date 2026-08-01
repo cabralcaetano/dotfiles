@@ -44,7 +44,6 @@ mem_pct="$(awk '/MemTotal:/ { total=$2 } /MemAvailable:/ { avail=$2 } END { if (
 mem_used="$(awk '/MemTotal:/ { total=$2 } /MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.1f", (total - avail) / 1048576; else printf "?" }' /proc/meminfo)"
 mem_total="$(awk '/MemTotal:/ { printf "%.1f", $2 / 1048576 }' /proc/meminfo)"
 
-disk_pct="$(df -P / | awk 'NR == 2 { gsub("%", "", $5); print $5 }')"
 gpu_pct="n/d"
 if command -v intel_gpu_top >/dev/null 2>&1; then
   gpu_sample="$(timeout 1s intel_gpu_top -J -s 500 -o - 2>/dev/null || true)"
@@ -54,12 +53,10 @@ fi
 
 cpu_value="${cpu_pct}%"
 mem_value="${mem_pct}%"
-disk_value="${disk_pct}%"
 gpu_value="$gpu_pct"
 [[ "$gpu_pct" =~ ^[0-9.]+$ ]] && gpu_value="${gpu_pct}%"
 
-printf '󰻠 %-4s %4s  %s\n󰍛 %-4s %4s  %s\n󰋊 %-4s %4s  %s\n󰢮 %-4s %4s  %s\n' \
+printf '󰢮 %-4s %4s  %s\n󰻠 %-4s %4s  %s\n󰍛 %-4s %4s  %s\n' \
+  "GPU" "$gpu_value" "$(bar "$gpu_pct")" \
   "CPU" "$cpu_value" "$(bar "$cpu_pct")" \
-  "MEM" "$mem_value" "$(bar "$mem_pct")" \
-  "DISK" "$disk_value" "$(bar "$disk_pct")" \
-  "GPU" "$gpu_value" "$(bar "$gpu_pct")"
+  "MEM" "$mem_value" "$(bar "$mem_pct")"
