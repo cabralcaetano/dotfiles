@@ -11,7 +11,7 @@ read_cpu() {
 }
 
 bar() {
-  awk -v pct="$1" -v width=23 'BEGIN {
+  awk -v pct="$1" -v width=28 'BEGIN {
     if (pct !~ /^[0-9.]+$/) {
       for (i = 0; i < width; i++) printf "░";
       exit;
@@ -123,9 +123,9 @@ mem_pct="$(awk '/MemTotal:/ { total=$2 } /MemAvailable:/ { avail=$2 } END { if (
 mapfile -t ai_usage < <(read_ai_usage)
 
 printf '%s\n%s\n%s\n%s|%s|%s|%s%%\n%s|%s|%s|%s%%\n%s\n' \
-  "${ai_usage[0]:-|C5|░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
-  "${ai_usage[1]:-|C7|░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
-  "${ai_usage[2]:-|O7|░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
+  "${ai_usage[0]:-|C5|░░░░░░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
+  "${ai_usage[1]:-|C7|░░░░░░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
+  "${ai_usage[2]:-|O7|░░░░░░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
   "" "CPU" "$(bar "$cpu_pct")" "$cpu_pct" \
   "" "RAM" "$(bar "$mem_pct")" "$mem_pct" \
   "${ai_usage[3]:-↻|C5 --|C7 --|O7 --}"
