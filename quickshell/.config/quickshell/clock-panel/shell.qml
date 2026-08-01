@@ -647,7 +647,7 @@ ShellRoot {
         Column {
             anchors.fill: parent
             anchors.margins: 10
-            spacing: 12
+            spacing: 8
 
             Text {
                 width: parent.width
@@ -664,9 +664,20 @@ ShellRoot {
                 color: "#ffffff"
                 font.family: "JetBrainsMono Nerd Font"
                 font.pixelSize: 13
-                lineHeight: 1.2
+                lineHeight: 1.12
                 wrapMode: Text.NoWrap
-                text: systemText
+                text: systemText.split("\n").slice(0, -1).join("\n")
+            }
+
+            Text {
+                width: parent.width
+                color: "#e5c07b"
+                font.family: "JetBrainsMono Nerd Font"
+                font.pixelSize: 13
+                font.bold: true
+                wrapMode: Text.NoWrap
+                elide: Text.ElideRight
+                text: systemText.split("\n").slice(-1)[0]
             }
         }
     }

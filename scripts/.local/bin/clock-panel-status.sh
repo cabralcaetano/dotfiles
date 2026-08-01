@@ -13,7 +13,7 @@ read_cpu() {
 bar() {
   awk -v pct="$1" -v width=23 'BEGIN {
     if (pct !~ /^[0-9.]+$/) {
-      for (i = 0; i < width; i++) printf "·";
+      for (i = 0; i < width; i++) printf "░";
       exit;
     }
 
@@ -22,7 +22,7 @@ bar() {
     if (filled > width) filled = width;
 
     for (i = 0; i < filled; i++) printf "█";
-    for (i = filled; i < width; i++) printf "·";
+    for (i = filled; i < width; i++) printf "░";
   }'
 }
 
@@ -98,7 +98,7 @@ read_ai_usage() {
       o_reset_label="O7"
       o_reset_value="$o_weekly_reset"
     fi
-    printf 'reset C5 %s · C7 %s · %s %s\n' "$(compact_reset "$a_session_reset")" "$(compact_reset "$a_weekly_reset")" "$o_reset_label" "$(compact_reset "$o_reset_value")"
+    printf '↻ C5 %-4s   C7 %-6s   %s %s\n' "$(compact_reset "$a_session_reset")" "$(compact_reset "$a_weekly_reset")" "$o_reset_label" "$(compact_reset "$o_reset_value")"
   } > "$tmp"
   mv "$tmp" "$cache"
   cat "$cache"
@@ -122,9 +122,9 @@ mem_pct="$(awk '/MemTotal:/ { total=$2 } /MemAvailable:/ { avail=$2 } END { if (
 mapfile -t ai_usage < <(read_ai_usage)
 
 printf '%s\n%s\n%s\n%-5s %s %3s%%\n%-5s %s %3s%%\n%s\n' \
-  "${ai_usage[0]:-CLD5h ·······················  n/d}" \
-  "${ai_usage[1]:-CLD7d ·······················  n/d}" \
-  "${ai_usage[2]:-OAI7d ·······················  n/d}" \
+  "${ai_usage[0]:-CLD5h ░░░░░░░░░░░░░░░░░░░░░░░  n/d}" \
+  "${ai_usage[1]:-CLD7d ░░░░░░░░░░░░░░░░░░░░░░░  n/d}" \
+  "${ai_usage[2]:-OAI7d ░░░░░░░░░░░░░░░░░░░░░░░  n/d}" \
   "CPU" "$(bar "$cpu_pct")" "$cpu_pct" \
   "MEM" "$(bar "$mem_pct")" "$mem_pct" \
   "${ai_usage[3]:-reset C5 -- · C7 -- · O7 --}"
