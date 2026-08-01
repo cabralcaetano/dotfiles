@@ -88,8 +88,8 @@ read_ai_usage() {
 
   tmp="$(mktemp)"
   {
-    usage_bar_line "" "C5" "$a_session_pct"
-    usage_bar_line "" "C7" "$a_weekly_pct"
+    usage_bar_line "󰚩" "C5" "$a_session_pct"
+    usage_bar_line "󰚩" "C7" "$a_weekly_pct"
     if [[ -n "$o_session_pct" ]]; then
       usage_bar_line "" "O5" "$o_session_pct"
       o_reset_label="O5"
@@ -123,8 +123,8 @@ mem_pct="$(awk '/MemTotal:/ { total=$2 } /MemAvailable:/ { avail=$2 } END { if (
 mapfile -t ai_usage < <(read_ai_usage)
 
 printf '%s\n%s\n%s\n%s|%s|%s|%s%%\n%s|%s|%s|%s%%\n%s\n' \
-  "${ai_usage[0]:-|C5|░░░░░░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
-  "${ai_usage[1]:-|C7|░░░░░░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
+  "${ai_usage[0]:-󰚩|C5|░░░░░░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
+  "${ai_usage[1]:-󰚩|C7|░░░░░░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
   "${ai_usage[2]:-|O7|░░░░░░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
   "" "CPU" "$(bar "$cpu_pct")" "$cpu_pct" \
   "" "RAM" "$(bar "$mem_pct")" "$mem_pct" \
