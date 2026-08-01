@@ -610,7 +610,7 @@ ShellRoot {
     component WeatherBox: Rectangle {
         required property string weatherText
 
-        height: 220
+        height: 180
         radius: 10
         color: "#cc2a2a2e"
         border.color: "#26a0a0a0"
@@ -646,7 +646,7 @@ ShellRoot {
     component SystemBox: Rectangle {
         required property string systemText
 
-        height: 140
+        height: 180
         radius: 10
         color: "#cc2a2a2e"
         border.color: "#26a0a0a0"
