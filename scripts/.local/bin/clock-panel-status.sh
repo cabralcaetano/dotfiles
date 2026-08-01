@@ -11,18 +11,18 @@ read_cpu() {
 }
 
 bar() {
-  awk -v pct="$1" 'BEGIN {
+  awk -v pct="$1" -v width=16 'BEGIN {
     if (pct !~ /^[0-9.]+$/) {
-      print "░░░░░░░░░░";
+      for (i = 0; i < width; i++) printf "░";
       exit;
     }
 
-    filled = int((pct + 5) / 10);
+    filled = int((pct * width + 50) / 100);
     if (filled < 0) filled = 0;
-    if (filled > 10) filled = 10;
+    if (filled > width) filled = width;
 
     for (i = 0; i < filled; i++) printf "█";
-    for (i = filled; i < 10; i++) printf "░";
+    for (i = filled; i < width; i++) printf "░";
   }'
 }
 
@@ -118,8 +118,8 @@ mem_pct="$(awk '/MemTotal:/ { total=$2 } /MemAvailable:/ { avail=$2 } END { if (
 mapfile -t ai_usage < <(read_ai_usage)
 
 printf '%s\n%s\n%s\n%-5s %s %3s%%\n%-5s %s %3s%%\n' \
-  "${ai_usage[0]:-CLD5h ░░░░░░░░░░  n/d --}" \
-  "${ai_usage[1]:-CLD7d ░░░░░░░░░░  n/d --}" \
-  "${ai_usage[2]:-OAI7d ░░░░░░░░░░  n/d --}" \
+  "${ai_usage[0]:-CLD5h ░░░░░░░░░░░░░░░░  n/d --}" \
+  "${ai_usage[1]:-CLD7d ░░░░░░░░░░░░░░░░  n/d --}" \
+  "${ai_usage[2]:-OAI7d ░░░░░░░░░░░░░░░░  n/d --}" \
   "CPU" "$(bar "$cpu_pct")" "$cpu_pct" \
   "MEM" "$(bar "$mem_pct")" "$mem_pct"

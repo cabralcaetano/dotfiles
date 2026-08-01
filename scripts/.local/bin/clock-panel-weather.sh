@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-curl -fsS --max-time 4 'https://wttr.in/?format=j1' | python3 -c '
+if ! payload="$(curl -fsS --max-time 4 'https://wttr.in/?format=j1')"; then
+  printf '󰖐 Tempo indisponível\n'
+  exit 0
+fi
+
+python3 -c '
 import datetime as dt
 import json
 import sys
 
 try:
-    data = json.load(sys.stdin)
+    data = json.loads(sys.stdin.read())
     current = data["current_condition"][0]
     days = data["weather"]
 except Exception:
@@ -27,31 +32,63 @@ def short(text):
         "light rain": "rain",
         "moderate rain": "rain",
         "overcast": "cloudy",
+        "mist": "fog",
     }
-    return aliases.get(text.lower(), text[:9])
+    return aliases.get(text.lower(), text[:12])
+
+def temp_value(item):
+    raw = item.get("tempC") or item.get("temp_C") or "?"
+    try:
+        return int(round(float(raw)))
+    except Exception:
+        return None
+
+def signed_temp(value):
+    if value is None:
+        return "?°"
+    return f"{value:+d}°"
+
+def sparkline(values):
+    blocks = "▁▂▃▄▅▆▇█"
+    nums = [v for v in values if v is not None]
+    if not nums:
+        return " ".join("···" for _ in values)
+    low = min(nums)
+    high = max(nums)
+    if low == high:
+        return " ".join("▄▄▄" for _ in values)
+    chars = []
+    for value in values:
+        if value is None:
+            chars.append("·")
+        else:
+            idx = round((value - low) * (len(blocks) - 1) / (high - low))
+            chars.append(blocks[idx])
+    return " ".join(ch * 3 for ch in chars)
 
 now_hour = dt.datetime.now().hour
 hourlies = []
-for day in days[:2]:
+for day_index, day in enumerate(days[:2]):
     for hour in day.get("hourly", []):
         raw_time = int(hour.get("time", "0") or 0)
         hour_24 = raw_time // 100
-        if len(hourlies) == 0 and hour_24 < now_hour and day is days[0]:
+        if day_index == 0 and hour_24 < now_hour:
             continue
         hourlies.append((hour_24, hour))
 
-forecast = hourlies[:2]
-current_desc = desc(current)
-temp = current.get("temp_C", "?")
+forecast = hourlies[:6]
+current_desc = short(desc(current))
+temp = temp_value(current)
 humidity = current.get("humidity", "?")
 wind = current.get("windspeedKmph", "?")
 
 print(f"󰖐 {current_desc}")
-print(f" +{temp}° · 󰖎 {humidity}% · 󰖝 {wind}km/h")
+print(f" {signed_temp(temp)}  ·  󰖎 {humidity}%  ·  󰖝 {wind}km/h")
+
 if forecast:
-    parts = []
-    for hour, item in forecast:
-        item_temp = item.get("tempC", "?")
-        parts.append(f"{hour:02d}h +{item_temp}°")
-    print("󰅐 " + " · ".join(parts))
-'
+    hours = [f"{hour:02d}" for hour, _ in forecast]
+    temps = [temp_value(item) for _, item in forecast]
+    print("󰅐 " + " ".join(hours) + "h")
+    print(" " + " ".join(f"{value:+d}" if value is not None else " ?" for value in temps) + "°")
+    print("   " + sparkline(temps))
+' <<< "$payload"
