@@ -647,8 +647,8 @@ ShellRoot {
         Column {
             id: systemColumn
             anchors.fill: parent
-            anchors.margins: 10
-            spacing: 8
+            anchors.margins: 12
+            spacing: 4
             property var lines: systemText.length > 0 ? systemText.split("\n") : []
 
             Text {
@@ -667,8 +667,8 @@ ShellRoot {
                 Row {
                     id: systemRow
                     width: parent.width
-                    height: 18
-                    spacing: 3
+                    height: 16
+                    spacing: 1
                     property var fields: modelData.split("|")
 
                     Text {
@@ -692,7 +692,7 @@ ShellRoot {
 
                     Text {
                         id: pctText
-                        width: 36
+                        width: 34
                         color: "#ffffff"
                         font.family: "JetBrainsMono Nerd Font"
                         font.pixelSize: 13
