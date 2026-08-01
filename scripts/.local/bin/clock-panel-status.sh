@@ -43,7 +43,7 @@ usage_bar_line() {
   local used_pct="$2"
 
   if [[ ! "$used_pct" =~ ^[0-9]+$ ]]; then
-    printf '%-5s %s %4s\n' "$label" "$(bar "?")" "n/d"
+    printf '%s %s %4s\n' "$label" "$(bar "?")" "n/d"
     return
   fi
 
@@ -51,7 +51,7 @@ usage_bar_line() {
   if (( free_pct < 0 )); then free_pct=0; fi
   if (( free_pct > 100 )); then free_pct=100; fi
 
-  printf '%-5s %s %3s%%\n' "$label" "$(bar "$used_pct")" "$free_pct"
+  printf '%s %s %3s%%\n' "$label" "$(bar "$used_pct")" "$free_pct"
 }
 
 usagebar_text() {
@@ -87,14 +87,14 @@ read_ai_usage() {
 
   tmp="$(mktemp)"
   {
-    usage_bar_line "CLD5h" "$a_session_pct"
-    usage_bar_line "CLD7d" "$a_weekly_pct"
+    usage_bar_line "󰚩 C5" "$a_session_pct"
+    usage_bar_line "󰚩 C7" "$a_weekly_pct"
     if [[ -n "$o_session_pct" ]]; then
-      usage_bar_line "OAI5h" "$o_session_pct"
+      usage_bar_line " O5" "$o_session_pct"
       o_reset_label="O5"
       o_reset_value="$o_session_reset"
     else
-      usage_bar_line "OAI7d" "$o_weekly_pct"
+      usage_bar_line " O7" "$o_weekly_pct"
       o_reset_label="O7"
       o_reset_value="$o_weekly_reset"
     fi
@@ -121,10 +121,10 @@ mem_pct="$(awk '/MemTotal:/ { total=$2 } /MemAvailable:/ { avail=$2 } END { if (
 
 mapfile -t ai_usage < <(read_ai_usage)
 
-printf '%s\n%s\n%s\n%-5s %s %3s%%\n%-5s %s %3s%%\n%s\n' \
-  "${ai_usage[0]:-CLD5h ░░░░░░░░░░░░░░░░░░░░░░░  n/d}" \
-  "${ai_usage[1]:-CLD7d ░░░░░░░░░░░░░░░░░░░░░░░  n/d}" \
-  "${ai_usage[2]:-OAI7d ░░░░░░░░░░░░░░░░░░░░░░░  n/d}" \
-  "CPU" "$(bar "$cpu_pct")" "$cpu_pct" \
-  "MEM" "$(bar "$mem_pct")" "$mem_pct" \
-  "${ai_usage[3]:-reset C5 -- · C7 -- · O7 --}"
+printf '%s\n%s\n%s\n%s %s %3s%%\n%s %s %3s%%\n%s\n' \
+  "${ai_usage[0]:-󰚩 C5 ░░░░░░░░░░░░░░░░░░░░░░░  n/d}" \
+  "${ai_usage[1]:-󰚩 C7 ░░░░░░░░░░░░░░░░░░░░░░░  n/d}" \
+  "${ai_usage[2]:- O7 ░░░░░░░░░░░░░░░░░░░░░░░  n/d}" \
+  " CPU" "$(bar "$cpu_pct")" "$cpu_pct" \
+  " RAM" "$(bar "$mem_pct")" "$mem_pct" \
+  "${ai_usage[3]:-↻ C5 --   C7 --     O7 --}"
