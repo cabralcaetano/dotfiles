@@ -68,6 +68,7 @@
 
   // === RELÓGIO =================================
   "clock": {
+    "locale": "pt_BR.UTF-8",
     "format": "{:%a %d %H:%M:%S}",
     "interval": 1,
     "tooltip-format": "<tt>{calendar}</tt>",
@@ -155,6 +156,7 @@
   "scroll-step": 5,
   "on-click": "pavucontrol"
   },
+
 
   // === POWER ====================================
   "custom/power": {

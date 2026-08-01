@@ -549,6 +549,9 @@ Ver guia completo: [[ducking]]
 |---|---|
 | Overskride (Bluetooth) | Float, 800×500, centralizado |
 | pavucontrol (áudio) | Float, 800×500, centralizado |
+| btop via Waybar | Ghostty float, centralizado |
+| GNOME Calendar | Float, 882×575 solicitado; GTK aplica altura mínima real de 600px |
+| GNOME Calculator | Float, 380×540 solicitado; GTK aplica altura mínima real de ~616px |
 | Todas as janelas | suppress maximize events |
 | XWayland float sem classe | no_focus (fix drag) |
 
@@ -559,6 +562,7 @@ Ver guia completo: [[ducking]]
 | `workspace-float.sh` | Toggle de workspace float mode — flota todas as janelas abertas, novas janelas entram como float, e desativa warp do cursor no Alt+Tab. Lê/escreve `~/.config/hypr/workspace-float.conf` e recarrega o Hyprland. |
 | `alttab.sh` | Alt+Tab com `cyclenext` + `bringactivetotop`. Quando workspace float está ativo, preserva a posição do cursor em vez de deixar o Hyprland warpá-lo para o centro da janela. |
 | `clock-panel-toggle.sh` | Toggle do painel Quickshell do relógio via IPC. |
+| `waybar-calendar.sh` | Launcher/focus do GNOME Calendar usado pelo título do calendário no painel Quickshell. |
 | `clock-panel-status.sh` | Métricas do painel Quickshell: CPU, MEM, DISK e GPU em barras. |
 | `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell. |
 | `battery-conservation.sh` | Alterna `Long_Life`/`Standard`; em modo conservação o Lenovo para de carregar em 80%. |
@@ -571,7 +575,7 @@ Ver guia completo: [[ducking]]
 
 **Esquerda:** ícone Fedora, workspaces (i–x), nome da janela ativa
 
-**Centro:** relógio com calendário no tooltip; clique abre painel Quickshell com player, calendário, tempo e status
+**Centro:** relógio com calendário no tooltip; clique abre o painel Quickshell com player, calendário navegável, tempo e status; clicar no título do calendário (`julho 2026` etc.) abre/foca o GNOME Calendar flutuante
 
 **Direita:** CPU, RAM, rede, bluetooth, volume, perfil de energia, conservação da bateria, tray, hotspot invisível minúsculo no extremo direito para SwayNC
 

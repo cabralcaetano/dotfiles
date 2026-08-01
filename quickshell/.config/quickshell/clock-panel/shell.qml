@@ -8,6 +8,7 @@ ShellRoot {
 
     property bool panelVisible: false
     property date now: new Date()
+    property int calendarMonthOffset: 0
     property string mediaState: "Stopped"
     property string mediaTitle: "Nada tocando agora"
     property string mediaArtist: ""
@@ -73,17 +74,40 @@ ShellRoot {
     }
 
     function titleDate() {
-        return Qt.formatDate(now, "dddd, dd 'de' MMMM");
+        return now.toLocaleDateString(Qt.locale("pt_BR"), "dddd, dd 'de' MMMM");
+    }
+
+    function calendarDate() {
+        return new Date(now.getFullYear(), now.getMonth() + calendarMonthOffset, 1);
+    }
+
+    function resetCalendarMonth(): void {
+        calendarMonthOffset = 0;
+    }
+
+    function previousCalendarMonth(): void {
+        calendarMonthOffset--;
+    }
+
+    function nextCalendarMonth(): void {
+        calendarMonthOffset++;
+    }
+
+    function openCalendar(): void {
+        calendarProc.exec(calendarProc.command);
     }
 
     function monthTitle() {
-        return "󰃭 " + Qt.formatDate(now, "MMMM yyyy");
+        const date = calendarDate();
+        return "󰃭 " + date.toLocaleDateString(Qt.locale("pt_BR"), "MMMM yyyy");
     }
 
     function calendarCells() {
-        const year = now.getFullYear();
-        const month = now.getMonth();
+        const date = calendarDate();
+        const year = date.getFullYear();
+        const month = date.getMonth();
         const today = now.getDate();
+        const isCurrentMonth = year === now.getFullYear() && month === now.getMonth();
         const first = new Date(year, month, 1);
         const days = new Date(year, month + 1, 0).getDate();
         const offset = (first.getDay() + 6) % 7;
@@ -101,7 +125,7 @@ ShellRoot {
             cells.push({
                 text: String(day),
                 header: false,
-                today: day === today
+                today: isCurrentMonth && day === today
             });
         }
 
@@ -154,16 +178,25 @@ ShellRoot {
         stdout: StdioCollector { onStreamFinished: root.statusText = root.statusLabel(text) }
     }
 
+    Process {
+        id: calendarProc
+        command: ["/home/caetano/.local/bin/waybar-calendar.sh"]
+    }
+
     IpcHandler {
         target: "clockPanel"
 
         function toggle(): void {
             root.panelVisible = !root.panelVisible;
-            if (root.panelVisible) root.refreshAll();
+            if (root.panelVisible) {
+                root.resetCalendarMonth();
+                root.refreshAll();
+            }
         }
 
         function show(): void {
             root.panelVisible = true;
+            root.resetCalendarMonth();
             root.refreshAll();
         }
 
@@ -173,6 +206,22 @@ ShellRoot {
 
         function refresh(): void {
             root.refreshAll();
+        }
+
+        function previousMonth(): void {
+            root.previousCalendarMonth();
+        }
+
+        function nextMonth(): void {
+            root.nextCalendarMonth();
+        }
+
+        function resetMonth(): void {
+            root.resetCalendarMonth();
+        }
+
+        function openCalendar(): void {
+            root.openCalendar();
         }
     }
 
@@ -250,6 +299,9 @@ ShellRoot {
                                 width: parent.width
                                 title: root.monthTitle()
                                 cells: root.calendarCells()
+                                onPreviousClicked: root.previousCalendarMonth()
+                                onNextClicked: root.nextCalendarMonth()
+                                onOpenClicked: root.openCalendar()
                             }
                         }
 
@@ -390,8 +442,12 @@ ShellRoot {
     }
 
     component CalendarBox: Rectangle {
+        id: calendarBox
         required property string title
         required property var cells
+        signal previousClicked
+        signal nextClicked
+        signal openClicked
 
         height: 180
         radius: 10
@@ -402,16 +458,40 @@ ShellRoot {
         Column {
             anchors.fill: parent
             anchors.margins: 10
-            spacing: 10
+            spacing: 6
 
-            Text {
+            Row {
                 width: parent.width
-                color: "#a0a0a0"
-                font.family: "JetBrainsMono Nerd Font"
-                font.pixelSize: 12
-                font.bold: true
-                text: title
-                elide: Text.ElideRight
+                height: 18
+                spacing: 4
+
+                Text {
+                    width: parent.width - 44
+                    color: "#a0a0a0"
+                    font.family: "JetBrainsMono Nerd Font"
+                    font.pixelSize: 12
+                    font.bold: true
+                    text: title
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignLeft
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: calendarBox.openClicked()
+                    }
+                }
+
+                CalendarNavButton {
+                    label: "‹"
+                    onClicked: calendarBox.previousClicked()
+                }
+
+                CalendarNavButton {
+                    label: "›"
+                    onClicked: calendarBox.nextClicked()
+                }
             }
 
             Grid {
@@ -419,24 +499,69 @@ ShellRoot {
                 width: parent.width
                 columns: 7
                 columnSpacing: 3
-                rowSpacing: 5
+                rowSpacing: 2
 
                 Repeater {
                     model: cells
 
-                    Text {
+                    Rectangle {
                         required property var modelData
 
                         width: (calendarGrid.width - calendarGrid.columnSpacing * 6) / 7
-                        color: modelData.header ? "#deddda" : "#ffffff"
-                        horizontalAlignment: Text.AlignHCenter
-                        font.family: "JetBrainsMono Nerd Font"
-                        font.pixelSize: 13
-                        font.bold: modelData.header || modelData.today
-                        text: modelData.text
+                        height: 18
+                        color: "transparent"
+
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 18
+                            height: 18
+                            radius: 5
+                            color: modelData.today ? "#22a0a0a0" : "transparent"
+                            border.color: "#26a0a0a0"
+                            border.width: modelData.today ? 1 : 0
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            color: modelData.header ? "#deddda" : "#ffffff"
+                            horizontalAlignment: Text.AlignHCenter
+                            font.family: "JetBrainsMono Nerd Font"
+                            font.pixelSize: 12
+                            font.bold: modelData.header
+                            text: modelData.text
+                        }
                     }
                 }
             }
+        }
+    }
+
+    component CalendarNavButton: Rectangle {
+        property string label
+        signal clicked
+
+        width: 18
+        height: 18
+        radius: 5
+        color: navArea.containsMouse ? "#33a0a0a0" : "transparent"
+        border.color: "#26a0a0a0"
+        border.width: 1
+
+        Text {
+            anchors.centerIn: parent
+            color: "#deddda"
+            font.family: "JetBrainsMono Nerd Font"
+            font.pixelSize: 13
+            font.bold: true
+            text: label
+        }
+
+        MouseArea {
+            id: navArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: parent.clicked()
         }
     }
 

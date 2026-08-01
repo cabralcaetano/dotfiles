@@ -98,6 +98,14 @@ tuned-ppd
 # --- File manager ---
 nautilus
 
+# --- Apps GNOME usados fora do GNOME ---
+evolution
+gnome-calendar
+gnome-calculator
+gnome-control-center
+gnome-online-accounts
+gnome-online-accounts-gtk
+
 # --- Snapshots Btrfs (ver docs/arch-migration.md §1.2) ---
 snapper
 grub-btrfs
