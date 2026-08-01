@@ -3,6 +3,7 @@
 # Atualizado: 2026-07-11 · Arch Linux
 
 # --- Apps ---
+ai-usagebar-bin
 beekeeper-studio-bin
 brave-bin
 discord
