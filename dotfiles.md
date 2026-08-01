@@ -576,7 +576,7 @@ Ver guia completo: [[ducking]]
 
 **Esquerda:** ícone Fedora, workspaces (i–x), nome da janela ativa
 
-**Centro:** relógio com calendário no tooltip; clique abre o painel Quickshell com player, calendário navegável, tempo e status; clicar no título do calendário (`julho 2026` etc.) abre/foca o GNOME Calendar flutuante
+**Centro:** relógio com calendário no tooltip; clique abre o painel Quickshell com player, calendário navegável e cards separados de tempo/sistema; clicar no título do calendário (`julho 2026` etc.) abre/foca o GNOME Calendar flutuante e fecha o painel; clicar na capa do álbum abre/foca o Spotify e fecha o painel
 
 **Direita:** CPU, RAM, rede, bluetooth, volume, perfil de energia, conservação da bateria, tray, hotspot invisível minúsculo no extremo direito para SwayNC
 

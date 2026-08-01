@@ -95,10 +95,12 @@ ShellRoot {
 
     function openCalendar(): void {
         calendarProc.exec(calendarProc.command);
+        panelVisible = false;
     }
 
     function openSpotify(): void {
         spotifyProc.exec(spotifyProc.command);
+        panelVisible = false;
     }
 
     function monthTitle() {
@@ -318,10 +320,19 @@ ShellRoot {
                             }
                         }
 
-                        CombinedStatusBox {
+                        Column {
                             width: 230
-                            weatherText: root.weatherText
-                            systemText: root.statusText
+                            spacing: 10
+
+                            WeatherBox {
+                                width: parent.width
+                                weatherText: root.weatherText
+                            }
+
+                            SystemBox {
+                                width: parent.width
+                                systemText: root.statusText
+                            }
                         }
                     }
 
@@ -596,11 +607,10 @@ ShellRoot {
         }
     }
 
-    component CombinedStatusBox: Rectangle {
+    component WeatherBox: Rectangle {
         required property string weatherText
-        required property string systemText
 
-        height: 370
+        height: 220
         radius: 10
         color: "#cc2a2a2e"
         border.color: "#26a0a0a0"
@@ -630,12 +640,22 @@ ShellRoot {
                 wrapMode: Text.Wrap
                 text: weatherText
             }
+        }
+    }
 
-            Rectangle {
-                width: parent.width
-                height: 1
-                color: "#26a0a0a0"
-            }
+    component SystemBox: Rectangle {
+        required property string systemText
+
+        height: 140
+        radius: 10
+        color: "#cc2a2a2e"
+        border.color: "#26a0a0a0"
+        border.width: 1
+
+        Column {
+            anchors.fill: parent
+            anchors.margins: 10
+            spacing: 12
 
             Text {
                 width: parent.width
