@@ -11,7 +11,7 @@ move_when_ready() {
         sleep 1
         (( ++tries >= 30 )) && return 0
     done
-    hyprctl dispatch movetoworkspacesilent "$workspace,class:$class"
+    hyprctl dispatch "hl.dsp.window.move({ workspace = '${workspace} silent', window = 'class:${class}' })"
 }
 
 move_when_ready Spotify 3 &

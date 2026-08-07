@@ -55,9 +55,12 @@ stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship
 ## Estrutura do repo
 
 ```
-hypr/           → hyprland.conf, hypridle.conf, hyprlock.conf, autostart.sh,
+hypr/           → hyprland.lua, hypridle.conf, hyprlock.conf, autostart.sh,
                   hyprpaper.conf (referência — sistema usa swww),
-                  workspace-float.conf (estado do workspace 5 float mode)
+                  workspace-float.lua (estado do workspace 5 float mode)
+                  (hyprland.lua migrado de hyprland.conf em 2026-08-07 — hyprlang
+                  deprecated desde Hyprland 0.55, suporte removido no 0.57;
+                  original em legacy/hyprland-conf/)
 waybar/         → config.jsonc, style.css
 swaync/         → config.json, style.css
 quickshell/     → clock-panel/shell.qml
@@ -80,9 +83,31 @@ xkb/            → us-br.xkb, install.sh
 udev/deprecated → configs antigas (não instalar)
 ```
 
+## Obsidian (Home page)
+
+Perfil portátil do Obsidian mantido em `personal/projects/dotfiles/obsidian` para reaplicação do setup em outra máquina/reprodução:
+
+- `obsidian/plugins/homepage/data.json` mantém `Main Homepage` apontado para a nota `Home`, com `openOnStartup: true`, `openMode: "Replace all open notes"` e `refreshDataview: true`.
+- `obsidian/appearance.json` adiciona `home-dashboard` em `enabledCssSnippets` (junto com `github-dark-chart`).
+- `obsidian/snippets/home-dashboard.css` define estilo visual da nova Home:
+  - hero com salutation/time,
+  - grade de cards de atalhos,
+  - blocos de ação rápida,
+  - layout responsivo.
+
+No `wiki-ia` (vault raiz), a nota `Home.md` agora implementa a mesma UI base com:
+- `dataviewjs` de cabeçalho dinâmico,
+- `dataview` para notas recentes,
+- `TASK` para tasks pendentes de `work/_tasks.md` e `personal/_tasks.md`,
+- links rápidos para as áreas de conhecimento/trabalho/pessoal.
+
+Objetivo: manter visual mais limpo, com foco em navegação por categoria e status atual de execução.
+
+---
+
 ## Autostart (boot)
 
-Ordem de inicialização definida no `hyprland.conf`:
+Ordem de inicialização definida no `hyprland.lua`:
 
 | App | Workspace | Método |
 |---|---|---|
@@ -549,9 +574,6 @@ Ver guia completo: [[ducking]]
 |---|---|
 | Overskride (Bluetooth) | Float, 800×500, centralizado |
 | pavucontrol (áudio) | Float, 800×500, centralizado |
-| btop via Waybar | Ghostty float, centralizado |
-| GNOME Calendar | Float, 882×575 solicitado; GTK aplica altura mínima real de 600px |
-| GNOME Calculator | Float, 380×540 solicitado; GTK aplica altura mínima real de ~616px |
 | Todas as janelas | suppress maximize events |
 | XWayland float sem classe | no_focus (fix drag) |
 
@@ -562,10 +584,8 @@ Ver guia completo: [[ducking]]
 | `workspace-float.sh` | Toggle de workspace float mode — flota todas as janelas abertas, novas janelas entram como float, e desativa warp do cursor no Alt+Tab. Lê/escreve `~/.config/hypr/workspace-float.conf` e recarrega o Hyprland. |
 | `alttab.sh` | Alt+Tab com `cyclenext` + `bringactivetotop`. Quando workspace float está ativo, preserva a posição do cursor em vez de deixar o Hyprland warpá-lo para o centro da janela. |
 | `clock-panel-toggle.sh` | Toggle do painel Quickshell do relógio via IPC. |
-| `waybar-calendar.sh` | Launcher/focus do GNOME Calendar usado pelo título do calendário no painel Quickshell. |
-| `media-open-spotify.sh` | Clique na capa do álbum no painel Quickshell: foca o Spotify se já existir; senão abre `spotify-launcher`. |
-| `clock-panel-status.sh` | Card sistema do painel Quickshell: quotas Claude/OpenAI em barras largas (`CLD5h`, `CLD7d`, `OAI7d`) via `ai-usagebar` com cache de 5min, mais CPU e MEM. |
-| `clock-panel-weather.sh` | Tempo atual + 6 pontos de previsão em gráfico compacto de temperatura para o painel Quickshell. |
+| `clock-panel-status.sh` | Métricas do painel Quickshell: CPU, MEM, DISK e GPU em barras. |
+| `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell. |
 | `battery-conservation.sh` | Alterna `Long_Life`/`Standard`; em modo conservação o Lenovo para de carregar em 80%. |
 | `bt-codec-toggle.sh` | Bind de `Super+W` — alterna o profile do card `bluez_card.*` (auto-detectado via `pactl`) entre `a2dp-sink` (LDAC, hi-fi, sem mic) e `headset-head-unit` (mSBC, com mic para chamadas). Notificação via `notify-send`. Troca de profile inteira, não downgrade de codec — LDAC/AAC/SBC só existem no perfil A2DP (unidirecional); qualquer uso de microfone força o Bluetooth a trocar pra HFP, que só suporta CVSD/mSBC (limitação do protocolo Bluetooth Classic, não do fone). |
 | `tmux-close-window.sh` | Bind de `Ctrl+W` no tmux — empilha diretório + comando completo (via `/proc/<pid>/cmdline`) + nome da janela em `~/.tmux/closed-windows.stack` antes do `kill-window`. |
@@ -576,7 +596,7 @@ Ver guia completo: [[ducking]]
 
 **Esquerda:** ícone Fedora, workspaces (i–x), nome da janela ativa
 
-**Centro:** relógio com calendário no tooltip; clique abre o painel Quickshell com player, calendário navegável e cards separados de tempo/sistema; clicar no título do calendário (`julho 2026` etc.) abre/foca o GNOME Calendar flutuante e fecha o painel; clicar na capa do álbum abre/foca o Spotify e fecha o painel
+**Centro:** relógio com calendário no tooltip; clique abre painel Quickshell com player, calendário, tempo e status
 
 **Direita:** CPU, RAM, rede, bluetooth, volume, perfil de energia, conservação da bateria, tray, hotspot invisível minúsculo no extremo direito para SwayNC
 
@@ -593,7 +613,7 @@ Ver guia completo: [[ducking]]
 ## Notas abertas
 
 - **Menu WiFi sem atalho** — `wifi-menu.sh` continua no repo mas perdeu o bind `Super+W` (29/07/2026, substituído pelo toggle de codec Bluetooth). Rebindar em outra tecla se fizer falta.
-- `gesture = 3, horizontal, workspace` no hyprland.conf — sintaxe aparentemente não padrão mas funcionando; investigar se há forma correta
+- ~~`gesture = 3, horizontal, workspace` no hyprland.conf — sintaxe aparentemente não padrão mas funcionando; investigar se há forma correta~~ — resolvido na migração para Lua (2026-08-07): syntax oficial confirmada na wiki, `hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })` é a forma correta e documentada (substitui `gestures.workspace_swipe*`, removidos no novo sistema de gestures).
 - Starship sem `format` definido — usa default verboso (a discutir em sessão futura)
 - `hyprpaper.conf` no repo referencia `default_2.jpg` que não existe — arquivo criado como referência, sistema usa `swww`; ajustar path ou remover se não for usar hyprpaper
 - hyprshell `filter_by: [current_workspace]` atualizado mas ainda inativo (incompatibilidade Hyprland 0.55)

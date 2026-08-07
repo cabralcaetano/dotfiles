@@ -16,7 +16,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 | Kernel | 7.1.3-arch1-1 |
 | CPU | Intel Core i7-13620H (13ª geração) |
 | GPU | Intel UHD Graphics (Raptor Lake-P) |
-| WM | Hyprland 0.55.2 (Wayland) |
+| WM | Hyprland 0.56.1 (Wayland) — config em Lua (`hyprland.lua`) desde 2026-08-07 |
 | Shell | Zsh + Starship 1.24.2 |
 | Terminal | Ghostty 1.3.1 (principal) · Kitty (backup) |
 | Editor | VS Code 1.122.1 · Neovim v0.12.2 |
@@ -51,6 +51,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 - [Ferramentas instaladas](#ferramentas-instaladas)
 - [Apps (Flatpak)](#apps-flatpak)
 - [Stack de desenvolvimento](#stack-de-desenvolvimento)
+- [Agent harnesses e skills](#agent-harnesses-e-skills)
 
 ---
 
@@ -105,8 +106,11 @@ code --list-extensions | sort                > packages/vscode-extensions.txt
 bootstrap.sh    → instalação idempotente (pacotes, flatpaks, plugins zsh/tmux, stow)
 packages/       → manifestos reproduzíveis: pacman.txt, aur.txt, dnf.txt,
                   flatpak.txt, vscode-extensions.txt
-hypr/           → hyprland.conf, hypridle.conf, hyprlock.conf,
-                  autostart.sh, workspace-float.conf
+hypr/           → hyprland.lua, hypridle.conf, hyprlock.conf,
+                  autostart.sh, workspace-float.lua
+                  (hyprland.lua migrado de hyprland.conf em 2026-08-07 — hyprlang
+                  deprecated desde Hyprland 0.55, suporte removido no 0.57;
+                  original em legacy/hyprland-conf/)
 waybar/         → config.jsonc, style.css
 swaync/         → config.json, style.css
 quickshell/     → clock-panel/shell.qml
@@ -132,13 +136,14 @@ greetd/         → legado/rollback system-wide manual
 reflector/      → reflector.conf (mirrorlist Brasil, sort rate) + reflector.timer manual
 legacy/         → configs antigas úteis, mas fora do fluxo ativo
 ducking/        → guia completo do audio ducking
+claude/         → skills pessoais do Claude Code / harnesses de agente; ver docs/agent-harnesses-and-skills.md
 ```
 
 ---
 
 ## Autostart
 
-Ordem de inicialização definida no `hyprland.conf`:
+Ordem de inicialização definida no `hyprland.lua`:
 
 | App | Workspace | Método |
 |---|---|---|
@@ -435,7 +440,7 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 
 **Centro:** relógio (clique abre painel Quickshell com player, calendário, tempo e status; tooltip mantém calendário nativo)
 
-**Direita:** drawer da tray (ícone `<` revela velocidade de rede + tray ao clicar) · CPU · RAM · rede · bluetooth · volume · perfil de energia · conservação da bateria · hotspot invisível minúsculo no extremo direito para SwayNC
+**Direita:** CPU · RAM · rede · bluetooth · volume · perfil de energia · conservação da bateria · tray · hotspot invisível minúsculo no extremo direito para SwayNC
 
 ---
 
@@ -539,6 +544,19 @@ stow --target="$HOME" desktop-apps
 |---|---|---|
 | VS Code | 1.122.1 | Claude Code, Python, Prettier, ESLint, Error Lens, Live Server |
 | Neovim | 0.12.2 | — |
+
+---
+
+## Agent harnesses e skills
+
+Inventário e contrato operacional em [`docs/agent-harnesses-and-skills.md`](docs/agent-harnesses-and-skills.md).
+
+| Harness / skill | Estado |
+|---|---|
+| Claude Code | Skills versionadas em `claude/.claude/skills/` |
+| Oh My Pi (`omp`) | Harness principal neste ambiente; configs ativas em `~/.omp/agent/` |
+| OpenCode (`opencode`) | PATH versionado no `zsh/.zshrc` (`~/.opencode/bin`) |
+| `teachflow-board` | Nome técnico legado; agora opera só tasks/cards do Horizon CRM e sincroniza Kanban + `.md` locais |
 
 ---
 
