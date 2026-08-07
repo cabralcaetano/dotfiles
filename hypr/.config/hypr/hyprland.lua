@@ -317,6 +317,15 @@ hl.window_rule({
     center = true,
 })
 
+-- Bitwarden abre flutuante por padrão, mesmo tamanho do GNOME Calendar
+hl.window_rule({
+    name   = "bitwarden-float",
+    match  = { class = "^(Bitwarden)$" },
+    float  = true,
+    size   = {882, 575},
+    center = true,
+})
+
 -- Suprime eventos de maximizar em todas as janelas
 hl.window_rule({
     name           = "suppress-maximize-events",

@@ -4,4 +4,3 @@
 hl.window_rule({ match = { workspace = "1" }, float = true })
 hl.window_rule({ match = { workspace = "5" }, float = true })
 hl.window_rule({ match = { workspace = "3" }, float = true })
-hl.window_rule({ match = { workspace = "2" }, float = true })
