@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Thin client for the Teachflow/HorizonCRM Activity Board APIs.
-# Teachflow auth: better-auth email/password login, session cookie cached to disk and reused.
-# Horizon auth: JWT email/password login, access token cached to disk and refreshed on 401.
+# Thin client for the Horizon CRM Activity Board API.
+# Legacy Teachflow support exists in code only; this skill defaults to Horizon and blocks
+# Teachflow unless TEAM_BOARD_ALLOW_TEACHFLOW=1 is set explicitly.
 set -euo pipefail
 
-BOARD_TARGET="${TEAM_BOARD_TARGET:-teachflow}" # teachflow | horizon
+BOARD_TARGET="${TEAM_BOARD_TARGET:-horizon}" # horizon | teachflow (legacy, guarded)
 
 case "$BOARD_TARGET" in
   teachflow)
@@ -24,6 +24,11 @@ case "$BOARD_TARGET" in
     exit 1
     ;;
 esac
+
+if [[ "$BOARD_TARGET" == "teachflow" && "${TEAM_BOARD_ALLOW_TEACHFLOW:-}" != "1" ]]; then
+  echo "Erro: esta skill agora é Horizon CRM only. Para uso legado Teachflow, defina TEAM_BOARD_ALLOW_TEACHFLOW=1 explicitamente." >&2
+  exit 1
+fi
 
 login_teachflow() {
   if [[ -z "${TEACHFLOW_ADMIN_EMAIL:-}" || -z "${TEACHFLOW_ADMIN_PASSWORD:-}" ]]; then
@@ -211,8 +216,8 @@ usage() {
 uso: tb.sh <comando> [args]
 
 alvo:
-  TEAM_BOARD_TARGET=teachflow  usa o board real do Teachflow/CodeUp (default)
-  TEAM_BOARD_TARGET=horizon    usa o Activity Board do Horizon CRM
+  TEAM_BOARD_TARGET=horizon    usa o Activity Board do Horizon CRM (default)
+  TEAM_BOARD_TARGET=teachflow  legado Teachflow/CodeUp; bloqueado sem TEAM_BOARD_ALLOW_TEACHFLOW=1
 
   login                                   força novo login e recria cookie/token
   list [query_string]                     lista cards do board; filtra com "status=em_andamento&limit=10&offset=0"
@@ -232,17 +237,17 @@ alvo:
   profiles [query_string]                 Teachflow: perfis aprovados; Horizon: alias de users
   users [query_string]                    Horizon: usuários internos; Teachflow: alias de profiles
 
-JSON Teachflow usa snake_case:
-  create {"title":"...","description":"...","criticality":"media","status":"backlog","member_user_ids":["..."]}
-  member-add {"card_id":"...","user_id":"..."}
-  checklist-add {"card_id":"...","title":"..."}
-  item-add {"checklist_id":"...","title":"..."}
-
 JSON Horizon CRM usa camelCase:
   create {"title":"...","description":"...","criticality":"media","status":"backlog","memberUserIds":["..."]}
   member-add {"cardId":"...","userId":"..."}
   checklist-add {"cardId":"...","title":"..."}
   item-add {"checklistId":"...","title":"..."}
+
+JSON Teachflow legado usa snake_case e só deve ser usado fora desta skill, com TEAM_BOARD_ALLOW_TEACHFLOW=1:
+  create {"title":"...","description":"...","criticality":"media","status":"backlog","member_user_ids":["..."]}
+  member-add {"card_id":"...","user_id":"..."}
+  checklist-add {"card_id":"...","title":"..."}
+  item-add {"checklist_id":"...","title":"..."}
 
 status válidos (colunas do kanban, nessa ordem):
   backlog, priorizados, em_andamento, em_aprovacao, reprovados, aprovados, bloqueados, concluidos
