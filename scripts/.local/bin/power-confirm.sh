@@ -32,7 +32,16 @@ CHOICE=$(printf 'Cancelar\n%s\n' "$CONFIRM" | fuzzel --dmenu --prompt "$PROMPT" 
 
 case "$CHOICE" in
   "$CONFIRM")
-    "${COMMAND[@]}"
+    LOG="$XDG_RUNTIME_DIR/power-confirm.log"
+    {
+      echo "$(date -Iseconds) action=$ACTION cmd=${COMMAND[*]}"
+      "${COMMAND[@]}"
+      STATUS=$?
+      echo "$(date -Iseconds) action=$ACTION exit=$STATUS"
+    } >>"$LOG" 2>&1
+    if [ "${STATUS:-0}" -ne 0 ] && command -v notify-send >/dev/null 2>&1; then
+      notify-send -u critical "Energia" "Falha ao executar: ${COMMAND[*]} (exit $STATUS). Ver $LOG"
+    fi
     ;;
   *)
     exit 0
