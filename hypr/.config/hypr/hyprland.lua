@@ -317,12 +317,12 @@ hl.window_rule({
     center = true,
 })
 
--- Bitwarden abre flutuante por padrão, no tamanho mínimo real do app (882x600)
+-- Bitwarden abre flutuante por padrão, 1000x800
 hl.window_rule({
     name   = "bitwarden-float",
     match  = { class = "^(Bitwarden)$" },
     float  = true,
-    size   = {882, 600},
+    size   = {1000, 800},
     center = true,
 })
 
