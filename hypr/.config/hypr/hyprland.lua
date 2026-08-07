@@ -317,12 +317,12 @@ hl.window_rule({
     center = true,
 })
 
--- Bitwarden abre flutuante por padrão, mesmo tamanho do GNOME Calendar
+-- Bitwarden abre flutuante por padrão, no tamanho mínimo real do app (882x600)
 hl.window_rule({
     name   = "bitwarden-float",
     match  = { class = "^(Bitwarden)$" },
     float  = true,
-    size   = {882, 575},
+    size   = {882, 600},
     center = true,
 })
 
