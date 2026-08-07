@@ -94,3 +94,4 @@ export PATH="$HOME/.bun/bin:$PATH"
 
 # opencode
 export PATH="$HOME/.opencode/bin:$PATH"
+export OMP_ZSHRC_PROBE=hit
