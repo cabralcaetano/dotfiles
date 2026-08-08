@@ -1,3 +1,6 @@
+/* === TEMA (cores) — gerado por theme-set.sh, ver themes/ no root do repo == */
+@import url("colors.css");
+
 /* === GLOBAL ==================================== */
 * {
   font-family: "JetBrainsMono Nerd Font", monospace;
@@ -9,12 +12,12 @@
 
 /* === CONTROL CENTER ============================ */
 .control-center {
-  background-color: alpha(#1d1d20, 0.92);
-  border: 1px solid rgba(160, 160, 160, 0.2);
+  background-color: alpha(@background, 0.92);
+  border: 1px solid alpha(@accent, 0.2);
   border-radius: 8px;
   padding: 10px;
   margin: 8px;
-  color: #ffffff;
+  color: @foreground;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
 }
 
@@ -24,25 +27,25 @@
 }
 
 .notification {
-  background-color: alpha(#2a2a2e, 0.95);
-  border: 1px solid rgba(160, 160, 160, 0.15);
+  background-color: alpha(@surface, 0.95);
+  border: 1px solid alpha(@accent, 0.15);
   border-radius: 8px;
   padding: 10px 12px;
-  color: #ffffff;
+  color: @foreground;
 }
 
 .notification:hover {
-  background-color: alpha(#323236, 0.95);
-  border-color: rgba(160, 160, 160, 0.35);
+  background-color: alpha(@surface_hover, 0.95);
+  border-color: alpha(@accent, 0.35);
 }
 
 /* === URGÊNCIA ================================== */
 .notification.critical {
-  border-left: 2px solid rgba(255, 100, 100, 0.8);
+  border-left: 2px solid alpha(@error, 0.8);
 }
 
 .notification.normal {
-  border-left: 2px solid rgba(160, 160, 160, 0.5);
+  border-left: 2px solid alpha(@accent, 0.5);
 }
 
 .notification.low {
@@ -62,24 +65,24 @@
 .notification-summary {
   font-weight: bold;
   font-size: 13px;
-  color: #ffffff;
+  color: @foreground;
 }
 
 .notification-body {
   font-size: 12px;
-  color: #a0a0a0;
+  color: @accent;
   margin-top: 2px;
 }
 
 .notification-time {
   font-size: 11px;
-  color: rgba(160, 160, 160, 0.6);
+  color: alpha(@accent, 0.6);
 }
 
 /* === BOTÃO FECHAR ============================== */
 .close-button {
   background-color: transparent;
-  color: rgba(160, 160, 160, 0.5);
+  color: alpha(@accent, 0.5);
   border-radius: 4px;
   min-width: 18px;
   min-height: 18px;
@@ -87,72 +90,72 @@
 }
 
 .close-button:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background-color: alpha(@foreground, 0.08);
+  color: @foreground;
 }
 
 /* === BOTÕES DE AÇÃO ============================ */
 .notification-action-button {
-  background-color: rgba(160, 160, 160, 0.1);
+  background-color: alpha(@accent, 0.1);
   border-radius: 6px;
-  color: #a0a0a0;
+  color: @accent;
   padding: 4px 10px;
   margin: 4px 2px 0;
   font-size: 12px;
 }
 
 .notification-action-button:hover {
-  background-color: rgba(160, 160, 160, 0.2);
-  color: #ffffff;
+  background-color: alpha(@accent, 0.2);
+  color: @foreground;
 }
 
 /* === CABEÇALHO DO CONTROL CENTER =============== */
 .widget-title {
   margin-bottom: 8px;
   padding-bottom: 6px;
-  border-bottom: 1px solid rgba(160, 160, 160, 0.15);
+  border-bottom: 1px solid alpha(@accent, 0.15);
 }
 
 .widget-title > label {
   font-weight: bold;
   font-size: 13px;
-  color: #ffffff;
+  color: @foreground;
 }
 
 .widget-title > button {
   background-color: transparent;
-  color: #a0a0a0;
+  color: @accent;
   border-radius: 4px;
   padding: 2px 8px;
   font-size: 12px;
 }
 
 .widget-title > button:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background-color: alpha(@foreground, 0.08);
+  color: @foreground;
 }
 
 /* === WIDGET DND ================================ */
 .widget-dnd {
-  background-color: alpha(#2a2a2e, 0.8);
-  border: 1px solid rgba(160, 160, 160, 0.15);
+  background-color: alpha(@surface, 0.8);
+  border: 1px solid alpha(@accent, 0.15);
   border-radius: 8px;
   padding: 8px 12px;
   margin-bottom: 6px;
-  color: #ffffff;
+  color: @foreground;
 }
 
 .widget-dnd > switch {
   border-radius: 20px;
-  background-color: rgba(160, 160, 160, 0.2);
+  background-color: alpha(@accent, 0.2);
 }
 
 .widget-dnd > switch:checked {
-  background-color: #a0a0a0;
+  background-color: @accent;
 }
 
 .widget-dnd > switch slider {
-  background-color: #ffffff;
+  background-color: @foreground;
   border-radius: 20px;
 }
 
@@ -163,46 +166,46 @@
 
 .widget-label > label {
   font-weight: bold;
-  color: #ffffff;
+  color: @foreground;
   font-size: 13px;
 }
 
 
 /* === WIDGET VOLUME ============================= */
 .widget-volume {
-  background-color: alpha(#2a2a2e, 0.8);
-  border: 1px solid rgba(160, 160, 160, 0.15);
+  background-color: alpha(@surface, 0.8);
+  border: 1px solid alpha(@accent, 0.15);
   border-radius: 8px;
   padding: 8px 12px;
   margin-bottom: 6px;
-  color: #ffffff;
+  color: @foreground;
 }
 
 .widget-volume > box > button {
   background-color: transparent;
-  color: #a0a0a0;
+  color: @accent;
   border-radius: 4px;
   padding: 2px 6px;
 }
 
 .widget-volume > box > button:hover {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.08);
+  color: @foreground;
+  background-color: alpha(@foreground, 0.08);
 }
 
 scale trough {
-  background-color: rgba(160, 160, 160, 0.15);
+  background-color: alpha(@accent, 0.15);
   border-radius: 10px;
   min-height: 4px;
 }
 
 scale highlight {
-  background-color: #a0a0a0;
+  background-color: @accent;
   border-radius: 10px;
 }
 
 scale slider {
-  background-color: #ffffff;
+  background-color: @foreground;
   border-radius: 50%;
   min-width: 12px;
   min-height: 12px;
@@ -225,17 +228,17 @@ scale slider {
 
 /* === BUTTONS GRID ============================== */
 .widget-buttons-grid {
-  background-color: alpha(#2a2a2e, 0.8);
-  border: 1px solid rgba(160, 160, 160, 0.15);
+  background-color: alpha(@surface, 0.8);
+  border: 1px solid alpha(@accent, 0.15);
   border-radius: 8px;
   padding: 8px;
   margin-bottom: 6px;
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button {
-  background-color: rgba(160, 160, 160, 0.1);
+  background-color: alpha(@accent, 0.1);
   border-radius: 6px;
-  color: #a0a0a0;
+  color: @accent;
   font-size: 18px;
   min-width: 48px;
   min-height: 48px;
@@ -243,6 +246,6 @@ scale slider {
 }
 
 .widget-buttons-grid > flowbox > flowboxchild > button:hover {
-  background-color: rgba(160, 160, 160, 0.2);
-  color: #ffffff;
+  background-color: alpha(@accent, 0.2);
+  color: @foreground;
 }

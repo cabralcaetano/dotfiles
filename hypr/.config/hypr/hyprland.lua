@@ -19,6 +19,9 @@ local discord     = "discord"
 local spotify     = "spotify-launcher"
 local obsidian    = "flatpak run md.obsidian.Obsidian"
 
+-- === TEMA (cores) — gerado por theme-set.sh, ver themes/ no root do repo ===
+local theme_colors = dofile(os.getenv("HOME") .. "/.config/hypr/colors.lua")
+
 -- === AUTOSTART — SISTEMA E APLICATIVOS ===========
 hl.on("hyprland.start", function()
     hl.exec_cmd("fcitx5 --replace -d")
@@ -57,12 +60,12 @@ hl.env("XMODIFIERS", "@im=fcitx")
 -- === APARÊNCIA / INPUT / XWAYLAND / MISC =========
 hl.config({
     general = {
-        gaps_in  = 4,
+        gaps_in  = 3.5,
         gaps_out = 6.5,
 
         border_size = 2,
-        ["col.active_border"]   = "rgba(a0a0a0ff)",
-        ["col.inactive_border"] = "rgba(1d1d20ff)",
+        ["col.active_border"]   = theme_colors.active_border,
+        ["col.inactive_border"] = theme_colors.inactive_border,
 
         resize_on_border = false,
         allow_tearing    = false,

@@ -1,0 +1,8 @@
+/* Gerado por theme-set.sh — NÃO editar à mão, sobrescrito a cada troca de tema. */
+/* Fonte: themes/<tema>/colors.toml */
+@define-color background #1d1d20;
+@define-color surface #2a2a2e;
+@define-color surface_hover #323236;
+@define-color foreground #ffffff;
+@define-color accent #a0a0a0;
+@define-color error #ff6464;

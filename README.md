@@ -44,6 +44,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 - [Perfil de energia](#perfil-de-energia)
 - [Audio Ducking](#audio-ducking)
 - [Cursor](#cursor)
+- [Temas](#temas)
 - [Teclado](#teclado)
 - [Window Rules](#window-rules)
 - [Scripts customizados](#scripts-customizados)
@@ -124,7 +125,8 @@ starship/       → starship.toml
 scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
                   wifi-menu.sh, wallpaper.sh, wallpaper-toggle.sh,
                   screenshot.sh, workspace-float.sh, alttab.sh,
-                  battery-conservation.sh, clock-panel.sh/clock-panel.py
+                  battery-conservation.sh, clock-panel.sh/clock-panel.py,
+                  theme-set.sh (ver themes/README.md)
 gtk-3/          → settings.ini
 gtk-4/          → settings.ini + accent_color cinza
 qt6ct/          → qt6ct.conf + colors/dotfiles-dark.conf (tema dark para apps Qt6)
@@ -134,8 +136,8 @@ wlogout/        → layout, style.css
 sddm/           → referência system-wide manual do SDDM/SilentSDDM
 greetd/         → legado/rollback system-wide manual
 reflector/      → reflector.conf (mirrorlist Brasil, sort rate) + reflector.timer manual
-legacy/         → configs antigas úteis, mas fora do fluxo ativo
 ducking/        → guia completo do audio ducking
+themes/         → theme-set (troca de paleta system-wide, normal/catppuccin); ver themes/README.md
 claude/         → skills pessoais do Claude Code / harnesses de agente; ver docs/agent-harnesses-and-skills.md
 ```
 
@@ -388,6 +390,28 @@ flatpak override --user \
   --env=XCURSOR_SIZE=24 \
   <app-id>
 ```
+
+---
+
+## Temas
+
+`theme-set.sh <tema>` troca a paleta de cor do sistema inteiro — Hyprland
+(borda), Hyprlock, Ghostty, Fuzzel, Waybar, SwayNC e btop — regenerando um
+arquivo de cor dedicado por app (incluído/importado pelo config real, sem
+tocar no resto) a partir de `themes/<tema>/colors.toml`. Mecanismo adaptado
+do `omarchy-theme-set` do Omarchy, mas standalone (sem Walker/Elephant/CLI
+de outra distro).
+
+```bash
+theme-set.sh normal        # paleta monocromática atual (Adwaita dark)
+theme-set.sh catppuccin    # Catppuccin Mocha
+```
+
+Sem bind ainda — só CLI, aguardando decisão do seletor visual (fuzzel vs
+rofi vs waypaper). Registro de decisão/contexto (por que dois "foreground",
+por que btop não é templatizado, verificação feita) em
+[`docs/theme-switching.md`](docs/theme-switching.md); referência técnica de
+schema/templates/como adicionar tema em [`themes/README.md`](themes/README.md).
 
 ---
 

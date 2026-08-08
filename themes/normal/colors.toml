@@ -1,0 +1,35 @@
+# Tema "normal" — paleta monocromática atual (Adwaita dark), extraída 1:1 dos
+# configs reais em 2026-08-07. Byte-perfect com o estado anterior à existência
+# do theme-set: aplicar este tema não muda nenhum pixel do sistema atual.
+
+# UI (Hyprland borders, Waybar, SwayNC, Hyprlock, Fuzzel)
+background    = "#1d1d20"
+surface       = "#2a2a2e"
+surface_hover = "#323236"
+foreground    = "#ffffff"
+accent        = "#a0a0a0"
+error         = "#ff6464"
+
+# Terminal (Ghostty) — off-white mais suave que o foreground de UI
+term_foreground           = "#deddda"
+term_cursor               = "#deddda"
+term_selection_background = "#303030"
+term_selection_foreground = "#c0bfbc"
+
+# Paleta ANSI de 16 cores (Ghostty) — Adwaita dark
+color0  = "#1d1d20"
+color1  = "#ed333b"
+color2  = "#57e389"
+color3  = "#ff7800"
+color4  = "#62a0ea"
+color5  = "#9141ac"
+color6  = "#5bc8af"
+color7  = "#deddda"
+color8  = "#9a9996"
+color9  = "#f66151"
+color10 = "#8ff0a4"
+color11 = "#ffa348"
+color12 = "#99c1f1"
+color13 = "#dc8add"
+color14 = "#93ddc2"
+color15 = "#f6f5f4"

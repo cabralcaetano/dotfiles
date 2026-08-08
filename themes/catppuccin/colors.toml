@@ -1,0 +1,35 @@
+# Tema "catppuccin" — flavor Mocha, paleta oficial (catppuccin.com/palette).
+# Paleta ANSI/btop conferida contra os temas oficiais catppuccin/btop e
+# catppuccin/alacritty.
+
+# UI (Hyprland borders, Waybar, SwayNC, Hyprlock, Fuzzel)
+background    = "#1e1e2e" # base
+surface       = "#313244" # surface0
+surface_hover = "#45475a" # surface1
+foreground    = "#cdd6f4" # text
+accent        = "#cba6f7" # mauve
+error         = "#f38ba8" # red
+
+# Terminal (Ghostty)
+term_foreground           = "#cdd6f4" # text
+term_cursor               = "#f5e0dc" # rosewater
+term_selection_background = "#585b70" # surface2
+term_selection_foreground = "#cdd6f4" # text
+
+# Paleta ANSI de 16 cores (Ghostty) — mapeamento oficial Catppuccin Mocha
+color0  = "#45475a" # surface1
+color1  = "#f38ba8" # red
+color2  = "#a6e3a1" # green
+color3  = "#f9e2af" # yellow
+color4  = "#89b4fa" # blue
+color5  = "#f5c2e7" # pink
+color6  = "#94e2d5" # teal
+color7  = "#bac2de" # subtext1
+color8  = "#585b70" # surface2
+color9  = "#f38ba8" # red
+color10 = "#a6e3a1" # green
+color11 = "#f9e2af" # yellow
+color12 = "#89b4fa" # blue
+color13 = "#f5c2e7" # pink
+color14 = "#94e2d5" # teal
+color15 = "#a6adc8" # subtext0

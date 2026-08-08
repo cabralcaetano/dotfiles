@@ -1,3 +1,6 @@
+/* === TEMA (cores) — gerado por theme-set.sh, ver themes/ no root do repo == */
+@import url("colors.css");
+
 /* === GLOBAL ==================================== */
 * {
   font-family: "JetBrainsMono Nerd Font", monospace;
@@ -7,9 +10,9 @@
 
 /* === BAR ======================================= */
 window#waybar {
-  background-color: alpha(#1d1d20, 0.85);
+  background-color: alpha(@background, 0.85);
   border-radius: 0;
-  color: #ffffff;
+  color: @foreground;
   padding: 2px 0 2px 12px;
   transition: 0.3s all;
 }
@@ -18,13 +21,13 @@ window#waybar {
 .modules-left,
 .modules-center {
   padding: 0 1rem;
-  color: #ffffff;
+  color: @foreground;
   border: none;
 }
 
 .modules-right {
   padding: 0;
-  color: #ffffff;
+  color: @foreground;
   border: none;
 }
 
@@ -41,7 +44,7 @@ window#waybar {
 /* === JANELA ATIVA ============================== */
 #window {
   font-weight: bold;
-  color: #ffffff;
+  color: @foreground;
   transition: all 0.3s ease;
 }
 
@@ -53,20 +56,20 @@ window#waybar {
 }
 
 #workspaces button {
-  color: #ffffff;
+  color: @foreground;
   border-radius: 0;
   transition: 0.2s ease-out;
   border-bottom: 1px solid transparent;
 }
 
 #workspaces button.active {
-  color: #a0a0a0;
-  border-bottom: 1px solid #a0a0a0;
+  color: @accent;
+  border-bottom: 1px solid @accent;
 }
 
 #workspaces button.urgent {
-  color: #ffffff;
-  border-bottom: 1px solid #ffffff;
+  color: @foreground;
+  border-bottom: 1px solid @foreground;
 }
 
 /* === TRAY DRAWER ================================ */
@@ -77,12 +80,12 @@ window#waybar {
 #custom-tray-arrow {
   font-size: 15px;
   font-weight: bold;
-  color: #ffffff;
+  color: @foreground;
   padding: 0 6px;
 }
 
 #tray {
-  color: #ffffff;
+  color: @foreground;
   padding: 0 6px;
 }
 
@@ -100,7 +103,7 @@ window#waybar {
 #network-speed {
   font-size: 9px;
   font-weight: 700;
-  color: #ffffff;
+  color: @foreground;
   padding: 0 8px;
 }
 
@@ -111,7 +114,7 @@ window#waybar {
 }
 
 #clock:hover {
-  color: #a0a0a0;
+  color: @accent;
 }
 
 /* === BATERIA =================================== */
@@ -124,7 +127,7 @@ window#waybar {
 /* === REDE ====================================== */
 #network {
   font-weight: 700;
-  color: #ffffff;
+  color: @foreground;
   padding-right: 6px;
 }
 
@@ -132,7 +135,7 @@ window#waybar {
 #pulseaudio {
   font-weight: 700;
   font-size: 16px;
-  color: #ffffff;
+  color: @foreground;
   padding-right: 2px;
 }
 
@@ -143,7 +146,7 @@ window#waybar {
 }
 
 #custom-power:hover {
-  background-color: rgba(255,255,255,0.1);
+  background-color: alpha(@foreground, 0.1);
 }
 
 /* === CPU / MEMÓRIA ============================== */
@@ -151,14 +154,14 @@ window#waybar {
 #memory {
   font-weight: 700;
   font-size: 13px;
-  color: #ffffff;
+  color: @foreground;
 }
 
 /* === PERFIL DE ENERGIA ========================== */
 #custom-power-profile {
   font-size: 14px;
   font-weight: 700;
-  color: #ffffff;
+  color: @foreground;
   padding-right: 4px;
 }
 
@@ -166,6 +169,6 @@ window#waybar {
 #custom-battery-conservation {
   font-size: 14px;
   font-weight: 700;
-  color: #ffffff;
+  color: @foreground;
   padding-right: 4px;
 }
