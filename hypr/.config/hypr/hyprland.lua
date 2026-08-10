@@ -193,6 +193,12 @@ hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(spotify))
 
+-- Tela cheia
+hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({
+    mode   = "fullscreen",
+    action = "toggle",
+}))
+
 -- Trocar posição das janelas
 hl.bind(mainMod .. " + SHIFT + left",  hl.dsp.window.swap({ direction = "l" }))
 hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.swap({ direction = "r" }))

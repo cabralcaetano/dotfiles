@@ -175,6 +175,7 @@ Sequência do `hypridle.conf`:
 | Super+J | Alterna split |
 | Super+Setas | Move foco |
 | Super+Shift+Setas | Swap janelas |
+| Super+F | Tela cheia (toggle) |
 
 **Sistema**
 

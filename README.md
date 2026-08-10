@@ -192,6 +192,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Super+J | Alterna split |
 | Super+Setas | Move foco |
 | Super+Shift+Setas | Swap janelas |
+| Super+F | Tela cheia (toggle) |
 | Super+LMB | Move janela (mouse) |
 | Super+RMB | Redimensiona janela (mouse) |
 
