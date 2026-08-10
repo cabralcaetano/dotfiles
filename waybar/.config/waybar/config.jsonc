@@ -40,6 +40,7 @@
   // === WORKSPACES ==============================
   "hyprland/workspaces": {
     "disable-scroll": false,
+    "tooltip": false,
     "format": "{icon}",
     "format-icons": {
       "1": "i",
@@ -59,6 +60,7 @@
   "hyprland/window": {
     "separate-outputs": true,
     "max-length": 20,
+    "tooltip": false,
     "format": "{class}",
     "rewrite": {
       "^com\\.mitchellh\\.ghostty$": "ghostty"
