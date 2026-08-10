@@ -21,7 +21,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 | Terminal | Ghostty 1.3.1 (principal) · Kitty (backup) |
 | Editor | VS Code 1.122.1 · Neovim v0.12.2 |
 | Launcher | Fuzzel |
-| Bar / painel | Waybar 0.15.0 + Quickshell 0.3.0 |
+| Bar / painel | Waybar (git, r959+) + Quickshell 0.3.0 |
 | Notificações | SwayNC |
 | Lockscreen | Hyprlock |
 | Wallpaper | awww (fork compatível com swww, transições animadas) |
@@ -359,7 +359,7 @@ Sequência do `hypridle.conf`:
 | Performance | latency-performance | `󱐋` |
 | Economia | powersave | `󰌪` |
 
-Alternância: botão `󰓅` no painel SwayNC (`Super+N`).
+Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, ver [Waybar](#waybar)), ou no botão `󰓅` no painel SwayNC (`Super+N`).
 
 **Persistência no boot:** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — não há reset para um default. O `default=balanced` do `/etc/tuned/ppd.conf` só se aplica a clientes PPD (ex.: painel do GNOME), não ao toggle da Waybar, que usa `tuned-adm profile` direto. Para fixar o boot em Balanceado, aplique uma vez: `tuned-adm profile balanced`.
 
@@ -464,7 +464,18 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 
 **Centro:** relógio (clique abre painel Quickshell com player, calendário, tempo e status; tooltip mantém calendário nativo)
 
-**Direita:** CPU · RAM · rede · bluetooth · volume · perfil de energia · conservação da bateria · tray · hotspot invisível minúsculo no extremo direito para SwayNC
+**Direita:** CPU · RAM · rede · bluetooth · volume · indicador de perfil de energia (só aparece fora do Balanceado) · bateria/conservação · tray · hotspot invisível minúsculo no extremo direito para SwayNC
+
+**Workspaces — clique/scroll (2026-08-10):** `hyprland/workspaces` no Waybar 0.15.0 estável não troca de workspace no clique com o dispatcher Lua do Hyprland (`hyprland.lua`) — o módulo manda `dispatch workspace N` no formato antigo, que essa build do Hyprland rejeita ([Waybar#5008](https://github.com/Alexays/Waybar/issues/5008)). Scroll funciona porque cai num caminho diferente. Fix está no `master` do Waybar (PR #5013), ainda não lançado em release estável → pacote trocado de `waybar` (pacman) para `waybar-git` (AUR). Config ajustado:
+- `disable-scroll: false` — scroll também troca workspace.
+- Removido `"on-click": "activate"` — é sintaxe do `sway/workspaces`; o `hyprland/workspaces` troca no clique nativamente (sem config extra), e deixar essa chave quebrava o handler.
+- `#workspaces button { padding: 0 8px; min-width: 16px; }` em `style.css` — numeral romano sozinho tinha área de clique minúscula.
+
+**Alcance maior que o Waybar:** o mesmo dispatch antigo (`hyprctl dispatch focuswindow "class:^(X)$"`) quebra em qualquer script, não só no Waybar. Achados e corrigidos: `scripts/.local/bin/media-open-spotify.sh` (clique na capa do álbum no painel Quickshell foca o Spotify) e `scripts/.local/bin/waybar-calendar.sh`. Forma correta: `hyprctl dispatch "hl.dsp.focus({ window = 'class:^(X)\$' })"`. Os dois arquivos em `~/.local/bin/` tinham virado cópias soltas (symlink do Stow quebrado) — restaurados.
+
+**Bateria / perfil de energia (2026-08-10):** um ícone só de perfil (`custom/power-profile`, sem clique) causava mira errada — some quando não há nada ao lado pra empurrar, e o vizinho (`custom/battery-conservation`) desliza pro lugar e rouba o clique. Solução: o clique pra trocar perfil (Balanceado/Performance/Economia) foi pro ícone de bateria (`custom/battery-conservation`, sempre visível e largo — alvo fácil); o `custom/power-profile` virou indicador passivo, sem `on-click`, só aparece fora do Balanceado. `battery-conservation.sh waybar` agora usa `return-type: json` pra devolver `{"text": "...", "tooltip": "..."}` com tooltip curto e dinâmico (`Balanceado · Preservação`, `Performance · 100%` etc.) em vez de texto instrucional fixo. **Trade-off:** o toggle Long_Life/100% perdeu o clique dedicado na Waybar — agora só via terminal (`battery-conservation.sh toggle`), já que na prática raramente é trocado.
+
+**Tooltips — tamanho de fonte:** `tooltip, tooltip * { font-size: ...px }` em `style.css` controla o tamanho. Gotcha: o hot-reload (`reload_on_style_change`) não repropaga pro popup de tooltip do GTK — precisa `pkill waybar && waybar &` (restart completo), CSS sozinho não basta.
 
 ---
 
@@ -595,6 +606,7 @@ Inventário e contrato operacional em [`docs/agent-harnesses-and-skills.md`](doc
 | workspace-float.conf no repo | Estado inicial/atual de workspaces floating é preservado via Stow |
 | Flatpaks em Wayland nativo | Resolve cursor inconsistente e melhora integração com compositor |
 | brave-duck.service como systemd user | Persiste entre reinicializações sem intervenção manual |
+| waybar-git em vez de waybar (pacman) | Fix do clique em `hyprland/workspaces` com o dispatcher Lua do Hyprland só existe no `master` (Waybar#5008/#5013), sem release estável ainda |
 
 ---
 

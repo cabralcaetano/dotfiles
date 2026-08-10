@@ -1,7 +1,7 @@
 # Pacotes pacman — curados (não é o dump completo do sistema)
 # Instalar (oficiais): sudo pacman -S --needed $(grep -v '^#' packages/pacman.txt | grep -v '^$')
 # Pacotes AUR ficam em packages/aur.txt — precisam de um AUR helper (yay).
-# Atualizado: 2026-07-09 · Arch Linux
+# Atualizado: 2026-08-10 · Arch Linux
 
 # --- Compositor / Wayland ---
 hyprland
@@ -9,7 +9,7 @@ hyprlock
 hypridle
 xdg-desktop-portal-hyprland
 xdg-desktop-portal-gtk
-waybar
+# waybar → movido para packages/aur.txt (waybar-git); ver README.md#waybar
 quickshell
 swaync
 fuzzel

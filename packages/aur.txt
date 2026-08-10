@@ -1,6 +1,12 @@
 # Pacotes AUR — precisam de um AUR helper (yay)
 # Instalar: yay -S --needed $(grep -v '^#' packages/aur.txt | grep -v '^$')
-# Atualizado: 2026-07-11 · Arch Linux
+# Atualizado: 2026-08-10 · Arch Linux
+
+# --- Compositor / Wayland ---
+# waybar-git: fix do clique em hyprland/workspaces com dispatcher Lua do
+# Hyprland (Waybar#5008/#5013), sem release estável ainda — conflita com
+# `waybar` do repo oficial, sudo pacman -R waybar antes se necessário.
+waybar-git
 
 # --- Apps ---
 ai-usagebar-bin

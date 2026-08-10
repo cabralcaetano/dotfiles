@@ -135,11 +135,21 @@ case "${1:-toggle}" in
         capacity="$(cat /sys/class/power_supply/BAT0/capacity 2>/dev/null || echo "?")"
         battery_status="$(cat /sys/class/power_supply/BAT0/status 2>/dev/null || echo unknown)"
         case "$(current_mode):$battery_status" in
-            *:Charging)       echo "󰂄 ${capacity}%" ;;
-            conservation:*)   echo "󰁹 ${capacity}%" ;;
-            full:*)           echo "󰁹 ${capacity}%" ;;
-            *)                echo "󰂑 ${capacity}%" ;;
+            *:Charging)       text="󰂄 ${capacity}%" ;;
+            conservation:*)   text="󰁹 ${capacity}%" ;;
+            full:*)           text="󰁹 ${capacity}%" ;;
+            *)                text="󰂑 ${capacity}%" ;;
         esac
+        case "$(current_mode)" in
+            conservation) cons_label="Preservação" ;;
+            *)             cons_label="100%" ;;
+        esac
+        case "$(tuned-adm active | awk '{print $NF}')" in
+            latency-performance) profile_label="Performance" ;;
+            powersave)           profile_label="Economia" ;;
+            *)                    profile_label="Balanceado" ;;
+        esac
+        jq -nc --arg text "$text" --arg tooltip "${profile_label} · ${cons_label}" '{text: $text, tooltip: $tooltip}'
         ;;
     waybar-check)
         require_control_path

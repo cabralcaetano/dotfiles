@@ -39,8 +39,7 @@
 
   // === WORKSPACES ==============================
   "hyprland/workspaces": {
-    "disable-scroll": true,
-    "on-click": "activate",
+    "disable-scroll": false,
     "format": "{icon}",
     "format-icons": {
       "1": "i",
@@ -165,24 +164,31 @@
   "tooltip": false
   },
 
-  // === PERFIL DE ENERGIA ========================
+  // === INDICADOR DE PERFIL DE ENERGIA ===========
+  // Sem on-click — só indicador. Some quando o perfil é Balanceado (padrão);
+  // aparece com ícone de raio/economia quando foge disso. O clique pra
+  // trocar de perfil fica no ícone de bateria, ao lado.
   "custom/power-profile": {
     "exec": "$HOME/.local/bin/power-profile.sh waybar",
     "exec-if": "$HOME/.local/bin/power-profile.sh waybar-check",
     "interval": 3,
     "tooltip": true,
-    "tooltip-format": "Perfil de energia ativo"
+    "tooltip-format": "Perfil de energia"
   },
-  
-  // === CONSERVAÇÃO DA BATERIA ===================
+
+  // === BATERIA / PERFIL DE ENERGIA ==============
+  // Ícone reflete carga/conservação; clique alterna o perfil do tuned
+  // (Balanceado/Performance/Economia) em vez da conservação — o notebook
+  // fica em Balanceado por padrão, então não faz sentido um ícone dedicado.
+  // return-type json: tooltip vem do script (perfil · preservação/100%).
   "custom/battery-conservation": {
     "exec": "$HOME/.local/bin/battery-conservation.sh waybar",
     "exec-if": "$HOME/.local/bin/battery-conservation.sh waybar-check",
+    "return-type": "json",
     "interval": 5,
     "format": "{}",
-    "on-click": "$HOME/.local/bin/battery-conservation.sh",
-    "tooltip": true,
-    "tooltip-format": "Conservação da bateria: clique para alternar Long_Life/100%"
+    "on-click": "$HOME/.local/bin/power-profile.sh",
+    "tooltip": true
   },
 
   // === HOTSPOT INVISÍVEL SWAYNC ==================
