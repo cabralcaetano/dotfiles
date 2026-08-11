@@ -47,6 +47,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 - [Temas](#temas)
 - [Teclado](#teclado)
 - [Window Rules](#window-rules)
+- [Hyprland Super Workspaces](#hyprland-super-workspaces)
 - [Scripts customizados](#scripts-customizados)
 - [Waybar](#waybar)
 - [Ferramentas instaladas](#ferramentas-instaladas)
@@ -108,7 +109,7 @@ bootstrap.sh    → instalação idempotente (pacotes, flatpaks, plugins zsh/tmu
 packages/       → manifestos reproduzíveis: pacman.txt, aur.txt, dnf.txt,
                   flatpak.txt, vscode-extensions.txt
 hypr/           → hyprland.lua, hypridle.conf, hyprlock.conf,
-                  autostart.sh, workspace-float.lua
+                  autostart.sh, workspace-float.lua, super-workspaces.txt
                   (hyprland.lua migrado de hyprland.conf em 2026-08-07 — hyprlang
                   deprecated desde Hyprland 0.55, suporte removido no 0.57;
                   original em legacy/hyprland-conf/)
@@ -124,7 +125,7 @@ zsh/            → .zshrc
 starship/       → starship.toml
 scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
                   wifi-menu.sh, wallpaper.sh, wallpaper-toggle.sh,
-                  screenshot.sh, workspace-float.sh, alttab.sh,
+                  screenshot.sh, workspace-float.sh, super-workspace.sh, alttab.sh,
                   battery-conservation.sh, clock-panel.sh/clock-panel.py,
                   theme-set.sh (ver themes/README.md)
 gtk-3/          → settings.ini
@@ -154,11 +155,11 @@ Ordem de inicialização definida no `hyprland.lua`:
 | wallpaper_5.jpg | — | exec-once com sleep 0.5s |
 | XDG portals | — | exec-once com sleep 1s |
 | GTK dark theme | — | exec-once com sleep 2s |
-| brave | 1 | `[workspace 1 silent]` |
-| ghostty | 2 | `[workspace 2 silent]` |
-| obsidian (flatpak) | 2 | `[workspace 2 silent]` |
-| spotify | 3 | exec-once + `autostart.sh` move_when_ready |
-| discord | 4 | exec-once + `autostart.sh` move_when_ready |
+| brave | super workspace 1 / slot 1 (`name:super-1-1`) | `[workspace name:super-1-1 silent]` |
+| ghostty | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
+| obsidian (flatpak) | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
+| spotify | super workspace 1 / slot 3 (`name:super-1-3`) | `[workspace name:super-1-3 silent]` |
+| discord | super workspace 1 / slot 4 (`name:super-1-4`) | `[workspace name:super-1-4 silent]` |
 
 > Spotify e Discord usam `move_when_ready` porque têm updaters que quebram o `[workspace X silent]`.
 
@@ -200,11 +201,13 @@ Ordem de inicialização definida no `hyprland.lua`:
 
 | Atalho | Ação |
 |---|---|
-| Super+1..0 | Vai para workspace 1–10 |
-| Super+Shift+1..0 | Move janela para workspace 1–10 |
-| Super+S | Toggle scratchpad |
-| Super+Shift+S | Move janela para scratchpad |
-| Super+Scroll | Navega entre workspaces |
+| Super+1..0 | Vai para workspace 1–10 dentro do super workspace ativo |
+| Super+Shift+1..0 | Move janela para workspace 1–10 dentro do super workspace ativo |
+| Super+W | Próximo super workspace |
+| Super+Shift+G | Super workspace anterior |
+| Super+S | Toggle scratchpad do super workspace ativo |
+| Super+Shift+S | Move janela para scratchpad do super workspace ativo |
+| Super+Scroll | Navega globalmente entre workspaces (`e+1`/`e-1`) |
 
 **Sistema**
 
@@ -214,7 +217,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Super+Shift+Q | Menu de energia (wlogout; desligar/reiniciar pedem confirmação) |
 | Super+N | Abre/fecha painel do relógio (Quickshell) |
 | Super+Shift+N | Dismiss notificações |
-| Super+W | Menu WiFi |
+| Super+Shift+B | Alterna codec do fone Bluetooth |
 | Super+Shift+W | Alterna wallpaper |
 | Super+K | Alterna layout de teclado (ABNT2 ↔ ANSI) |
 | Super+. | Emoji picker (rofimoji) |
@@ -246,6 +249,25 @@ Ordem de inicialização definida no `hyprland.lua`:
 | F5 / XF86MonBrightnessDown | Brilho − |
 | XF86AudioNext/Prev | Faixa seguinte/anterior |
 | XF86AudioPlay/Pause | Play/pause |
+
+---
+
+## Hyprland Super Workspaces
+
+Sistema local de bancos de workspaces: cada super workspace tem seus próprios slots `1..9/0` e seu próprio scratchpad, sem mudar a memória muscular dos atalhos.
+
+| Peça | Caminho | Papel |
+|---|---|---|
+| Lista | `hypr/.config/hypr/super-workspaces.txt` | Uma linha por super workspace; ordem do ciclo `SUPER+W`. |
+| Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `scratchpad`, `next/prev` e payload JSON da Waybar. |
+| Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+W`, `SUPER+S` chamam o roteador. |
+| Barra | `waybar/.config/waybar/config.jsonc` | Ícone do super workspace ativo + filtro `ignore-workspaces`. |
+
+Nomes internos no Hyprland usam `name:super-<super>-<slot>` para evitar colisão com workspaces numéricos globais. Ex.: super workspace `1`, slot `4` vira `name:super-1-4`; scratchpad vira `special:super-1-magic`.
+
+Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar`, tem tooltip com a lista dos super workspaces e click esquerdo/direito para próximo/anterior.
+
+Documentação completa: [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 
 ---
 
@@ -456,12 +478,15 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 | `kb-toggle.sh` | Alterna layout de teclado ABNT2/ANSI |
 | `workspace-float.sh` | Toggle workspace float mode — flota todas as janelas, desativa warp no Alt+Tab |
 | `alttab.sh` | Alt+Tab via cyclenext+bringactivetotop, preserva cursor no float mode |
+| `super-workspace.sh` | Roteia bancos de workspaces: foco/move por slot, scratchpad por super workspace, ciclo `next/prev` e JSON da Waybar |
 
 ---
 
 ## Waybar
 
-**Esquerda:** ícone custom (`format` vazio no momento — pendente escolher glyph do Arch, era Fedora antes da migração) → workspaces (i–x) → título da janela ativa
+**Esquerda:** ícone do super workspace ativo (`custom/super-workspace`, tooltip com lista e click next/prev) → workspaces filtrados do banco ativo (i–x) → título da janela ativa
+
+**Super workspaces:** `hyprland/workspaces` mostra apenas workspaces cujo nome bate com `super-<ativo>-*`; `super-workspace.sh` reescreve `ignore-workspaces` e recarrega a Waybar com `SIGUSR2` a cada troca de banco. Ver [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 
 **Centro:** relógio (clique abre painel Quickshell com player, calendário, tempo e status; tooltip mantém calendário nativo)
 

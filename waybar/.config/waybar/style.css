@@ -54,6 +54,26 @@ tooltip * {
   padding-right: 5px;
 }
 
+/* === SUPER WORKSPACE =========================== */
+#custom-super-workspace {
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 15px;
+  min-width: 28px;
+  padding: 0;
+  margin-right: -18px;
+  color: @foreground;
+  background: transparent;
+  box-shadow: none;
+  border-bottom: 1px solid transparent;
+}
+
+#custom-super-workspace:hover {
+  color: @foreground;
+  background: transparent;
+  box-shadow: none;
+  border-bottom-color: transparent;
+}
+
 /* === JANELA ATIVA ============================== */
 #window {
   font-weight: bold;

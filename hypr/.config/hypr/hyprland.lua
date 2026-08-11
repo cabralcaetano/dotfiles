@@ -37,12 +37,12 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("sleep 2 && gsettings set org.gnome.desktop.interface gtk-theme \"adw-gtk3-dark\"")
     hl.exec_cmd("sleep 2 && gsettings set org.gnome.desktop.interface color-scheme \"prefer-dark\"")
 
-    -- aplicativos com workspace fixo (equivalente a [workspace N silent])
-    hl.dispatch(hl.dsp.exec_cmd(browser, { workspace = "1 silent" }))
-    hl.dispatch(hl.dsp.exec_cmd(terminal .. " -e zsh -lc \"tmux new-session -A -s wiki-ia -c ~/Projects/wiki-ia\"", { workspace = "2 silent" }))
-    hl.dispatch(hl.dsp.exec_cmd(obsidian, { workspace = "2 silent" }))
-    hl.dispatch(hl.dsp.exec_cmd(spotify, { workspace = "3 silent" }))
-    hl.dispatch(hl.dsp.exec_cmd(discord, { workspace = "4 silent" }))
+    -- aplicativos com workspace fixo, no super workspace 1 (padrão do boot)
+    hl.dispatch(hl.dsp.exec_cmd(browser, { workspace = "name:super-1-1 silent" }))
+    hl.dispatch(hl.dsp.exec_cmd(terminal .. " -e zsh -lc \"tmux new-session -A -s wiki-ia -c ~/Projects/wiki-ia\"", { workspace = "name:super-1-2 silent" }))
+    hl.dispatch(hl.dsp.exec_cmd(obsidian, { workspace = "name:super-1-2 silent" }))
+    hl.dispatch(hl.dsp.exec_cmd(spotify, { workspace = "name:super-1-3 silent" }))
+    hl.dispatch(hl.dsp.exec_cmd(discord, { workspace = "name:super-1-4 silent" }))
 
     hl.exec_cmd("bash ~/.config/hypr/autostart.sh")
 end)
@@ -211,21 +211,22 @@ hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "r" }))
 hl.bind(mainMod .. " + up",    hl.dsp.focus({ direction = "u" }))
 hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "d" }))
 
--- — Workspaces —
+-- — Workspaces (dentro do super workspace ativo, ver super-workspaces.txt) —
+-- SUPER+W/SHIFT+G troca o super workspace inteiro; os mesmos 1-9/0 abaixo
+-- passam a apontar pro banco do super workspace que estiver ativo.
 for i = 1, 9 do
-    hl.bind(mainMod .. " + " .. i, hl.dsp.focus({ workspace = i }))
+    hl.bind(mainMod .. " + " .. i, hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh focus " .. i))
+    hl.bind(mainMod .. " + SHIFT + " .. i, hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh move " .. i))
 end
-hl.bind(mainMod .. " + 0", hl.dsp.focus({ workspace = 10 }))
+hl.bind(mainMod .. " + 0", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh focus 10"))
+hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh move 10"))
 
--- — Mover janela para workspace —
-for i = 1, 9 do
-    hl.bind(mainMod .. " + SHIFT + " .. i, hl.dsp.window.move({ workspace = i }))
-end
-hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = 10 }))
+hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh next"))
+hl.bind(mainMod .. " + SHIFT + G", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh prev"))
 
--- — Scratchpad —
-hl.bind(mainMod .. " + S", hl.dsp.workspace.toggle_special("magic"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
+-- — Scratchpad (também por super workspace) —
+hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh scratchpad"))
+hl.bind(mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh scratchpad-move"))
 
 -- — Mouse —
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
@@ -255,7 +256,7 @@ hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = tr
 hl.bind(mainMod .. " + K", hl.dsp.exec_cmd("~/.local/bin/kb-toggle.sh"))
 
 -- — Fone Bluetooth —
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.local/bin/bt-codec-toggle.sh"))
+hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("~/.local/bin/bt-codec-toggle.sh"))
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("~/.local/bin/wallpaper-toggle.sh"))
 
 -- — Sistema —
