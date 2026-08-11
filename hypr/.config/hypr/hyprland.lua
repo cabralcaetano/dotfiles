@@ -18,6 +18,7 @@ local vscode      = "code"
 local discord     = "discord"
 local spotify     = "spotify-launcher"
 local obsidian    = "flatpak run md.obsidian.Obsidian"
+local waterReminder = "~/.local/bin/water-reminder"
 
 -- === TEMA (cores) — gerado por theme-set.sh, ver themes/ no root do repo ===
 local theme_colors = dofile(os.getenv("HOME") .. "/.config/hypr/colors.lua")
@@ -36,6 +37,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("sleep 1 && /usr/libexec/xdg-desktop-portal")
     hl.exec_cmd("sleep 2 && gsettings set org.gnome.desktop.interface gtk-theme \"adw-gtk3-dark\"")
     hl.exec_cmd("sleep 2 && gsettings set org.gnome.desktop.interface color-scheme \"prefer-dark\"")
+    hl.exec_cmd(waterReminder)
 
     -- aplicativos com workspace fixo, no super workspace 1 (padrão do boot)
     hl.dispatch(hl.dsp.exec_cmd(browser, { workspace = "name:super-1-1 silent" }))
