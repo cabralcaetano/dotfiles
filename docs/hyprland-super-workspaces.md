@@ -39,9 +39,10 @@ O super workspace ativo fica em:
 
 ```text
 ~/.cache/hypr/super-workspace
+~/.cache/hypr/super-workspace-slots/<super-workspace>
 ```
 
-Se o arquivo não existir ou contiver um valor fora de `super-workspaces.txt`, o script usa a primeira linha da lista como default.
+Se o arquivo de super workspace não existir ou contiver um valor fora de `super-workspaces.txt`, o script usa a primeira linha da lista como default. Se o arquivo de slot não existir, o default daquele super workspace é o slot `1`.
 
 Lista atual:
 
@@ -71,12 +72,14 @@ O prefixo `name:` é obrigatório nos dispatches de foco/move. Sem ele, Hyprland
 | `SUPER+0` | Vai para o slot `10` dentro do super workspace ativo. |
 | `SUPER+SHIFT+1..9` | Move a janela focada para o slot `1..9` do super workspace ativo. |
 | `SUPER+SHIFT+0` | Move a janela focada para o slot `10` do super workspace ativo. |
-| `SUPER+W` | Próximo super workspace; grava estado, pula para o slot `1`, sincroniza Waybar. |
-| `SUPER+SHIFT+G` | Super workspace anterior; mesma sincronização. |
+| `SUPER+W` | Próximo super workspace; grava o slot atual, restaura o último slot do destino e sincroniza Waybar. |
+| `SUPER+SHIFT+G` | Super workspace anterior; mesma restauração de slot. |
 | `SUPER+S` | Toggle do scratchpad do super workspace ativo. |
 | `SUPER+SHIFT+S` | Move a janela focada para o scratchpad do super workspace ativo. |
 
 `SUPER+Scroll` continua global (`e+1`/`e-1`) de propósito. Ele pode atravessar workspaces de outros super workspaces, mas não altera o estado salvo do super workspace ativo.
+
+Quando você está em `super-1-2`, alterna para outro super workspace e depois volta, o script retorna para `super-1-2` em vez de cair sempre em `super-1-1`.
 
 ## Waybar
 
