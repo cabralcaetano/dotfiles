@@ -214,7 +214,7 @@ hl.bind(mainMod .. " + up",    hl.dsp.focus({ direction = "u" }))
 hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "d" }))
 
 -- — Workspaces (dentro do super workspace ativo, ver super-workspaces.txt) —
--- SUPER+W/SHIFT+G troca o super workspace inteiro; os mesmos 1-9/0 abaixo
+-- SUPER+Tab/SHIFT+G troca o super workspace inteiro; os mesmos 1-9/0 abaixo
 -- passam a apontar pro banco do super workspace que estiver ativo.
 for i = 1, 9 do
     hl.bind(mainMod .. " + " .. i, hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh focus " .. i))
@@ -223,7 +223,7 @@ end
 hl.bind(mainMod .. " + 0", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh focus 10"))
 hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh move 10"))
 
-hl.bind(mainMod .. " + W", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh next"))
+hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh next"))
 hl.bind(mainMod .. " + SHIFT + G", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh prev"))
 
 -- — Scratchpad (também por super workspace) —

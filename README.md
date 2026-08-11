@@ -203,7 +203,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 |---|---|
 | Super+1..0 | Vai para workspace 1–10 dentro do super workspace ativo |
 | Super+Shift+1..0 | Move janela para workspace 1–10 dentro do super workspace ativo |
-| Super+W | Próximo super workspace |
+| Super+Tab | Próximo super workspace |
 | Super+Shift+G | Super workspace anterior |
 | Super+S | Toggle scratchpad do super workspace ativo |
 | Super+Shift+S | Move janela para scratchpad do super workspace ativo |
@@ -258,9 +258,9 @@ Sistema local de bancos de workspaces: cada super workspace tem seus próprios s
 
 | Peça | Caminho | Papel |
 |---|---|---|
-| Lista | `hypr/.config/hypr/super-workspaces.txt` | Uma linha por super workspace; ordem do ciclo `SUPER+W`. |
+| Lista | `hypr/.config/hypr/super-workspaces.txt` | Uma linha por super workspace; ordem do ciclo `SUPER+Tab`. |
 | Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `scratchpad`, `next/prev` e payload JSON da Waybar. |
-| Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+W`, `SUPER+S` chamam o roteador. |
+| Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+Tab`, `SUPER+S` chamam o roteador. |
 | Barra | `waybar/.config/waybar/config.jsonc` | Ícone do super workspace ativo + filtro `ignore-workspaces`. |
 
 Nomes internos no Hyprland usam `name:super-<super>-<slot>` para evitar colisão com workspaces numéricos globais. Ex.: super workspace `1`, slot `4` vira `name:super-1-4`; scratchpad vira `special:super-1-magic`.

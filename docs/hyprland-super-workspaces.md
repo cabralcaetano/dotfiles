@@ -29,7 +29,7 @@ Os números continuam sendo os mesmos na tecla e na Waybar; só o destino intern
 |---|---|
 | `hypr/.config/hypr/super-workspaces.txt` | Lista os super workspaces disponíveis, uma linha por item, na ordem do ciclo. |
 | `scripts/.local/bin/super-workspace.sh` | Roteia foco, movimento, scratchpad, troca de super workspace e payload da Waybar. |
-| `hypr/.config/hypr/hyprland.lua` | Binds `SUPER+1..9/0`, `SUPER+W`, `SUPER+S` chamam o script. |
+| `hypr/.config/hypr/hyprland.lua` | Binds `SUPER+1..9/0`, `SUPER+Tab`, `SUPER+S` chamam o script. |
 | `waybar/.config/waybar/config.jsonc` | Adiciona `custom/super-workspace` e filtra `hyprland/workspaces`. |
 | `waybar/.config/waybar/style.css` | Ajusta o ícone do super workspace e preserva o espaçamento dos numerais. |
 
@@ -72,7 +72,7 @@ O prefixo `name:` é obrigatório nos dispatches de foco/move. Sem ele, Hyprland
 | `SUPER+0` | Vai para o slot `10` dentro do super workspace ativo. |
 | `SUPER+SHIFT+1..9` | Move a janela focada para o slot `1..9` do super workspace ativo. |
 | `SUPER+SHIFT+0` | Move a janela focada para o slot `10` do super workspace ativo. |
-| `SUPER+W` | Próximo super workspace; grava o slot atual, restaura o último slot do destino e sincroniza Waybar. |
+| `SUPER+Tab` | Próximo super workspace; grava o slot atual, restaura o último slot do destino e sincroniza Waybar. |
 | `SUPER+SHIFT+G` | Super workspace anterior; mesma restauração de slot. |
 | `SUPER+S` | Toggle do scratchpad do super workspace ativo. |
 | `SUPER+SHIFT+S` | Move a janela focada para o scratchpad do super workspace ativo. |
