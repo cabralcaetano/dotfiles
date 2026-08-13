@@ -339,6 +339,14 @@ hl.window_rule({
     center = true,
 })
 
+-- Waydroid/YouCine: força janela fullscreen e faz o Android renderizar no
+-- tamanho lógico do monitor (1920x1200 / scale 1.25 = 1536x960).
+hl.window_rule({
+    name       = "waydroid-youcine-fullscreen",
+    match      = { class = "^(waydroid.com.world.(youcinetv|youcinemobile))$" },
+    fullscreen = true,
+})
+
 -- Suprime eventos de maximizar em todas as janelas
 hl.window_rule({
     name           = "suppress-maximize-events",
