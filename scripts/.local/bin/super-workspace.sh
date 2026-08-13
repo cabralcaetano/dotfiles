@@ -20,6 +20,8 @@
 #   super-workspace.sh scratchpad           toggle special:super-<sw>-magic
 #   super-workspace.sh scratchpad-move      move focused window to special:super-<sw>-magic
 #   super-workspace.sh next|prev            cycle active super workspace, restore its last slot
+#   super-workspace.sh move-super <next|prev>  move focused window to same
+#                                               slot in neighboring super workspace, and follow it there
 #   super-workspace.sh sync-waybar|icon|waybar
 set -euo pipefail
 export PATH="/usr/local/bin:/usr/bin:/bin:${PATH:-}"
@@ -47,6 +49,18 @@ index_of() {
     [ "${SUPER_WORKSPACES[$i]}" = "$target" ] && { printf '%s' "$i"; return; }
   done
   printf '0'
+}
+
+neighbor_sw() {
+  local dir="$1" idx n
+  idx=$(index_of "$SW")
+  n=${#SUPER_WORKSPACES[@]}
+  if [ "$dir" = next ]; then
+    idx=$(( (idx + 1) % n ))
+  else
+    idx=$(( (idx - 1 + n) % n ))
+  fi
+  printf '%s' "${SUPER_WORKSPACES[$idx]}"
 }
 
 slot_state_file() {
@@ -152,18 +166,26 @@ case "$cmd" in
   scratchpad-move)
     hyprctl dispatch "hl.dsp.window.move({ workspace = \"special:$(scratchpad_name "$SW")\" })" >/dev/null
     ;;
+  move-super)
+    dir="${1:-next}"
+    case "$dir" in
+      next|prev) ;;
+      *) echo "usage: super-workspace.sh move-super {next|prev}" >&2; exit 1 ;;
+    esac
+    NEW="$(neighbor_sw "$dir")"
+    SLOT="$(active_slot_for "$SW")"
+    [ -n "$SLOT" ] || SLOT="$(saved_slot_for "$SW")"
+    hyprctl dispatch "hl.dsp.window.move({ workspace = \"name:$(workspace_name "$NEW" "$SLOT")\" })" >/dev/null
+    printf '%s' "$SLOT" > "$(slot_state_file "$NEW")"
+    printf '%s' "$NEW" > "$STATE_FILE"
+    hyprctl dispatch "hl.dsp.focus({ workspace = \"name:$(workspace_name "$NEW" "$SLOT")\" })" >/dev/null
+    sync_waybar "$NEW"
+    notify-send -t 1200 "Super workspace" "$NEW"
+    ;;
   next|prev)
     remember_slot "$SW"
 
-    idx=$(index_of "$SW")
-    n=${#SUPER_WORKSPACES[@]}
-    if [ "$cmd" = next ]; then
-      idx=$(( (idx + 1) % n ))
-    else
-      idx=$(( (idx - 1 + n) % n ))
-    fi
-
-    NEW="${SUPER_WORKSPACES[$idx]}"
+    NEW="$(neighbor_sw "$cmd")"
     SLOT="$(saved_slot_for "$NEW")"
     printf '%s' "$NEW" > "$STATE_FILE"
     hyprctl dispatch "hl.dsp.focus({ workspace = \"name:$(workspace_name "$NEW" "$SLOT")\" })" >/dev/null
@@ -181,7 +203,7 @@ case "$cmd" in
     waybar_payload
     ;;
   *)
-    echo "usage: super-workspace.sh {focus|move|scratchpad|scratchpad-move|next|prev|sync-waybar|icon|waybar} [n]" >&2
+    echo "usage: super-workspace.sh {focus|move|move-super|scratchpad|scratchpad-move|next|prev|sync-waybar|icon|waybar} [n]" >&2
     exit 1
     ;;
 esac

@@ -224,6 +224,7 @@ hl.bind(mainMod .. " + 0", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh focu
 hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh move 10"))
 
 hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh next"))
+hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh move-super next"))
 hl.bind(mainMod .. " + SHIFT + G", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh prev"))
 
 -- — Scratchpad (também por super workspace) —
