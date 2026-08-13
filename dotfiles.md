@@ -576,9 +576,13 @@ Ver guia completo: [[ducking]]
 |---|---|
 | Overskride (Bluetooth) | Float, 800×500, centralizado |
 | pavucontrol (áudio) | Float, 800×500, centralizado |
+| GNOME Calendar (Quickshell) | Float, 882×575, centralizado |
+| GNOME Calculator | Float, 380×540, centralizado |
+| Bitwarden | Float, 1000×800, centralizado |
 | Waydroid YouCine | Fullscreen, renderiza no tamanho lógico do monitor |
 | Todas as janelas | suppress maximize events |
 | XWayland float sem classe | no_focus (fix drag) |
+| hyprland-run | Float, ancorado no canto inferior esquerdo do monitor |
 
 ## Scripts customizados
 
