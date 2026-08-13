@@ -57,7 +57,8 @@ stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship
 ```
 hypr/           → hyprland.lua, hypridle.conf, hyprlock.conf, autostart.sh,
                   hyprpaper.conf (referência — sistema usa swww),
-                  workspace-float.lua (estado do workspace 5 float mode)
+                  workspace-float.lua (estado atual dos workspaces com float por
+                  padrão, gerado por workspace-float.sh, ver seção Decisões)
                   (hyprland.lua migrado de hyprland.conf em 2026-08-07 — hyprlang
                   deprecated desde Hyprland 0.55, suporte removido no 0.57;
                   original em legacy/hyprland-conf/)
@@ -575,6 +576,7 @@ Ver guia completo: [[ducking]]
 |---|---|
 | Overskride (Bluetooth) | Float, 800×500, centralizado |
 | pavucontrol (áudio) | Float, 800×500, centralizado |
+| Waydroid YouCine | Fullscreen, renderiza no tamanho lógico do monitor |
 | Todas as janelas | suppress maximize events |
 | XWayland float sem classe | no_focus (fix drag) |
 
@@ -609,7 +611,7 @@ Ver guia completo: [[ducking]]
 - **Sem windowrulev2 de workspace** — workspace rules no `exec-once` são apenas para o boot; depois o usuário tem controle total
 - **Sem autostart via `~/.config/autostart/`** — os `.desktop` do GNOME foram deletados, tudo gerenciado pelo Hyprland
 - **Alt+Tab via cyclenext em vez de hyprshitch/hyprswitch** — hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço de janela mudou de hex para decimal na IPC); cyclenext é nativo e confiável
-- **workspace-float.conf versionado no repo** — contém o estado inicial (`workspace = 5, defaultFloating:1`); em máquina nova o stow o instala automaticamente
+- **workspace-float.lua versionado no repo** — gerado por `workspace-float.sh`, contém as regras `hl.window_rule({ match = { workspace = "N" }, float = true })` dos workspaces com float por padrão; em máquina nova o stow o instala automaticamente
 
 ## Notas abertas
 
