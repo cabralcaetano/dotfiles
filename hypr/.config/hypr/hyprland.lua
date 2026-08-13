@@ -214,8 +214,8 @@ hl.bind(mainMod .. " + up",    hl.dsp.focus({ direction = "u" }))
 hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "d" }))
 
 -- — Workspaces (dentro do super workspace ativo, ver super-workspaces.txt) —
--- SUPER+Tab/SHIFT+G troca o super workspace inteiro; os mesmos 1-9/0 abaixo
--- passam a apontar pro banco do super workspace que estiver ativo.
+-- SUPER+Tab troca em ciclo; SUPER+Tab+1..2 pula direto para o super workspace.
+-- Os mesmos 1-9/0 abaixo passam a apontar pro banco do super workspace ativo.
 for i = 1, 9 do
     hl.bind(mainMod .. " + " .. i, hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh focus " .. i))
     hl.bind(mainMod .. " + SHIFT + " .. i, hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh move " .. i))
@@ -223,9 +223,26 @@ end
 hl.bind(mainMod .. " + 0", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh focus 10"))
 hl.bind(mainMod .. " + SHIFT + 0", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh move 10"))
 
-hl.bind(mainMod .. " + Tab", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh next"))
+hl.bind(mainMod .. " + Tab", function()
+    hl.dispatch(hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh next"))
+    hl.dispatch(hl.dsp.submap("super-workspace-select"))
+    hl.dispatch(hl.dsp.exec_cmd("sh -c 'sleep 1; hyprctl dispatch submap reset' &"))
+end)
 hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh move-super next"))
 hl.bind(mainMod .. " + SHIFT + G", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh prev"))
+
+hl.define_submap("super-workspace-select", function()
+    for i = 1, 2 do
+        local switch_super = function()
+            hl.dispatch(hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh switch " .. i))
+            hl.dispatch(hl.dsp.submap("reset"))
+        end
+        hl.bind("" .. i, switch_super)
+        hl.bind(mainMod .. " + " .. i, switch_super)
+    end
+    hl.bind("escape", hl.dsp.submap("reset"))
+    hl.bind("catchall", hl.dsp.submap("reset"))
+end)
 
 -- — Scratchpad (também por super workspace) —
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh scratchpad"))

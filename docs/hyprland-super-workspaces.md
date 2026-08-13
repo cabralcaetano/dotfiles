@@ -21,7 +21,7 @@ super workspace 2
   └─ scratchpad   → special:super-2-magic
 ```
 
-Os números continuam sendo os mesmos na tecla e na Waybar; só o destino interno muda conforme o super workspace ativo.
+Os números continuam sendo os mesmos na tecla e nos nomes internos; a Waybar mostra o símbolo configurado para o super workspace ativo.
 
 ## Arquivos
 
@@ -51,6 +51,8 @@ Lista atual:
 2
 ```
 
+Plano futuro: expandir a lista até o super workspace `10`. Os símbolos `>` para o `1` e `~` para o `2` ficam reservados; os símbolos `3..10` serão escolhidos só quando esses bancos forem ativados.
+
 ## Nomes internos no Hyprland
 
 Hyprland mantém um espaço global de workspaces. Para simular bancos independentes sem colisão, o script usa workspaces nomeados:
@@ -73,6 +75,7 @@ O prefixo `name:` é obrigatório nos dispatches de foco/move. Sem ele, Hyprland
 | `SUPER+SHIFT+1..9` | Move a janela focada para o slot `1..9` do super workspace ativo. |
 | `SUPER+SHIFT+0` | Move a janela focada para o slot `10` do super workspace ativo. |
 | `SUPER+Tab` | Próximo super workspace; grava o slot atual, restaura o último slot do destino e sincroniza Waybar. |
+| `SUPER+Tab+1..2` | Pula direto para o super workspace `1..2`, restaurando o último slot salvo daquele banco. |
 | `SUPER+SHIFT+G` | Super workspace anterior; mesma restauração de slot. |
 | `SUPER+SHIFT+Tab` | Move a janela focada para o mesmo slot no próximo super workspace e segue para lá (troca o super workspace ativo, restaura foco e sincroniza Waybar). |
 | `SUPER+S` | Toggle do scratchpad do super workspace ativo. |
@@ -107,8 +110,8 @@ Exemplo para super workspace `1`:
 Tooltip do ícone mostra somente a lista dos super workspaces, com marcador no ativo:
 
 ```text
-•  1
-   2
+• > 1
+  ~ 2
 ```
 
 O ícone é clicável:
@@ -122,16 +125,13 @@ O ícone é clicável:
 
 Mapa atual em `icon_for()`:
 
-| Super workspace | Ícone | Nerd Font name | Codepoint |
-|---|---:|---|---|
-| `1` | `` | `fa-skull` | `U+EE15` |
-| `2` | `` | `cod-terminal_linux` | `U+EBC6` |
-| `3` | `` | `cod-symbol_namespace` | `U+EA8B` |
-| `4` | `` | `cod-terminal` | `U+EA85` |
-| `5` | `` | `cod-terminal_cmd` | `U+EBC4` |
-| fallback | `` | `nf-fa-circle` | `U+F111` |
+| Super workspace | Símbolo |
+|---|---:|
+| `1` | `>` |
+| `2` | `~` |
+| fallback | valor do próprio super workspace |
 
-Todos foram verificados via `fc-match :charset=<codepoint>` contra `JetBrainsMonoNLNerdFont-Regular.ttf`.
+Os símbolos `>` e `~` foram escolhidos como mapa estável para os dois bancos atuais. Não trocar ao expandir; adicionar somente os símbolos faltantes para `3..10`.
 
 ## Autostart
 
@@ -152,16 +152,16 @@ Isso preserva o layout antigo (`1` browser, `2` terminal/Obsidian, `3` Spotify, 
 1. Adicione uma linha em `hypr/.config/hypr/super-workspaces.txt`:
 
    ```text
-   3
+   5
    ```
 
-2. Se quiser ícone específico, adicione o caso em `icon_for()`:
+2. Se quiser símbolo específico, adicione o caso em `icon_for()`:
 
    ```bash
-   3) printf '\uea8b' ;;  # cod-symbol_namespace
+   5) printf '$' ;;
    ```
 
-3. Se quiser que a Waybar mostre numerais para o novo banco, adicione chaves `super-3-1` até `super-3-10` em `format-icons`.
+3. Se quiser que a Waybar mostre numerais para o novo banco, adicione chaves `super-5-1` até `super-5-10` em `format-icons`.
 
 4. Recarregue:
 
@@ -176,6 +176,7 @@ Isso preserva o layout antigo (`1` browser, `2` terminal/Obsidian, `3` Spotify, 
 |---|---|
 | `super-workspace.sh focus 1` | Vai para o slot `1` do super workspace ativo. |
 | `super-workspace.sh move 2` | Move a janela focada para o slot `2` do super workspace ativo. |
+| `super-workspace.sh switch 2` | Pula diretamente para o super workspace `2`. |
 | `super-workspace.sh move-super next` | Move a janela focada pro mesmo slot no próximo super workspace e segue pra lá. |
 | `super-workspace.sh move-super prev` | Idem, no super workspace anterior. |
 | `super-workspace.sh next` | Cicla para o próximo super workspace. |
@@ -183,7 +184,7 @@ Isso preserva o layout antigo (`1` browser, `2` terminal/Obsidian, `3` Spotify, 
 | `super-workspace.sh scratchpad` | Toggle do scratchpad do super workspace ativo. |
 | `super-workspace.sh scratchpad-move` | Move a janela focada para esse scratchpad. |
 | `super-workspace.sh waybar` | Emite JSON para o módulo custom da Waybar. |
-| `super-workspace.sh icon 5` | Mostra o ícone mapeado para o super workspace `5`. |
+| `super-workspace.sh icon 2` | Mostra o ícone mapeado para o super workspace `2`. |
 
 ## Verificação
 

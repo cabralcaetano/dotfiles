@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Super workspaces: independent banks of numbered workspaces (1-9/0), each
-# with its own scratchpad. User-facing identity is numeric only: super
-# workspace 1, super workspace 2, ...
+# with its own scratchpad. User-facing identity stays numeric; Waybar symbols
+# come from icon_for().
 #
 # Mechanism: the active super workspace number is persisted in $STATE_FILE; the
 # last focused slot of each super workspace is persisted under $SLOT_STATE_DIR.
 # SUPER+N and SUPER+SHIFT+N binds call this script instead of a raw workspace
 # number, so they always resolve to name:super-<sw>-<n>. The Hyprland internal
-# name is only a collision-free target; notifications and waybar expose only the numeric super workspace and its icon.
+# name is only a collision-free target; notifications and Waybar expose the
+# numeric super workspace and its configured symbol.
 #
 # Waybar: on next/prev/sync this rewrites the "ignore-workspaces" regex in
 # config.jsonc (plain sed — JSONC comments must survive) and reloads the bar
@@ -20,6 +21,7 @@
 #   super-workspace.sh scratchpad           toggle special:super-<sw>-magic
 #   super-workspace.sh scratchpad-move      move focused window to special:super-<sw>-magic
 #   super-workspace.sh next|prev            cycle active super workspace, restore its last slot
+#   super-workspace.sh switch <sw>          switch directly to a specific super workspace
 #   super-workspace.sh move-super <next|prev>  move focused window to same
 #                                               slot in neighboring super workspace, and follow it there
 #   super-workspace.sh sync-waybar|icon|waybar
@@ -49,6 +51,14 @@ index_of() {
     [ "${SUPER_WORKSPACES[$i]}" = "$target" ] && { printf '%s' "$i"; return; }
   done
   printf '0'
+}
+
+known_sw() {
+  local target="$1" item
+  for item in "${SUPER_WORKSPACES[@]}"; do
+    [ "$item" = "$target" ] && return 0
+  done
+  return 1
 }
 
 neighbor_sw() {
@@ -107,15 +117,13 @@ scratchpad_name() {
   printf 'super-%s-magic' "$1"
 }
 
-# Ícone por número de super workspace. Sem nome textual na waybar.
+# Símbolo por número de super workspace. Mapa escolhido: 1=">", 2="~".
+# Futuro: expandir super-workspaces.txt até 10 sem trocar esses dois símbolos.
 icon_for() {
   case "$1" in
-    1) printf '\uee15' ;;  # fa-skull
-    2) printf '\uebc6' ;;  # cod-terminal_linux
-    3) printf '\uea8b' ;;  # cod-symbol_namespace
-    4) printf '\uea85' ;;  # cod-terminal
-    5) printf '\uebc4' ;;  # cod-terminal_cmd
-    *) printf '\uf111' ;;  # nf-fa-circle (fallback)
+    1) printf '>' ;;
+    2) printf '~' ;;
+    *) printf '%s' "$1" ;;
   esac
 }
 
@@ -166,6 +174,20 @@ case "$cmd" in
   scratchpad-move)
     hyprctl dispatch "hl.dsp.window.move({ workspace = \"special:$(scratchpad_name "$SW")\" })" >/dev/null
     ;;
+  switch)
+    NEW="${1:-}"
+    if ! known_sw "$NEW"; then
+      echo "usage: super-workspace.sh switch <super-workspace>" >&2
+      exit 1
+    fi
+    remember_slot "$SW"
+    SLOT="$(saved_slot_for "$NEW")"
+    printf '%s' "$NEW" > "$STATE_FILE"
+    hyprctl dispatch "hl.dsp.focus({ workspace = \"name:$(workspace_name "$NEW" "$SLOT")\" })" >/dev/null
+    printf '%s' "$SLOT" > "$(slot_state_file "$NEW")"
+    sync_waybar "$NEW"
+    notify-send -t 1200 "Super workspace" "$NEW"
+    ;;
   move-super)
     dir="${1:-next}"
     case "$dir" in
@@ -203,7 +225,7 @@ case "$cmd" in
     waybar_payload
     ;;
   *)
-    echo "usage: super-workspace.sh {focus|move|move-super|scratchpad|scratchpad-move|next|prev|sync-waybar|icon|waybar} [n]" >&2
+    echo "usage: super-workspace.sh {focus|move|move-super|switch|scratchpad|scratchpad-move|next|prev|sync-waybar|icon|waybar} [n]" >&2
     exit 1
     ;;
 esac

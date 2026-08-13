@@ -204,6 +204,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Super+1..0 | Vai para workspace 1–10 dentro do super workspace ativo |
 | Super+Shift+1..0 | Move janela para workspace 1–10 dentro do super workspace ativo |
 | Super+Tab | Próximo super workspace |
+| Super+Tab+1..2 | Vai direto para o super workspace 1–2 |
 | Super+Shift+G | Super workspace anterior |
 | Super+S | Toggle scratchpad do super workspace ativo |
 | Super+Shift+S | Move janela para scratchpad do super workspace ativo |
@@ -259,15 +260,17 @@ Sistema local de bancos de workspaces: cada super workspace tem seus próprios s
 | Peça | Caminho | Papel |
 |---|---|---|
 | Lista | `hypr/.config/hypr/super-workspaces.txt` | Uma linha por super workspace; ordem do ciclo `SUPER+Tab`. |
-| Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `scratchpad`, `next/prev` e payload JSON da Waybar. |
-| Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+Tab`, `SUPER+S` chamam o roteador. |
+| Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `switch`, `scratchpad`, `next/prev` e payload JSON da Waybar. |
+| Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+Tab`, `SUPER+Tab+1..2`, `SUPER+S` chamam o roteador. |
 | Barra | `waybar/.config/waybar/config.jsonc` | Ícone do super workspace ativo + filtro `ignore-workspaces`. |
 
 Nomes internos no Hyprland usam `name:super-<super>-<slot>` para evitar colisão com workspaces numéricos globais. Ex.: super workspace `1`, slot `4` vira `name:super-1-4`; scratchpad vira `special:super-1-magic`.
 
 O script também lembra o último slot focado em cada super workspace. Se você sai de `super-1-2` e depois volta para o super workspace `1`, ele restaura `super-1-2` em vez de cair sempre no slot `1`.
 
-Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar`, tem tooltip com a lista dos super workspaces e click esquerdo/direito para próximo/anterior.
+Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar` e usa `>`, `~` para os super workspaces `1..2`; o tooltip lista todos e click esquerdo/direito navega próximo/anterior.
+
+Mapa salvo: `>` para o super workspace `1` e `~` para o `2`. Futuro planejado: expandir até `10` super workspaces mantendo esses dois símbolos.
 
 Documentação completa: [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 
