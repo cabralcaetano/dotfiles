@@ -30,6 +30,7 @@ export PATH="/usr/local/bin:/usr/bin:/bin:${PATH:-}"
 
 LIST_FILE="$HOME/.config/hypr/super-workspaces.txt"
 STATE_FILE="$HOME/.cache/hypr/super-workspace"
+URGENT_STATE_FILE="$HOME/.cache/hypr/super-workspace-urgent-banks"
 SLOT_STATE_DIR="$HOME/.cache/hypr/super-workspace-slots"
 WAYBAR_CONFIG="$HOME/.config/waybar/config.jsonc"
 mkdir -p "$(dirname "$STATE_FILE")" "$SLOT_STATE_DIR"
@@ -117,6 +118,18 @@ scratchpad_name() {
   printf 'super-%s-magic' "$1"
 }
 
+# Um cliente urgente (Hyprland urgent hint) num banco que não é o ativo fica
+# invisível pro usuário — hyprland/workspaces só mostra os slots do banco
+# atual (ignore-workspaces). bank_has_urgent() lê $URGENT_STATE_FILE, mantido
+# por super-workspace-urgent-watch.sh: hyprctl clients -j NÃO expõe campo
+# "urgent" nesse build do Hyprland (0.56.2) — só existe como evento
+# `urgent>>ADDR` no socket2, então precisa de um listener em background, não
+# dá pra fazer polling.
+bank_has_urgent() {
+  local sw="$1"
+  [ -f "$URGENT_STATE_FILE" ] && grep -qxF "$sw" "$URGENT_STATE_FILE"
+}
+
 # Símbolo por número de super workspace. Mapa escolhido: 1=">", 2="~".
 # Futuro: expandir super-workspaces.txt até 10 sem trocar esses dois símbolos.
 icon_for() {
@@ -128,7 +141,7 @@ icon_for() {
 }
 
 waybar_payload() {
-  local tooltip="" item line text
+  local tooltip="" item line text class="[]"
   text="$(icon_for "$SW")"
 
   for item in "${SUPER_WORKSPACES[@]}"; do
@@ -137,6 +150,10 @@ waybar_payload() {
       line="• $line"
     else
       line="  $line"
+      if bank_has_urgent "$item"; then
+        line="$line !"
+        class='["urgent"]'
+      fi
     fi
 
     if [ -z "$tooltip" ]; then
@@ -146,7 +163,7 @@ waybar_payload() {
     fi
   done
 
-  printf '{"text":"%s","tooltip":"%s"}\n' "$text" "$tooltip"
+  printf '{"text":"%s","tooltip":"%s","class":%s}\n' "$text" "$tooltip" "$class"
 }
 
 

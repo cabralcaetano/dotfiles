@@ -47,6 +47,7 @@ hl.on("hyprland.start", function()
     hl.dispatch(hl.dsp.exec_cmd(discord, { workspace = "name:super-1-4 silent" }))
 
     hl.exec_cmd("bash ~/.config/hypr/autostart.sh")
+    hl.exec_cmd("~/.local/bin/super-workspace-urgent-watch.sh")
 end)
 
 -- === VARIÁVEIS DE AMBIENTE =======================

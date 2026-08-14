@@ -74,6 +74,11 @@ tooltip * {
   border-bottom-color: transparent;
 }
 
+#custom-super-workspace.urgent {
+  color: @foreground;
+  border-bottom: 1px solid @foreground;
+}
+
 /* === JANELA ATIVA ============================== */
 #window {
   font-weight: bold;

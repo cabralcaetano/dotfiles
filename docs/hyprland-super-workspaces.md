@@ -1,6 +1,6 @@
 # Hyprland Super Workspaces
 
-**Status:** implementado e verificado (2026-08-11) — bancos independentes de workspaces `1..9/0` por super workspace.
+**Status:** implementado e verificado (2026-08-13) — bancos independentes de workspaces `1..9/0` por super workspace, mais marca de urgente/notificação cross-banco.
 **Contexto:** Hyprland 0.56.x em configuração Lua, monitor único, Waybar mostrando apenas os slots do super workspace ativo.
 
 ## Objetivo
@@ -32,6 +32,7 @@ Os números continuam sendo os mesmos na tecla e nos nomes internos; a Waybar mo
 | `hypr/.config/hypr/hyprland.lua` | Binds `SUPER+1..9/0`, `SUPER+Tab`, `SUPER+S` chamam o script. |
 | `waybar/.config/waybar/config.jsonc` | Adiciona `custom/super-workspace` e filtra `hyprland/workspaces`. |
 | `waybar/.config/waybar/style.css` | Ajusta o ícone do super workspace e preserva o espaçamento dos numerais. |
+| `scripts/.local/bin/super-workspace-urgent-watch.sh` | Escuta `urgent>>` no socket IPC do Hyprland; mantém `~/.cache/hypr/super-workspace-urgent-banks`. |
 
 ## Estado
 
@@ -97,7 +98,7 @@ A barra da esquerda fica:
 
 Componentes:
 
-- `custom/super-workspace`: executa `super-workspace.sh waybar` e recebe JSON no formato `{"text":"...","tooltip":"..."}`.
+- `custom/super-workspace`: executa `super-workspace.sh waybar` e recebe JSON no formato `{"text":"...","tooltip":"...","class":[...]}`.
 - `hyprland/workspaces`: continua sendo o módulo nativo, preservando clique/scroll nos workspaces.
 - `ignore-workspaces`: é reescrito pelo script em cada `next`/`prev` para mostrar só nomes com prefixo do super workspace ativo.
 
@@ -120,6 +121,57 @@ O ícone é clicável:
 |---|---|
 | Click esquerdo | `super-workspace.sh next` |
 | Click direito | `super-workspace.sh prev` |
+
+### Marca de urgente/notificação entre bancos
+
+`hyprland/workspaces` só mostra os slots do banco ativo (`ignore-workspaces`),
+então um `urgent` hint (Hyprland marca a janela quando ela pede atenção) num
+banco escondido fica invisível — não tem como saber que o super workspace `2`
+tem algo pra ver enquanto você está no `1`.
+
+**`hyprctl clients -j` não expõe o campo `urgent` nesse build (0.56.2)** —
+verificado empiricamente: a chave simplesmente não existe no JSON, `jq` só
+devolve `null` porque a chave está ausente. O único jeito de saber que uma
+janela virou urgente é escutar o evento `urgent>>ADDR` no socket IPC
+(`.socket2.sock`) — é assim que a própria Waybar detecta urgência pro
+`hyprland/workspaces`. Então isso não dá pra fazer com polling; precisa de
+um listener rodando.
+
+`scripts/.local/bin/super-workspace-urgent-watch.sh`:
+
+- conecta em `.socket2.sock` via `socat` (loop de respawn se a conexão cair);
+- em `urgent>>ADDR`, resolve `ADDR` pra `workspace.name` via
+  `hyprctl clients -j` e marca o banco (`super-<n>-`) em
+  `~/.cache/hypr/super-workspace-urgent-banks`;
+- em `workspace>>`/`workspacev2>>` (troca de foco), desmarca o banco da
+  workspace visitada — mesmo comportamento do Hyprland limpando urgência ao
+  focar. Fechar a janela urgente sem visitar o banco NÃO limpa a marca (não
+  há rastreio por janela, só a flag do banco).
+- reload da Waybar (`SIGUSR2`) a cada marca/desmarca, pro ícone atualizar na
+  hora em vez de esperar o próximo evento do módulo.
+
+Autostart em `hyprland.lua` (`hl.on("hyprland.start", ...)`). Reiniciar o
+watcher perde marcas já setadas até o próximo evento `urgent>>` reafirmar.
+
+`bank_has_urgent()` em `super-workspace.sh` só lê esse arquivo de estado.
+`waybar_payload()`:
+
+- marca `"class":["urgent"]` no payload do ícone quando QUALQUER banco que
+  não é o ativo está na lista;
+- adiciona `!` na linha do tooltip do banco urgente (ex.: `  ~ 2 !`).
+
+`style.css` estende a mesma marca visual dos workspaces individuais
+(`#workspaces button.urgent`, sublinhado `border-bottom` na cor do
+foreground) para `#custom-super-workspace.urgent`. Urgência do próprio banco
+ativo não precisa desse tratamento: `hyprland/workspaces` já sublinha o slot
+individual normalmente.
+
+Verificado ponta-a-ponta: janela ghostty silenciosa no banco `1` (inativo,
+banco ativo era `2`), `BEL` (`\a`) escrito direto no pty do processo pra
+disparar o hint de urgência sem precisar de foco → evento `urgent>>` capturado
+→ `super-workspace-urgent-banks` marcado com `1` → payload da Waybar virou
+`{"class":["urgent"]}` → screenshot confirmou o sublinhado branco sob o `~`
+→ `switch 1` limpou o arquivo de estado e o payload voltou a `"class":[]`.
 
 ## Ícones
 
