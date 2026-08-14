@@ -73,6 +73,6 @@ while true; do
         [ -n "$bank" ] && unmark_bank "$bank"
         ;;
     esac
-  done
+  done || true
   sleep 1
 done
