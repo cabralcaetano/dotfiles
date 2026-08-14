@@ -339,6 +339,16 @@ hl.window_rule({
     center = true,
 })
 
+-- File chooser do portal (VS Code Ctrl+K Ctrl+O etc.) abre tiled por padrão;
+-- força flutuante no mesmo tamanho do GNOME Calendar
+hl.window_rule({
+    name   = "portal-filechooser-float",
+    match  = { class = "^(xdg-desktop-portal-gtk)$" },
+    float  = true,
+    size   = {882, 575},
+    center = true,
+})
+
 -- GNOME Calculator abre compacta e flutuante
 hl.window_rule({
     name   = "gnome-calculator-float",

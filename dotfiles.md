@@ -577,12 +577,15 @@ Ver guia completo: [[ducking]]
 | Overskride (Bluetooth) | Float, 800×500, centralizado |
 | pavucontrol (áudio) | Float, 800×500, centralizado |
 | GNOME Calendar (Quickshell) | Float, 882×575, centralizado |
+| xdg-desktop-portal-gtk (file chooser nativo, ex.: Ctrl+K Ctrl+O no VS Code) | Float, 882×575, centralizado — mesmo tamanho do GNOME Calendar |
 | GNOME Calculator | Float, 380×540, centralizado |
 | Bitwarden | Float, 1000×800, centralizado |
 | Waydroid YouCine | Fullscreen, renderiza no tamanho lógico do monitor |
 | Todas as janelas | suppress maximize events |
 | XWayland float sem classe | no_focus (fix drag) |
 | hyprland-run | Float, ancorado no canto inferior esquerdo do monitor |
+
+**Bug do file chooser do portal (14/08/2026):** o diálogo nativo de abrir arquivo/pasta (`xdg-desktop-portal-gtk`, usado pelo VS Code e outros apps via `org.freedesktop.impl.portal.FileChooser=gtk` em `hyprland-portals.conf`) não tinha `window_rule` própria, então abria **tiled** no layout dwindle em vez de flutuante — por isso o tamanho ficava esticado/desproporcional e ajustar `gsettings org.gtk.Settings.FileChooser window-size` não tinha efeito nenhum (a janela nunca chegava a aplicar o tamanho default do GTK, já que não era float). A regra acima força float no mesmo tamanho do calendário.
 
 ## Scripts customizados
 
