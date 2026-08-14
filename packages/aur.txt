@@ -1,6 +1,6 @@
 # Pacotes AUR — precisam de um AUR helper (yay)
 # Instalar: yay -S --needed $(grep -v '^#' packages/aur.txt | grep -v '^$')
-# Atualizado: 2026-08-10 · Arch Linux
+# Atualizado: 2026-08-14 · Arch Linux
 
 # --- Compositor / Wayland ---
 # waybar-git: fix do clique em hyprland/workspaces com dispatcher Lua do
@@ -17,3 +17,7 @@ overskride-bin
 spotify-launcher
 visual-studio-code-bin
 wlogout
+
+# --- Escritório ---
+# dicionário pt-BR para o LibreOffice/hunspell (não existe nos repos oficiais)
+hunspell-pt-br

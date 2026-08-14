@@ -1,7 +1,7 @@
 # Pacotes pacman — curados (não é o dump completo do sistema)
 # Instalar (oficiais): sudo pacman -S --needed $(grep -v '^#' packages/pacman.txt | grep -v '^$')
 # Pacotes AUR ficam em packages/aur.txt — precisam de um AUR helper (yay).
-# Atualizado: 2026-08-10 · Arch Linux
+# Atualizado: 2026-08-14 · Arch Linux
 
 # --- Compositor / Wayland ---
 hyprland
@@ -128,6 +128,17 @@ ttf-liberation
 ttf-dejavu
 ttf-roboto
 cantarell-fonts
+# metric-compatible com fontes MS (docs .docx/.xlsx abrem sem quebrar layout)
+# ttf-caladea → Cambria · ttf-carlito → Calibri · ttf-croscore → Arial/Times/Courier
+ttf-caladea
+ttf-carlito
+ttf-croscore
+# famílias para documento e apresentação (LibreOffice)
+ttf-opensans
+adobe-source-sans-fonts
+adobe-source-serif-fonts
+ttf-fira-sans
+noto-fonts-extra
 
 # --- Virtualização / Windows VM (ver docs/windows-vm-incogniton.md) ---
 qemu-full
@@ -141,6 +152,11 @@ iptables
 openbsd-netcat
 spice-gtk
 libisoburn
+
+# --- Escritório ---
+libreoffice-fresh
+libreoffice-fresh-pt-br
+# corretor ortográfico pt-BR: hunspell-pt-br está no AUR (packages/aur.txt)
 
 # --- Diversos ---
 fastfetch
