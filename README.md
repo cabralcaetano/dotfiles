@@ -616,6 +616,14 @@ stow --target="$HOME" desktop-apps
 | VS Code | 1.122.1 | Claude Code, Python, Prettier, ESLint, Error Lens, Live Server |
 | Neovim | 0.12.2 | — |
 
+
+**Neovim**
+
+| Atalho | Ação |
+|---|---|
+| Alt+1..9 | Vai para a aba/buffer visível na `bufferline.nvim` |
+| Alt+h/j/k/l | Move foco entre splits do Neovim |
+| Alt+Setas | Move foco entre splits do Neovim |
 ---
 
 ## Agent harnesses e skills
