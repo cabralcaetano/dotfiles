@@ -35,3 +35,16 @@ for key, direction in pairs(split_directions) do
     desc = "Focus split " .. direction,
   })
 end
+
+-- From an embedded terminal, keep the standard Ctrl-w split navigation working.
+vim.keymap.set("t", "<C-w><C-w>", "<C-\\><C-n><Cmd>wincmd w<CR>", {
+  desc = "Focus next split",
+})
+
+for key, direction in pairs(split_directions) do
+  local lhs = #key == 1 and "<C-w>" .. key or "<C-w><" .. key .. ">"
+
+  vim.keymap.set("t", lhs, "<C-\\><C-n><Cmd>wincmd " .. direction .. "<CR>", {
+    desc = "Focus split " .. direction,
+  })
+end
