@@ -621,6 +621,8 @@ stow --target="$HOME" desktop-apps
 | Atalho | Ação |
 |---|---|
 | Alt+1..9 | Vai para a aba/buffer visível na `bufferline.nvim` |
+| Ctrl+t | Cria uma aba/buffer vazio (`:enew`) |
+| Ctrl+w | Fecha a aba/buffer atual sem fechar o split |
 | Alt+h/j/k/l | Move foco entre splits do Neovim |
 | Alt+Setas | Move foco entre splits do Neovim |
 | Ctrl-w Ctrl-w | No terminal embutido, alterna para o próximo split |

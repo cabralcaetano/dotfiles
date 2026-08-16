@@ -2,6 +2,22 @@
 -- Default keymaps that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- Add any additional keymaps here
 
+-- New empty buffer/tab, matching the common browser/editor Ctrl+t muscle memory.
+vim.keymap.set({ "n", "i" }, "<C-t>", "<Cmd>enew<CR>", {
+  desc = "New empty buffer",
+})
+
+vim.keymap.set("t", "<C-t>", "<C-\\><C-n><Cmd>enew<CR>", {
+  desc = "New empty buffer",
+})
+
+-- Close the current buffer/tab without closing the split layout.
+vim.keymap.set({ "n", "i" }, "<C-w>", function()
+  Snacks.bufdelete()
+end, {
+  desc = "Close current buffer",
+})
+
 -- Bufferline tabs: Alt+1..9 jumps to the visible buffer tab number.
 -- Works with the top tab bar shown by bufferline.nvim, not with splits/windows.
 for i = 1, 9 do
