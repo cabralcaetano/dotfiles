@@ -22,6 +22,7 @@ Regras:
 - Se uma skill instalada mudar em `~/.omp/agent/skills/` ou `~/.claude/skills/`, copiar a mudança para `claude/.claude/skills/` quando ela virar contrato estável.
 - O clone ativo de aplicação é `~/Projects/dotfiles`; o submodule em `wiki-ia/personal/projects/dotfiles/` deve ser mantido sincronizado quando a mudança for operacional.
 
+## Estrutura versionada
 ```text
 claude/.claude/skills/
 └── teachflow-board/
