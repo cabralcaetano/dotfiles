@@ -1,0 +1,69 @@
+# Tema "matte-black" — variante grayscale conforme preview clássico.
+# Nota: o Omarchy Quattro atual usa accent laranja; este port segue a captura
+# enviada pelo usuário: preto fosco + cinzas, sem highlights coloridos.
+
+# UI (Hyprland borders, Waybar, SwayNC, Hyprlock, Fuzzel)
+background    = "#0f0f10"
+surface       = "#18181b"
+surface_hover = "#252529"
+foreground    = "#f0f0f0"
+accent        = "#8a8a8d"
+error         = "#9c5b5f"
+
+# Terminal (Ghostty)
+term_foreground           = "#deddda"
+term_cursor               = "#deddda"
+term_selection_background = "#303030"
+term_selection_foreground = "#c0bfbc"
+
+# Paleta ANSI igual ao tema normal; só o background real continua matte-black.
+color0  = "#1d1d20"
+color1  = "#ed333b"
+color2  = "#57e389"
+color3  = "#ff7800"
+color4  = "#62a0ea"
+color5  = "#9141ac"
+color6  = "#5bc8af"
+color7  = "#deddda"
+color8  = "#9a9996"
+color9  = "#f66151"
+color10 = "#8ff0a4"
+color11 = "#ffa348"
+color12 = "#99c1f1"
+color13 = "#dc8add"
+color14 = "#93ddc2"
+color15 = "#f6f5f4"
+
+# Integração desktop estilo Omarchy
+mode = "dark"
+icon_theme = "MatteBlack"
+gtk_theme = "adw-gtk3-dark"
+gtk4_theme = "Adwaita-dark"
+window_rounding = 0
+border_size = 2
+gaps_in = 3.0
+gaps_out = 6.0
+
+# Quickshell/SwayNC: matte-black é o único tema preto e quadrado.
+quick_panel_background = "#0f0f10"
+quick_card_background = "#0f0f10"
+quick_hover_background = "#0f0f10"
+quick_panel_opacity = 0.78
+quick_card_opacity = 0.78
+quick_hover_opacity = 0.85
+quick_panel_radius = 0
+quick_card_radius = 0
+quick_button_radius = 0
+quick_switch_radius = 0
+quick_box_shadow = "none"
+quick_clock_width = 600
+quick_clock_height = 380
+quick_clock_scale = 0.75
+quick_clock_margin = 12
+quick_clock_spacing = 8
+quick_clock_left_width = 288
+quick_clock_right_width = 280
+quick_clock_top_height = 180
+quick_clock_bottom_height = 160
+quick_clock_art_size = 80
+quick_clock_control_height = 26

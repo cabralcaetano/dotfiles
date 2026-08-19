@@ -1,8 +1,11 @@
 /* Gerado por theme-set.sh — NÃO editar à mão, sobrescrito a cada troca de tema. */
 /* Fonte: themes/<tema>/colors.toml */
-@define-color background #1d1d20;
-@define-color surface #2a2a2e;
-@define-color surface_hover #323236;
-@define-color foreground #ffffff;
-@define-color accent #a0a0a0;
-@define-color error #ff6464;
+@define-color background #0f0f10;
+@define-color surface #18181b;
+@define-color surface_hover #252529;
+@define-color foreground #f0f0f0;
+@define-color accent #8a8a8d;
+@define-color error #9c5b5f;
+@define-color quick_panel_background #0f0f10;
+@define-color quick_card_background #0f0f10;
+@define-color quick_hover_background #0f0f10;

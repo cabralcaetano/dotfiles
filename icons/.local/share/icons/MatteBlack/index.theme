@@ -1,0 +1,19 @@
+[Icon Theme]
+Name=MatteBlack
+Comment=Matte black grayscale folder overrides for Hyprland theme-set
+Inherits=Adwaita,hicolor
+Directories=scalable/places,symbolic/places
+
+[scalable/places]
+Size=64
+Type=Scalable
+MinSize=16
+MaxSize=512
+Context=Places
+
+[symbolic/places]
+Size=16
+Type=Scalable
+MinSize=16
+MaxSize=64
+Context=Places

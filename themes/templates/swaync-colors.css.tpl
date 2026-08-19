@@ -6,3 +6,6 @@
 @define-color foreground #{{ foreground_strip }};
 @define-color accent #{{ accent_strip }};
 @define-color error #{{ error_strip }};
+@define-color quick_panel_background #{{ quick_panel_background_strip }};
+@define-color quick_card_background #{{ quick_card_background_strip }};
+@define-color quick_hover_background #{{ quick_hover_background_strip }};

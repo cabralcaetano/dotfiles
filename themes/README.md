@@ -1,29 +1,28 @@
 # themes/ — theme-set (paleta de cor system-wide)
 
-**Status:** implementado — 2 temas ativos (`normal`, `catppuccin`), aplicáveis via
-`scripts/.local/bin/theme-set.sh <nome>` (symlinkado em `~/.local/bin/theme-set.sh`).
+**Status:** implementado — 5 temas ativos (`normal`, `matte-black`,
+`tokyo-night`, `kanagawa`, `catppuccin`), aplicáveis via
+`scripts/.local/bin/theme-set.sh <nome>` (symlinkado em
+`~/.local/bin/theme-set.sh`) ou pelo seletor visual `theme-picker.sh`.
 
 ## Mecanismo (adaptado de `bin/omarchy-theme-set` do Omarchy)
 
 1. **`themes/<tema>/colors.toml`** — fonte de verdade da paleta. Schema fixo
    (ver `themes/normal/colors.toml` como referência): `background`, `surface`,
-   `surface_hover`, `foreground`, `accent`, `error` (paleta de UI); `term_*`
-   (paleta específica do terminal, off-white mais suave que a UI); `color0`–
-   `color15` (paleta ANSI de 16 cores, usada por Ghostty e btop).
-2. **`themes/templates/*.tpl`** — um template por app, com placeholders
-   `{{ chave }}` (valor com `#`) e `{{ chave_strip }}` (sem `#`, pra formatos
+   `surface_hover`, `foreground`, `accent`, `error`; `term_*`; `color0`–
+   `color15`; integrações desktop (`gtk_theme`, `icon_theme`, `window_rounding`,
+   gaps/bordas); e parâmetros de UI (`quick_*`) para Quickshell/SwayNC.
+2. **`themes/templates/*.tpl`** — templates por app, com placeholders
+   `{{ chave }}` (valor com `#`) e `{{ chave_strip }}` (sem `#`, para formatos
    hex-sem-hash como `rgba(a0a0a0ff)`).
-3. **`theme-set.sh <tema>`** monta um sed dinâmico a partir do `colors.toml` e
-   renderiza cada `.tpl` direto no arquivo real do repo (que o Stow já
-   symlinka pro `$HOME`) — sem diretório intermediário/swap atômico como o
-   Omarchy faz, porque aqui cada app tem só um arquivo pequeno **dedicado**
-   à cor (ver tabela abaixo), então regenerar o arquivo inteiro já é atômico
-   o bastante (a escrita do `sed` é para um arquivo só, sem tocar no resto
-   da config do app).
-4. **Reload em cascata**: `hyprctl reload` (Hyprland + hyprlock, que relê o
-   `colors.conf` na próxima chamada), restart do Waybar (não tem hot-reload
-   de CSS), `swaync-client --reload-css`, `pkill -SIGUSR2 btop`. Fuzzel e
-   Hyprlock não têm daemon — leem o config na hora que abrem.
+3. **`theme-set.sh <tema>`** monta um `sed` dinâmico a partir do `colors.toml` e
+   renderiza os arquivos reais do repo (que o Stow symlinka para `$HOME`):
+   arquivos pequenos de cor quando o app suporta include e templates inteiros
+   onde o visual é parte do tema (`swaync/style.css`, Quickshell clock-panel,
+   Quickshell theme-picker).
+4. **Reload em cascata**: `hyprctl reload`, Waybar, `swaync-client --reload-css`,
+   btop, GTK/Qt/icon theme; o shell Quickshell ativo é reiniciado/preloaded
+   quando necessário para evitar seletor frio na primeira abertura.
 
 ## Por que cada app é um arquivo `.tpl` isolado, e não a config inteira
 
@@ -43,7 +42,8 @@ incluído/importado pelo config real:
 | Fuzzel | `include=~/.config/fuzzel/colors.ini` (fuzzel ≥ 1.10) | `fuzzel/.config/fuzzel/colors.ini` |
 | Waybar | `@import url("colors.css");` + `@define-color` (GTK CSS) | `waybar/.config/waybar/colors.css` |
 | SwayNC | mesmo mecanismo do Waybar (GTK CSS) | `swaync/.config/swaync/colors.css` |
-| btop | não usa template — troca só `color_theme` no `btop.conf` entre `"Default"` (builtin, tema normal) e `"catppuccin-mocha"` (arquivo estático oficial do catppuccin/btop) | — |
+| btop | `theme-set.sh` escolhe `color_theme` no `btop.conf` | temas estáticos em `btop/.config/btop/themes/*.theme` |
+| Quickshell | templates QML + JS renderizados | `clock-panel/shell.qml`, `theme-picker/shell.qml`, `theme.js` |
 
 Cada config real (`waybar/style.css`, `swaync/style.css` etc.) foi refatorado
 pra referenciar essas cores por nome (`@accent`, `$fg_color`, etc.) em vez de
@@ -52,22 +52,26 @@ mais no config continua intocado.
 
 ## Temas disponíveis
 
-- **`normal`** — paleta monocromática atual (Adwaita dark), extraída 1:1 dos
-  configs em 2026-08-07. Aplicar este tema é byte-idêntico ao estado anterior
-  à existência do theme-set (verificado via `git diff` vazio).
-- **`catppuccin`** — flavor Mocha, paleta oficial (catppuccin.com/palette),
-  conferida contra catppuccin/btop.
+- **`normal`** — Adwaita/cinza escuro, arredondado; preserva o visual histórico
+  do sistema e os painéis Quickshell cinza.
+- **`matte-black`** — preto fosco, quadrado, wallpaper próprio, ícones
+  MatteBlack, clock-panel Quickshell em 75% (`quick_clock_scale = 0.75`).
+- **`tokyo-night`** — paleta azul/roxa derivada do pacote Omarchy.
+- **`kanagawa`** — paleta escura Kanagawa derivada do pacote Omarchy.
+- **`catppuccin`** — flavor Mocha, paleta oficial (catppuccin.com/palette).
 
 ## Uso
 
 ```bash
-theme-set.sh normal        # volta pro monocromático
-theme-set.sh catppuccin    # aplica Catppuccin Mocha
+theme-set.sh normal
+theme-set.sh matte-black
+theme-set.sh tokyo-night
+theme-set.sh kanagawa
+theme-set.sh catppuccin
 ```
 
-Sem bind ainda — decisão consciente, pendente de escolher o seletor visual
-(fuzzel vs rofi vs waypaper, discutido em sessão anterior). O script já
-funciona standalone via CLI.
+Atalhos: `Super+T` e `Super+Ctrl+Shift+Space` abrem o theme-picker; `Super+R`
+abre/fecha Fuzzel via `fuzzel-toggle.sh` (ignora processos zumbis).
 
 ## Como adicionar um tema novo
 

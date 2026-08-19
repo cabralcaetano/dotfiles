@@ -1,9 +1,9 @@
 # Gerado por theme-set.sh — NÃO editar à mão, sobrescrito a cada troca de tema.
 # Fonte: themes/<tema>/colors.toml
-background = #1d1d20
+background = #0f0f10
 foreground = #deddda
 cursor-color = #deddda
-cursor-text = #1d1d20
+cursor-text = #0f0f10
 selection-background = #303030
 selection-foreground = #c0bfbc
 

@@ -1,0 +1,44 @@
+# Tema "kanagawa" — adaptado do Omarchy Quattro kanagawa.
+# Fonte upstream: https://github.com/basecamp/omarchy/tree/quattro/themes/kanagawa
+
+# UI (Hyprland borders, Waybar, SwayNC, Hyprlock, Fuzzel)
+background    = "#1f1f28"
+surface       = "#223249"
+surface_hover = "#363646"
+foreground    = "#dcd7ba"
+accent        = "#dcd7ba"
+error         = "#c34043"
+
+# Terminal (Ghostty)
+term_foreground           = "#dcd7ba"
+term_cursor               = "#dcd7ba"
+term_selection_background = "#363646"
+term_selection_foreground = "#dcd7ba"
+
+# Paleta ANSI de 16 cores — mapeada da paleta semântica do Omarchy kanagawa
+color0  = "#17171e"
+color1  = "#c34043"
+color2  = "#76946a"
+color3  = "#c0a36e"
+color4  = "#7e9cd8"
+color5  = "#957fb8"
+color6  = "#6a9589"
+color7  = "#dcd7ba"
+color8  = "#54546D"
+color9  = "#e82424"
+color10 = "#98bb6c"
+color11 = "#e6c384"
+color12 = "#7fb4ca"
+color13 = "#938aa9"
+color14 = "#7aa89f"
+color15 = "#dcd7ba"
+
+# Integração desktop estilo Omarchy
+mode = "dark"
+icon_theme = "breeze-dark"
+gtk_theme = "adw-gtk3-dark"
+gtk4_theme = "Adwaita-dark"
+window_rounding = 10
+border_size = 2
+gaps_in = 3.5
+gaps_out = 6.5

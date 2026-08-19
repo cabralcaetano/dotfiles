@@ -16,10 +16,25 @@ ShellRoot {
     property string mediaArtUrl: ""
     property string weatherText: "Carregando tempo…"
     property string statusText: "Carregando status…"
+    property int spotifyVolume: 0
+    property bool spotifyMuted: false
+    property bool spotifyVolumeAvailable: false
+    readonly property string spotifyVolumeScript: "/home/caetano/.local/bin/media-volume-spotify.sh"
+
+    function colorWithAlpha(value, alpha) {
+        const raw = String(value || "#000000").replace("#", "");
+        if (raw.length < 6) return Qt.rgba(0, 0, 0, alpha);
+
+        const r = parseInt(raw.slice(0, 2), 16) / 255;
+        const g = parseInt(raw.slice(2, 4), 16) / 255;
+        const b = parseInt(raw.slice(4, 6), 16) / 255;
+        return Qt.rgba(r, g, b, alpha);
+    }
 
     function refreshAll(): void {
         now = new Date();
         refreshMedia();
+        refreshSpotifyVolume();
         weatherProc.exec(weatherProc.command);
         statusProc.exec(statusProc.command);
     }
@@ -55,6 +70,43 @@ ShellRoot {
 
     function mediaStateIcon() {
         return mediaState === "Playing" ? "󰐊" : mediaState === "Paused" ? "󰏤" : "󰓛";
+    }
+
+    function refreshSpotifyVolume(): void {
+        spotifyVolumeProc.exec([root.spotifyVolumeScript, "get"]);
+    }
+
+    function updateSpotifyVolume(raw) {
+        const parts = raw.trim().split("|");
+        const vol = parseInt(parts[0], 10);
+        if (isNaN(vol) || vol < 0) {
+            spotifyVolumeAvailable = false;
+            spotifyVolume = 0;
+            spotifyMuted = false;
+            return;
+        }
+        spotifyVolumeAvailable = true;
+        spotifyVolume = vol;
+        spotifyMuted = parts[1] === "1";
+    }
+
+    function setSpotifyVolume(pct): void {
+        const clamped = Math.max(0, Math.min(100, Math.round(pct)));
+        spotifyVolume = clamped;
+        spotifyVolumeAvailable = true;
+        spotifyVolumeProc.exec([root.spotifyVolumeScript, "set", String(clamped)]);
+    }
+
+    function toggleSpotifyMute(): void {
+        spotifyVolumeProc.exec([root.spotifyVolumeScript, "mute"]);
+    }
+
+    function increaseSpotifyVolume(): void {
+        spotifyVolumeProc.exec([root.spotifyVolumeScript, "up"]);
+    }
+
+    function decreaseSpotifyVolume(): void {
+        spotifyVolumeProc.exec([root.spotifyVolumeScript, "down"]);
     }
 
     function weatherLabel(raw) {
@@ -194,6 +246,12 @@ ShellRoot {
         command: ["/home/caetano/.local/bin/media-open-spotify.sh"]
     }
 
+    Process {
+        id: spotifyVolumeProc
+        command: [root.spotifyVolumeScript, "get"]
+        stdout: StdioCollector { onStreamFinished: root.updateSpotifyVolume(text) }
+    }
+
     IpcHandler {
         target: "clockPanel"
 
@@ -266,31 +324,37 @@ ShellRoot {
 
             Rectangle {
                 id: panel
-                width: 650
-                height: 400
+                width:  600
+                height:  380
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
+                transform: Scale {
+                    origin.x: panel.width / 2
+                    origin.y: 0
+                    xScale:  0.75
+                    yScale:  0.75
+                }
                 anchors.topMargin: 0
-                radius: 12
-                color: "#e61d1d20"
-                border.color: "#33a0a0a0"
+                radius:  0
+                color: root.colorWithAlpha("#0f0f10",  0.78)
+                border.color: root.colorWithAlpha("#8a8a8d", 0.2)
                 border.width: 1
 
                 MouseArea { anchors.fill: parent }
 
                 Column {
                     anchors.fill: parent
-                    anchors.margins: 14
-                    spacing: 10
+                    anchors.margins:  12
+                    spacing:  8
 
 
                     Row {
                         width: parent.width
-                        spacing: 10
+                        spacing:  8
 
                         Column {
-                            width: 315
-                            spacing: 10
+                            width:  288
+                            spacing:  8
 
                             MediaBox {
                                 width: parent.width
@@ -313,8 +377,8 @@ ShellRoot {
                         }
 
                         Column {
-                            width: 297
-                            spacing: 10
+                            width:  280
+                            spacing:  8
 
                             WeatherBox {
                                 width: parent.width
@@ -337,6 +401,16 @@ ShellRoot {
             sequence: "Escape"
             onActivated: root.panelVisible = false
         }
+
+        Shortcut {
+            sequence: "Ctrl+Up"
+            onActivated: root.increaseSpotifyVolume()
+        }
+
+        Shortcut {
+            sequence: "Ctrl+Down"
+            onActivated: root.decreaseSpotifyVolume()
+        }
     }
 
     component MediaBox: Rectangle {
@@ -347,10 +421,10 @@ ShellRoot {
         required property string albumText
         required property string artUrl
 
-        height: 180
-        radius: 10
-        color: "#cc2a2a2e"
-        border.color: "#26a0a0a0"
+        height:  180
+        radius:  0
+        color: root.colorWithAlpha("#0f0f10",  0.78)
+        border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
         Column {
@@ -373,12 +447,12 @@ ShellRoot {
                 spacing: 10
 
                 Rectangle {
-                    width: 88
-                    height: 88
-                    radius: 9
+                    width:  80
+                    height:  80
+                    radius:  0
                     clip: true
-                    color: "#991d1d20"
-                    border.color: "#26a0a0a0"
+                    color: root.colorWithAlpha("#0f0f10",  0.78)
+                    border.color: root.colorWithAlpha("#8a8a8d", 0.28)
                     border.width: 1
 
                     Image {
@@ -406,8 +480,8 @@ ShellRoot {
                 }
 
                 Column {
-                    width: parent.width - 98
-                    height: 88
+                    width: parent.width -  80 - 10
+                    height:  80
                     spacing: 5
 
                     Text {
@@ -452,25 +526,108 @@ ShellRoot {
 
                 ControlButton {
                     fixedWidth: parent.sideButtonWidth
-                    buttonHeight: 28
+                    buttonHeight:  26
                     label: "󰒮"
                     command: ["playerctl", "previous"]
                     onClicked: root.scheduleMediaRefresh()
                 }
                 ControlButton {
                     fixedWidth: parent.playButtonWidth
-                    buttonHeight: 28
+                    buttonHeight:  26
                     label: stateText === "Playing" ? "󰏤 pause" : "󰐊 play"
                     command: ["playerctl", "play-pause"]
                     onClicked: root.scheduleMediaRefresh()
                 }
                 ControlButton {
                     fixedWidth: parent.sideButtonWidth
-                    buttonHeight: 28
+                    buttonHeight:  26
                     label: "󰒭"
                     command: ["playerctl", "next"]
                     onClicked: root.scheduleMediaRefresh()
                 }
+            }
+
+            VolumeSlider {
+                width: parent.width
+                value: root.spotifyVolume
+                muted: root.spotifyMuted
+                available: root.spotifyVolumeAvailable
+                onChanged: (pct) => root.setSpotifyVolume(pct)
+                onMuteToggled: root.toggleSpotifyMute()
+            }
+        }
+    }
+
+    component VolumeSlider: Item {
+        id: volumeSlider
+        required property int value
+        required property bool muted
+        required property bool available
+        signal changed(real pct)
+        signal muteToggled
+
+        height: 20
+
+        Row {
+            anchors.fill: parent
+            spacing: 8
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                width: 16
+                horizontalAlignment: Text.AlignHCenter
+                color: "#deddda"
+                font.family: "JetBrainsMono Nerd Font"
+                font.pixelSize: 13
+                opacity: volumeSlider.available ? 1 : 0.4
+                text: volumeSlider.muted || !volumeSlider.available ? "󰝟" : volumeSlider.value > 60 ? "󰕾" : volumeSlider.value > 0 ? "󰖀" : "󰕿"
+
+                MouseArea {
+                    anchors.fill: parent
+                    enabled: volumeSlider.available
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: volumeSlider.muteToggled()
+                }
+            }
+
+            Rectangle {
+                id: track
+                width: parent.width - 16 - 34 - parent.spacing * 2
+                height: 3
+                anchors.verticalCenter: parent.verticalCenter
+                radius:  0
+                color: root.colorWithAlpha("#0f0f10",  0.78)
+                border.color: root.colorWithAlpha("#8a8a8d", 0.28)
+                border.width: 1
+                opacity: volumeSlider.available ? 1 : 0.4
+
+                Rectangle {
+                    width: Math.max(0, track.width * Math.max(0, Math.min(100, volumeSlider.muted ? 0 : volumeSlider.value)) / 100 - 2)
+                    height: parent.height - 2
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.leftMargin: 1
+                    radius: 0
+                    color: "#ffffff"
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    enabled: volumeSlider.available
+                    cursorShape: Qt.PointingHandCursor
+                    onPressed: (mouse) => volumeSlider.changed(mouse.x / track.width * 100)
+                    onPositionChanged: (mouse) => { if (pressed) volumeSlider.changed(mouse.x / track.width * 100); }
+                }
+            }
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                width: 34
+                horizontalAlignment: Text.AlignRight
+                color: "#a0a0a0"
+                font.family: "JetBrainsMono Nerd Font"
+                font.pixelSize: 11
+                text: !volumeSlider.available ? "n/d" : volumeSlider.muted ? "mudo" : volumeSlider.value + "%"
             }
         }
     }
@@ -483,20 +640,20 @@ ShellRoot {
         signal nextClicked
         signal openClicked
 
-        height: 180
-        radius: 10
-        color: "#cc2a2a2e"
-        border.color: "#26a0a0a0"
+        height:  160
+        radius:  0
+        color: root.colorWithAlpha("#0f0f10",  0.78)
+        border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
         Column {
             anchors.fill: parent
-            anchors.margins: 10
-            spacing: 6
+            anchors.margins: 8
+            spacing: 4
 
             Row {
                 width: parent.width
-                height: 18
+                height: Math.max(16,  26 - 10)
                 spacing: 4
 
                 Text {
@@ -542,16 +699,16 @@ ShellRoot {
                         required property var modelData
 
                         width: (calendarGrid.width - calendarGrid.columnSpacing * 6) / 7
-                        height: 18
+                        height:  0 === 0 ? 15 : 18
                         color: "transparent"
 
                         Rectangle {
                             anchors.centerIn: parent
-                            width: 18
-                            height: 18
-                            radius: 5
-                            color: modelData.today ? "#22a0a0a0" : "transparent"
-                            border.color: "#26a0a0a0"
+                            width:  0 === 0 ? 16 : 18
+                            height:  0 === 0 ? 15 : 18
+                            radius:  0
+                            color: modelData.today ? root.colorWithAlpha("#8a8a8d", 0.28) : "transparent"
+                            border.color: root.colorWithAlpha("#8a8a8d", 0.28)
                             border.width: modelData.today ? 1 : 0
                         }
 
@@ -560,7 +717,7 @@ ShellRoot {
                             color: modelData.header ? "#deddda" : "#ffffff"
                             horizontalAlignment: Text.AlignHCenter
                             font.family: "JetBrainsMono Nerd Font"
-                            font.pixelSize: 12
+                            font.pixelSize:  0 === 0 ? 11 : 12
                             font.bold: modelData.header
                             text: modelData.text
                         }
@@ -575,10 +732,10 @@ ShellRoot {
         signal clicked
 
         width: 18
-        height: 18
-        radius: 5
-        color: navArea.containsMouse ? "#33a0a0a0" : "transparent"
-        border.color: "#26a0a0a0"
+        height:  0 === 0 ? 16 : 18
+        radius:  0
+        color: navArea.containsMouse ? root.colorWithAlpha("#0f0f10",  0.85) : "transparent"
+        border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
         Text {
@@ -602,10 +759,10 @@ ShellRoot {
     component WeatherBox: Rectangle {
         required property string weatherText
 
-        height: 180
-        radius: 10
-        color: "#cc2a2a2e"
-        border.color: "#26a0a0a0"
+        height:  180
+        radius:  0
+        color: root.colorWithAlpha("#0f0f10",  0.78)
+        border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
         Column {
@@ -638,10 +795,10 @@ ShellRoot {
     component SystemBox: Rectangle {
         required property string systemText
 
-        height: 180
-        radius: 10
-        color: "#cc2a2a2e"
-        border.color: "#26a0a0a0"
+        height:  160
+        radius:  0
+        color: root.colorWithAlpha("#0f0f10",  0.78)
+        border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
         Column {
@@ -729,9 +886,9 @@ ShellRoot {
 
         width: fixedWidth > 0 ? fixedWidth : Math.max(minWidth, buttonText.implicitWidth + 24)
         height: buttonHeight
-        radius: 8
-        color: clickArea.containsMouse ? "#33a0a0a0" : "#cc2a2a2e"
-        border.color: "#26a0a0a0"
+        radius:  0
+        color: root.colorWithAlpha(clickArea.containsMouse ? "#0f0f10" : "#0f0f10", clickArea.containsMouse ?  0.85 :  0.78)
+        border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
         Text {

@@ -14,6 +14,7 @@ obsidian/workspace-mobile.json
 # Cache / runtime
 *.tmp
 *.swp
+**/icon-theme.cache
 
 # Plugins do tmux (TPM clona aqui por causa do symlink XDG ~/.config/tmux →
 # este diretório — não versionar, bootstrap.sh recria via TPM)

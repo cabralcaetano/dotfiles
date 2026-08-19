@@ -6,7 +6,7 @@ font-size = 13
 config-file = colors.ghostty
 
 # === Transparência ===
-background-opacity = 0.85
+background-opacity = 0.78
 background-blur-radius = 20
 
 # === Janela ===

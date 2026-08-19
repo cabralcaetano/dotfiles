@@ -89,6 +89,7 @@ O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma v
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
 > | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md); não é o caminho primário atual |
 > | **Reflector (mirrorlist automático)** | `/etc/xdg/reflector/reflector.conf` | copiar `reflector/etc/xdg/reflector/reflector.conf`; depois `sudo systemctl enable --now reflector.timer` (ranqueia mirrors do Brasil por velocidade, semanalmente) |
+> | **Impressora (HP DeskJet 2774)** | CUPS + hplip, Wi-Fi da impressora | ver [`docs/printer-hp-deskjet-2774.md`](docs/printer-hp-deskjet-2774.md) — assistente gráfico da HP é instável, usar `scripts/.local/bin/hp-wifi-connect.py` |
 
 ### Manifestos de pacote
 
@@ -423,23 +424,35 @@ flatpak override --user \
 
 ## Temas
 
-`theme-set.sh <tema>` troca a paleta de cor do sistema inteiro — Hyprland
-(borda), Hyprlock, Ghostty, Fuzzel, Waybar, SwayNC e btop — regenerando um
-arquivo de cor dedicado por app (incluído/importado pelo config real, sem
-tocar no resto) a partir de `themes/<tema>/colors.toml`. Mecanismo adaptado
-do `omarchy-theme-set` do Omarchy, mas standalone (sem Walker/Elephant/CLI
-de outra distro).
+`theme-set.sh <tema>` troca a paleta do sistema inteiro — Hyprland, Hyprlock,
+Ghostty, Kitty, Fuzzel, Waybar, SwayNC, Quickshell, Neovim, tmux, GTK/Qt e btop
+— regenerando templates a partir de `themes/<tema>/colors.toml`. Mecanismo
+adaptado do `omarchy-theme-set`, mas standalone.
 
 ```bash
-theme-set.sh normal        # paleta monocromática atual (Adwaita dark)
-theme-set.sh catppuccin    # Catppuccin Mocha
+theme-set.sh normal       # cinza/Adwaita, redondo
+theme-set.sh matte-black  # preto fosco, quadrado
+theme-set.sh tokyo-night
+theme-set.sh kanagawa
+theme-set.sh catppuccin
 ```
 
-Sem bind ainda — só CLI, aguardando decisão do seletor visual (fuzzel vs
-rofi vs waypaper). Registro de decisão/contexto (por que dois "foreground",
-por que btop não é templatizado, verificação feita) em
-[`docs/theme-switching.md`](docs/theme-switching.md); referência técnica de
-schema/templates/como adicionar tema em [`themes/README.md`](themes/README.md).
+Atalhos:
+
+| Atalho | Ação |
+|---|---|
+| Super+T | Seletor visual de temas (Quickshell) |
+| Super+Ctrl+Shift+Space | Mesmo seletor, compatível com o hábito do Omarchy |
+| Super+Shift+W | Cicla wallpapers do diretório ativo |
+
+`normal` preserva os painéis Quickshell cinza/arredondados; `matte-black` aplica
+painéis pretos/quadrados e reduz o clock-panel para 75% via
+`quick_clock_scale`. Hyprland aplica blur nas layers `quickshell`,
+`swaync-control-center` e `launcher` com `ignore_alpha` para não borrar a tela
+inteira.
+
+Registro de decisão/contexto em [`docs/theme-switching.md`](docs/theme-switching.md);
+referência técnica de schema/templates em [`themes/README.md`](themes/README.md).
 
 ---
 

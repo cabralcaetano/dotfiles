@@ -1,7 +1,7 @@
 # Pacotes pacman — curados (não é o dump completo do sistema)
 # Instalar (oficiais): sudo pacman -S --needed $(grep -v '^#' packages/pacman.txt | grep -v '^$')
 # Pacotes AUR ficam em packages/aur.txt — precisam de um AUR helper (yay).
-# Atualizado: 2026-08-14 · Arch Linux
+# Atualizado: 2026-08-15 · Arch Linux
 
 # --- Compositor / Wayland ---
 hyprland
@@ -157,6 +157,14 @@ libisoburn
 libreoffice-fresh
 libreoffice-fresh-pt-br
 # corretor ortográfico pt-BR: hunspell-pt-br está no AUR (packages/aur.txt)
+
+# --- Impressão (ver docs/printer-hp-deskjet-2774.md) ---
+cups
+hplip
+usbutils
+python-pyqt5
+nss-mdns
+system-config-printer
 
 # --- Diversos ---
 fastfetch

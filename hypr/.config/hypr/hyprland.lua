@@ -63,10 +63,10 @@ hl.env("XMODIFIERS", "@im=fcitx")
 -- === APARÊNCIA / INPUT / XWAYLAND / MISC =========
 hl.config({
     general = {
-        gaps_in  = 3.5,
-        gaps_out = 6.5,
+        gaps_in  = theme_colors.gaps_in or 3.5,
+        gaps_out = theme_colors.gaps_out or 6.5,
 
-        border_size = 2,
+        border_size = theme_colors.border_size or 2,
         ["col.active_border"]   = theme_colors.active_border,
         ["col.inactive_border"] = theme_colors.inactive_border,
 
@@ -76,8 +76,8 @@ hl.config({
     },
 
     decoration = {
-        rounding       = 10,
-        rounding_power = 2,
+        rounding       = theme_colors.rounding or 10,
+        rounding_power = theme_colors.rounding_power or 2,
 
         active_opacity   = 1.0,
         inactive_opacity = 1.0,
@@ -182,7 +182,7 @@ hl.bind("ALT + SHIFT + Tab", hl.dsp.exec_cmd("~/.local/bin/alttab.sh prev"))
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(browser))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("pkill fuzzel || " .. menu))
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.local/bin/fuzzel-toggle.sh"))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(discord))
 hl.bind(mainMod .. " + O", hl.dsp.exec_cmd(obsidian))
 
@@ -279,6 +279,8 @@ hl.bind(mainMod .. " + K", hl.dsp.exec_cmd("~/.local/bin/kb-toggle.sh"))
 -- — Fone Bluetooth —
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("~/.local/bin/bt-codec-toggle.sh"))
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("~/.local/bin/wallpaper-toggle.sh"))
+hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("~/.local/bin/theme-picker.sh"))
+hl.bind(mainMod .. " + CTRL + SHIFT + Space", hl.dsp.exec_cmd("~/.local/bin/theme-picker.sh"))
 
 -- — Sistema —
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
@@ -301,6 +303,33 @@ hl.bind("ALT + SHIFT + S", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh
 
 -- Regras de float dinâmico por workspace (gerenciado por workspace-float.sh)
 dofile(os.getenv("HOME") .. "/.config/hypr/workspace-float.lua")
+
+-- === LAYER RULES =================================
+
+-- Quickshell usa uma layer transparente fullscreen; ignore_alpha evita borrar a tela inteira
+-- e aplica o blur só nos pixels semi-opacos dos painéis.
+hl.layer_rule({
+    name = "quickshell-blur",
+    match = { namespace = "^quickshell$" },
+    blur = true,
+    ignore_alpha = 0.10,
+})
+
+-- SwayNC e Fuzzel também são layers transparentes; blur + ignore_alpha mantém
+-- o wallpaper nítido fora das caixas e borra só atrás das superfícies visíveis.
+hl.layer_rule({
+    name = "swaync-blur",
+    match = { namespace = "^swaync-control-center$" },
+    blur = true,
+    ignore_alpha = 0.10,
+})
+
+hl.layer_rule({
+    name = "fuzzel-launcher-blur",
+    match = { namespace = "^launcher$" },
+    blur = true,
+    ignore_alpha = 0.10,
+})
 
 -- === WINDOW RULES ================================
 

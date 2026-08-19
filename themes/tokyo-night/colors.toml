@@ -1,0 +1,44 @@
+# Tema "tokyo-night" — adaptado do Omarchy Quattro tokyo-night.
+# Fonte upstream: https://github.com/basecamp/omarchy/tree/quattro/themes/tokyo-night
+
+# UI (Hyprland borders, Waybar, SwayNC, Hyprlock, Fuzzel)
+background    = "#1a1b26"
+surface       = "#24283b"
+surface_hover = "#292e42"
+foreground    = "#a9b1d6"
+accent        = "#7aa2f7"
+error         = "#f7768e"
+
+# Terminal (Ghostty)
+term_foreground           = "#a9b1d6"
+term_cursor               = "#7aa2f7"
+term_selection_background = "#292e42"
+term_selection_foreground = "#c0caf5"
+
+# Paleta ANSI de 16 cores — mapeada da paleta semântica do Omarchy tokyo-night
+color0  = "#13141c"
+color1  = "#f7768e"
+color2  = "#9ece6a"
+color3  = "#e0af68"
+color4  = "#7aa2f7"
+color5  = "#ad8ee6"
+color6  = "#449dab"
+color7  = "#a9b1d6"
+color8  = "#414868"
+color9  = "#ff7a93"
+color10 = "#b9f27c"
+color11 = "#ff9e64"
+color12 = "#7da6ff"
+color13 = "#bb9af7"
+color14 = "#0db9d7"
+color15 = "#c0caf5"
+
+# Integração desktop estilo Omarchy
+mode = "dark"
+icon_theme = "breeze-dark"
+gtk_theme = "adw-gtk3-dark"
+gtk4_theme = "Adwaita-dark"
+window_rounding = 10
+border_size = 2
+gaps_in = 3.5
+gaps_out = 6.5

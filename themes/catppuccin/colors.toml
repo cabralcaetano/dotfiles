@@ -33,3 +33,13 @@ color12 = "#89b4fa" # blue
 color13 = "#f5c2e7" # pink
 color14 = "#94e2d5" # teal
 color15 = "#a6adc8" # subtext0
+
+# Integração desktop estilo Omarchy
+mode = "dark"
+icon_theme = "breeze-dark"
+gtk_theme = "adw-gtk3-dark"
+gtk4_theme = "Adwaita-dark"
+window_rounding = 10
+border_size = 2
+gaps_in = 3.5
+gaps_out = 6.5

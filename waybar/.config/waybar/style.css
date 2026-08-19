@@ -107,6 +107,24 @@ tooltip * {
   border-bottom: 1px solid @accent;
 }
 
+#workspaces button:hover {
+  color: @foreground;
+  background: transparent;
+  box-shadow: none;
+  text-shadow: none;
+  border-bottom-color: transparent;
+}
+
+#workspaces button.active:hover {
+  color: @accent;
+  border-bottom-color: @accent;
+}
+
+#workspaces button.urgent:hover {
+  color: @foreground;
+  border-bottom-color: @foreground;
+}
+
 #workspaces button.urgent {
   color: @foreground;
   border-bottom: 1px solid @foreground;
@@ -144,6 +162,9 @@ tooltip * {
   font-size: 9px;
   font-weight: 700;
   color: @foreground;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
   padding: 0 8px;
 }
 
@@ -168,7 +189,11 @@ tooltip * {
 #network {
   font-weight: 700;
   color: @foreground;
-  padding-right: 6px;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0 8px;
+  margin-right: 2px;
 }
 
 /* === PULSEAUDIO ====================================== */

@@ -33,3 +33,37 @@ color12 = "#99c1f1"
 color13 = "#dc8add"
 color14 = "#93ddc2"
 color15 = "#f6f5f4"
+
+# Integração desktop estilo Omarchy
+mode = "dark"
+icon_theme = "Adwaita"
+gtk_theme = "adw-gtk3-dark"
+gtk4_theme = "Adwaita-dark"
+window_rounding = 10
+border_size = 2
+gaps_in = 3.5
+gaps_out = 6.5
+
+# Quickshell/SwayNC: estado commitado antes da sessão (cinza, redondo).
+quick_panel_background = "#1d1d20"
+quick_card_background = "#2a2a2e"
+quick_hover_background = "#323236"
+quick_panel_opacity = 0.90
+quick_card_opacity = 0.80
+quick_hover_opacity = 0.95
+quick_panel_radius = 12
+quick_card_radius = 10
+quick_button_radius = 8
+quick_switch_radius = 20
+quick_box_shadow = "0 4px 24px rgba(0, 0, 0, 0.5)"
+quick_clock_width = 650
+quick_clock_height = 400
+quick_clock_scale = 1.0
+quick_clock_margin = 14
+quick_clock_spacing = 10
+quick_clock_left_width = 315
+quick_clock_right_width = 297
+quick_clock_top_height = 180
+quick_clock_bottom_height = 180
+quick_clock_art_size = 88
+quick_clock_control_height = 28

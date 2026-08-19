@@ -12,6 +12,14 @@ Config do EasyEffects (`8.2.7-1`, Qt6/Kirigami — não é mais GTK, ver `docs/g
 - **Tema visual:** tentativa de aproximar de GNOME (Material style, Kvantum) testada e **revertida**. Ficou preso no visual Breeze/Kirigami padrão — sem solução limpa, ver `docs/gtk-qt-theming.md` pra detalhes técnicos.
 - **Roteamento de microfone (Discord):** LDAC é perfil A2DP **só de saída** — Bluetooth clássico não permite LDAC (saída) + mic (entrada) simultâneos no mesmo dispositivo. Ao usar o mic do fone, o WirePlumber troca o perfil pra `headset-head-unit` (mSBC), derrubando a qualidade da saída também. Solução aplicada: **Discord configurado para usar o microfone do notebook** (`Digital Microphone`) em vez do mic do QCY H3 Pro — assim o perfil do fone nunca sai de `a2dp-sink` (LDAC), mesmo em call.
 
+## Vesktop — teste em andamento (2026-08-14)
+
+Avaliado como alternativa mais leve ao Discord oficial (~2,5x menos RAM). Instalado desde 16/jul (`vesktop 1.6.5-1`, AUR), mas ficou "bugado" e voltou pro Discord oficial. Causas encontradas ao investigar de novo:
+
+- **Screen share:** sem `~/.config/xdg-desktop-portal/*-portals.conf`, o `ScreenCast` do `xdg-desktop-portal` não tinha backend preferido explícito entre `xdg-desktop-portal-hyprland` e `xdg-desktop-portal-gtk` rodando juntos. Fix: pacote stow novo `xdg-desktop-portal/` (`STOW_PKGS` em `_dotfiles-lib.sh`) com `hyprland-portals.conf` fixando `ScreenCast`/`Screenshot` em `hyprland` e `FileChooser` em `gtk`. Aplicado e portais reiniciados — **pendente confirmar em call real**.
+- **Renderização (janela preta/flicker):** `~/.config/vesktop/settings/settings.json` tinha `"transparent": true`. É bug conhecido de Electron+transparência em compositores wlroots (Hyprland) com GPU Intel iGPU. Confirmado também 1 crash de GPU no `coredumpctl` (`SIGTRAP`, 16/jul, logo após instalar). Fix: `transparent` setado pra `false` diretamente no JSON.
+- **Áudio em call:** mesma causa raiz já documentada acima pro Discord oficial — troca de perfil Bluetooth pra `headset-head-unit` ao abrir o mic. A correção de "usar `Digital Microphone` do notebook" foi aplicada só no Discord oficial (linha acima), **nunca replicada no Vesktop** (é config por app, cada instalação tem sua própria lista de dispositivo de voz). Provável causa do "áudio não funcionava" — precisa configurar o mesmo device em Vesktop → User Settings → Voice & Video → Input Device.
+
 ## Presets — tentativa com pacote da comunidade (revertida)
 
 - Instalado `easyeffects-m0rf30-presets` (AUR) — 72 presets (EQ, bass, loudness, HRTF/virtualização). **Incompatível**: o pacote usa o schema JSON do EasyEffects **GTK antigo** (chaves `snake_case`, ex: `exciter#0`, `plugins_order`). A versão instalada (`8.2.7`, Qt6/Kirigami) usa outro sistema de config (`~/.config/easyeffects/db/easyeffectsrc`, formato KConfig) — não escaneia/importa esses arquivos automaticamente.
@@ -44,3 +52,4 @@ Config do EasyEffects (`8.2.7-1`, Qt6/Kirigami — não é mais GTK, ver `docs/g
   ```
   Trade-off: mais glitches em ambiente com interferência 2.4GHz — se acontecer, reverter pra `auto`.
 - [ ] Excluir Discord da cadeia de efeitos do EasyEffects (latência em call) caso efeitos sejam aplicados globalmente
+- [ ] **Confirmar fix do Vesktop em call real**: testar screen share (portal) e áudio (configurar `Digital Microphone` em Voice & Video) numa call de teste. Se áudio ainda falhar mesmo com o mic certo, investigar se é bug específico do Vesktop/Electron 144 com WebRTC + PipeWire (não só o profile switch do Bluetooth).

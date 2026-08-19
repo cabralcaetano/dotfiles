@@ -101,3 +101,14 @@ tailscale dns status   # conferir: "Tailscale DNS: disabled"
 
 > `tailscale set` exige root por padrão. Para dispensar o `sudo` nos comandos do dia a dia:
 > `sudo tailscale set --operator=$USER` (uma vez só).
+
+### Boot — habilitar `tailscaled` no systemd
+
+Instalar o pacote não habilita o serviço automaticamente; ele fica `active` na sessão atual mas `disabled` no boot até habilitar explicitamente:
+
+```bash
+systemctl is-enabled tailscaled   # disabled == não sobrevive a reboot
+sudo systemctl enable tailscaled  # symlink em multi-user.target.wants/
+```
+
+Verificar depois de um reboot: `systemctl is-active tailscaled` deve voltar `active` sem intervenção manual.

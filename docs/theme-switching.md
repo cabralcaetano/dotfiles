@@ -1,13 +1,14 @@
 # Theme switching — troca de paleta system-wide
 
-**Status:** implementado e verificado (2026-08-07) — 2 temas ativos (`normal`, `catppuccin`), aplicados via CLI.
-**Contexto:** Hyprland + Waybar + SwayNC + Ghostty + Fuzzel + Hyprlock + btop, sem nenhuma distro/rice completa (Omarchy, HyDE etc.) instalada.
+**Status:** implementado e verificado — 5 temas ativos (`normal`, `matte-black`, `tokyo-night`, `kanagawa`, `catppuccin`), aplicados via CLI ou theme-picker.
+**Contexto:** Hyprland + Waybar + SwayNC + Ghostty/Kitty + Fuzzel + Hyprlock + btop + Quickshell + Neovim + tmux, sem instalar Omarchy/HyDE.
 
 ## Descrição
 
-Troca a paleta de cor do sistema inteiro com um comando (`theme-set.sh <tema>`), mecanismo adaptado do `bin/omarchy-theme-set` real do [Omarchy](https://github.com/basecamp/omarchy) (lido direto do código-fonte, não de resumo de terceiro), mas **standalone** — sem Walker/Elephant/CLI de outra distro, sem instalar rice nenhuma.
-
-Motivação: usuário perguntou como ricers fazem seletor de wallpaper/tema com preview (fuzzel vs rofi vs waypaper), pesquisamos os padrões reais (JaKooLit/Hyprland-Dots, HyDE, Omarchy), e por decisão explícita **o seletor visual ficou pra depois** — o pedido concreto virou "copia o método do Omarchy de troca de tema" primeiro, sem UI ainda.
+Troca a paleta de cor do sistema inteiro com `theme-set.sh <tema>` ou pelo
+seletor visual Quickshell (`Super+T` / `Super+Ctrl+Shift+Space`). O mecanismo
+foi adaptado do `bin/omarchy-theme-set` real do Omarchy, mas permanece
+standalone — sem Walker/Elephant/CLI de outra distro.
 
 ## Decisões tomadas
 
@@ -28,8 +29,20 @@ Motivação: usuário perguntou como ricers fazem seletor de wallpaper/tema com 
 - **CSS refatorado pra usar variáveis nomeadas** (`@accent`, `@foreground` etc. via `@define-color`, confirmado que Waybar e SwayNC suportam — ambos GTK3 CSS) em vez de hex literal espalhado pelas regras. Author verificou: `alpha()`/`shade()` do GTK funcionam em cima de `@named-color`, não só hex — usado pra opacidades variáveis (ex: `alpha(@accent, 0.2)`).
 - **`fail_color` do Hyprlock virou campo `error` dedicado**, não reaproveitou `color1` — o hex real (`#ff6464`) não batia com o vermelho da paleta ANSI (`#ed333b`), e forçar igualdade teria mudado a cor de erro do lockscreen.
 - **`outer_color` (borda do campo de senha) precisou de alpha diferente do `check_color`** (mesmo accent, alphas `33` vs `ff`) — motivo de existir `$accent_color` *e* `$accent_faint` no `colors.conf` gerado, em vez de uma variável só.
-- **btop não foi templatizado** — o tema "normal" usa o `color_theme = "Default"` builtin do próprio btop (zero risco de divergência), e o "catppuccin" usa o tema oficial `catppuccin/btop` copiado literal, em vez de eu tentar re-derivar a paleta a partir do schema genérico (evita erro de mapeamento).
-- **Sem bind ainda** — decisão consciente, pendente da escolha do seletor visual (fuzzel vs rofi vs waypaper — ver discussão de sessão sobre como ricers fazem preview de wallpaper/tema). O script funciona 100% via CLI nesse meio tempo.
+- **btop segue sem template genérico** — `theme-set.sh` alterna `color_theme`
+  no `btop.conf`; temas que precisam de mapeamento próprio entram como arquivos
+  estáticos em `btop/.config/btop/themes/*.theme`.
+- **Theme-picker local em Quickshell**: carousel filtrável de previews, inspirado
+  no Omarchy. O namespace real da layer do Fuzzel é `launcher`; o bind `Super+R`
+  chama `fuzzel-toggle.sh` para ignorar processos zumbis que antes impediam o
+  launcher de reabrir.
+- **Quickshell/SwayNC também entram no tema**: `quick_*` no `colors.toml` controla
+  fundo, opacidade, radius e dimensões do clock-panel. `normal` mantém painéis
+  cinza/arredondados; `matte-black` aplica painéis pretos/quadrados e escala o
+  clock-panel para 75%.
+- **Blur por layer no Hyprland**: `quickshell`, `swaync-control-center` e
+  `launcher` têm `hl.layer_rule({ blur = true, ignore_alpha = 0.10 })`, para
+  borrar só atrás das superfícies semi-transparentes e não a tela inteira.
 
 ## Verificação feita
 
@@ -52,8 +65,11 @@ Esses dois arquivos existem como **arquivos reais** em `~/.local/bin/` (não sym
 ## Uso
 
 ```bash
-theme-set.sh normal        # paleta monocromática atual (Adwaita dark)
-theme-set.sh catppuccin    # Catppuccin Mocha
+theme-set.sh normal
+theme-set.sh matte-black
+theme-set.sh tokyo-night
+theme-set.sh kanagawa
+theme-set.sh catppuccin
 ```
 
-Detalhes de schema, templates e como adicionar um tema novo em [`themes/README.md`](../themes/README.md) — este doc é o registro de decisão/contexto, aquele é a referência técnica.
+Detalhes de schema, templates e como adicionar tema novo em [`themes/README.md`](../themes/README.md) — este doc é o registro de decisão/contexto, aquele é a referência técnica.
