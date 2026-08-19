@@ -44,13 +44,13 @@ border_size = 2
 gaps_in = 3.0
 gaps_out = 6.0
 
-# Quickshell/SwayNC: matte-black é o único tema preto e quadrado.
+# Quickshell/SwayNC: preto quadrado, translúcido em vez de sólido.
 quick_panel_background = "#0f0f10"
 quick_card_background = "#0f0f10"
-quick_hover_background = "#0f0f10"
-quick_panel_opacity = 0.78
-quick_card_opacity = 0.78
-quick_hover_opacity = 0.85
+quick_hover_background = "#18181b"
+quick_panel_opacity = 0.72
+quick_card_opacity = 0.56
+quick_hover_opacity = 0.72
 quick_panel_radius = 0
 quick_card_radius = 0
 quick_button_radius = 0

@@ -336,7 +336,7 @@ ShellRoot {
                 }
                 anchors.topMargin: 0
                 radius:  0
-                color: root.colorWithAlpha("#0f0f10",  0.78)
+                color: root.colorWithAlpha("#0f0f10",  0.72)
                 border.color: root.colorWithAlpha("#8a8a8d", 0.2)
                 border.width: 1
 
@@ -423,7 +423,7 @@ ShellRoot {
 
         height:  180
         radius:  0
-        color: root.colorWithAlpha("#0f0f10",  0.78)
+        color: root.colorWithAlpha("#0f0f10",  0.56)
         border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
@@ -451,7 +451,7 @@ ShellRoot {
                     height:  80
                     radius:  0
                     clip: true
-                    color: root.colorWithAlpha("#0f0f10",  0.78)
+                    color: root.colorWithAlpha("#0f0f10",  0.56)
                     border.color: root.colorWithAlpha("#8a8a8d", 0.28)
                     border.width: 1
 
@@ -596,7 +596,7 @@ ShellRoot {
                 height: 3
                 anchors.verticalCenter: parent.verticalCenter
                 radius:  0
-                color: root.colorWithAlpha("#0f0f10",  0.78)
+                color: root.colorWithAlpha("#0f0f10",  0.56)
                 border.color: root.colorWithAlpha("#8a8a8d", 0.28)
                 border.width: 1
                 opacity: volumeSlider.available ? 1 : 0.4
@@ -642,7 +642,7 @@ ShellRoot {
 
         height:  160
         radius:  0
-        color: root.colorWithAlpha("#0f0f10",  0.78)
+        color: root.colorWithAlpha("#0f0f10",  0.56)
         border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
@@ -734,7 +734,7 @@ ShellRoot {
         width: 18
         height:  0 === 0 ? 16 : 18
         radius:  0
-        color: navArea.containsMouse ? root.colorWithAlpha("#0f0f10",  0.85) : "transparent"
+        color: navArea.containsMouse ? root.colorWithAlpha("#18181b",  0.72) : "transparent"
         border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
@@ -761,7 +761,7 @@ ShellRoot {
 
         height:  180
         radius:  0
-        color: root.colorWithAlpha("#0f0f10",  0.78)
+        color: root.colorWithAlpha("#0f0f10",  0.56)
         border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
@@ -797,7 +797,7 @@ ShellRoot {
 
         height:  160
         radius:  0
-        color: root.colorWithAlpha("#0f0f10",  0.78)
+        color: root.colorWithAlpha("#0f0f10",  0.56)
         border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 
@@ -887,7 +887,7 @@ ShellRoot {
         width: fixedWidth > 0 ? fixedWidth : Math.max(minWidth, buttonText.implicitWidth + 24)
         height: buttonHeight
         radius:  0
-        color: root.colorWithAlpha(clickArea.containsMouse ? "#0f0f10" : "#0f0f10", clickArea.containsMouse ?  0.85 :  0.78)
+        color: root.colorWithAlpha(clickArea.containsMouse ? "#18181b" : "#0f0f10", clickArea.containsMouse ?  0.72 :  0.56)
         border.color: root.colorWithAlpha("#8a8a8d", 0.28)
         border.width: 1
 

@@ -9,10 +9,10 @@ var error = "#9c5b5f"
 
 var panelBackground = "#0f0f10"
 var cardBackground = "#0f0f10"
-var hoverBackground = "#0f0f10"
-var panelOpacity =  0.78
-var cardOpacity =  0.78
-var hoverOpacity =  0.85
+var hoverBackground = "#18181b"
+var panelOpacity =  0.72
+var cardOpacity =  0.56
+var hoverOpacity =  0.72
 var panelRadius =  0
 var cardRadius =  0
 var buttonRadius =  0

@@ -209,7 +209,7 @@ ShellRoot {
                 height: Math.min(parent.height - 260, 430)
                 anchors.centerIn: parent
                 radius:  0
-                color: root.colorWithAlpha(root.chromeTheme.background,  0.78)
+                color: root.colorWithAlpha(root.chromeTheme.background,  0.72)
                 border.color: root.colorWithAlpha(root.chromeTheme.accent, 0.55)
                 border.width: 1
 
@@ -240,7 +240,7 @@ ShellRoot {
                             height: 32
                             anchors.verticalCenter: parent.verticalCenter
                             radius:  0
-                            color: root.colorWithAlpha(root.chromeTheme.surfaceHover,  0.78)
+                            color: root.colorWithAlpha(root.chromeTheme.surfaceHover,  0.56)
                             border.color: filterInput.activeFocus ? root.colorWithAlpha(root.chromeTheme.foreground, 0.55) : root.colorWithAlpha(root.chromeTheme.accent, 0.35)
                             border.width: 1
 
@@ -320,7 +320,7 @@ ShellRoot {
                                     width: root.cardWidth
                                     height: carousel.height - 6
                                     radius:  0
-                                    color: root.colorWithAlpha(selected ? theme.surfaceHover : theme.surface,  0.78)
+                                    color: root.colorWithAlpha(selected ? theme.surfaceHover : theme.surface,  0.56)
                                     border.color: selected ? root.chromeTheme.foreground : root.colorWithAlpha(root.chromeTheme.accent, 0.24)
                                     border.width: selected ? 2 : 1
                                     scale: 1.0
