@@ -185,23 +185,39 @@ tooltip * {
   font-weight: 700;
 }
 
-/* === REDE ====================================== */
-#network {
-  font-weight: 700;
+/* === REDE / STATUS RIGHT ======================= */
+/* Espaçamento entre módulos vem só de "spacing" no config.jsonc.
+ * Padding horizontal por módulo distorce a distância visual entre RAM/Wi-Fi/BT/áudio. */
+#cpu,
+#memory,
+#network,
+#bluetooth,
+#pulseaudio,
+#custom-power-profile,
+#custom-battery-conservation {
   color: @foreground;
   background-color: transparent;
   border: none;
   border-radius: 0;
-  padding: 0 8px;
-  margin-right: 2px;
+  padding: 0;
+  margin: 0;
 }
 
-/* === PULSEAUDIO ====================================== */
+#cpu,
+#memory,
+#network,
+#bluetooth,
 #pulseaudio {
   font-weight: 700;
+}
+
+#network {
+  font-size: 15px;
+  min-width: 18px;
+}
+
+#pulseaudio {
   font-size: 16px;
-  color: @foreground;
-  padding-right: 2px;
 }
 
 /* === POWER ====================================== */
@@ -222,18 +238,9 @@ tooltip * {
   color: @foreground;
 }
 
-/* === INDICADOR DE PERFIL DE ENERGIA ============= */
-#custom-power-profile {
-  font-size: 14px;
-  font-weight: 700;
-  color: @foreground;
-  padding-right: 4px;
-}
-
-/* === CONSERVAÇÃO DA BATERIA ===================== */
+/* === PERFIL / CONSERVAÇÃO ======================= */
+#custom-power-profile,
 #custom-battery-conservation {
   font-size: 14px;
   font-weight: 700;
-  color: @foreground;
-  padding-right: 4px;
 }
