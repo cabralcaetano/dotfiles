@@ -324,15 +324,15 @@ ShellRoot {
 
             Rectangle {
                 id: panel
-                width:  600
-                height:  380
+                width:  650
+                height:  400
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 transform: Scale {
                     origin.x: panel.width / 2
                     origin.y: 0
-                    xScale:  0.75
-                    yScale:  0.75
+                    xScale:  1.0
+                    yScale:  1.0
                 }
                 anchors.topMargin: 0
                 radius:  0
@@ -344,17 +344,17 @@ ShellRoot {
 
                 Column {
                     anchors.fill: parent
-                    anchors.margins:  12
-                    spacing:  8
+                    anchors.margins:  14
+                    spacing:  10
 
 
                     Row {
                         width: parent.width
-                        spacing:  8
+                        spacing:  10
 
                         Column {
-                            width:  288
-                            spacing:  8
+                            width:  315
+                            spacing:  10
 
                             MediaBox {
                                 width: parent.width
@@ -377,8 +377,8 @@ ShellRoot {
                         }
 
                         Column {
-                            width:  280
-                            spacing:  8
+                            width:  297
+                            spacing:  10
 
                             WeatherBox {
                                 width: parent.width
@@ -447,8 +447,8 @@ ShellRoot {
                 spacing: 10
 
                 Rectangle {
-                    width:  80
-                    height:  80
+                    width:  88
+                    height:  88
                     radius:  0
                     clip: true
                     color: root.colorWithAlpha("#0f0f10",  0.56)
@@ -480,8 +480,8 @@ ShellRoot {
                 }
 
                 Column {
-                    width: parent.width -  80 - 10
-                    height:  80
+                    width: parent.width -  88 - 10
+                    height:  88
                     spacing: 5
 
                     Text {
@@ -526,21 +526,21 @@ ShellRoot {
 
                 ControlButton {
                     fixedWidth: parent.sideButtonWidth
-                    buttonHeight:  26
+                    buttonHeight:  28
                     label: "󰒮"
                     command: ["playerctl", "previous"]
                     onClicked: root.scheduleMediaRefresh()
                 }
                 ControlButton {
                     fixedWidth: parent.playButtonWidth
-                    buttonHeight:  26
+                    buttonHeight:  28
                     label: stateText === "Playing" ? "󰏤 pause" : "󰐊 play"
                     command: ["playerctl", "play-pause"]
                     onClicked: root.scheduleMediaRefresh()
                 }
                 ControlButton {
                     fixedWidth: parent.sideButtonWidth
-                    buttonHeight:  26
+                    buttonHeight:  28
                     label: "󰒭"
                     command: ["playerctl", "next"]
                     onClicked: root.scheduleMediaRefresh()
@@ -640,7 +640,7 @@ ShellRoot {
         signal nextClicked
         signal openClicked
 
-        height:  160
+        height:  180
         radius:  0
         color: root.colorWithAlpha("#0f0f10",  0.56)
         border.color: root.colorWithAlpha("#8a8a8d", 0.28)
@@ -653,7 +653,7 @@ ShellRoot {
 
             Row {
                 width: parent.width
-                height: Math.max(16,  26 - 10)
+                height: Math.max(16,  28 - 10)
                 spacing: 4
 
                 Text {
@@ -795,7 +795,7 @@ ShellRoot {
     component SystemBox: Rectangle {
         required property string systemText
 
-        height:  160
+        height:  180
         radius:  0
         color: root.colorWithAlpha("#0f0f10",  0.56)
         border.color: root.colorWithAlpha("#8a8a8d", 0.28)
