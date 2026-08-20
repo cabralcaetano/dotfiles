@@ -13,7 +13,7 @@ window#waybar {
   background-color: alpha(@background, 0.85);
   border-radius: 0;
   color: @foreground;
-  padding: 2px 0 2px 12px;
+  padding: 0;
   transition: 0.3s all;
 }
 
@@ -33,7 +33,6 @@ tooltip * {
 /* === MÓDULOS =================================== */
 .modules-left,
 .modules-center {
-  padding: 0 1rem;
   color: @foreground;
   border: none;
 }
@@ -58,12 +57,14 @@ tooltip * {
 #custom-super-workspace {
   font-family: "JetBrainsMono Nerd Font";
   font-size: 15px;
-  min-width: 28px;
+  min-width: 0;
   padding: 0;
-  margin-right: -18px;
+  margin-left: 2px;
+  margin-right: -22px;
   color: @foreground;
   background: transparent;
   box-shadow: none;
+  border-radius: 0;
   border-bottom: 1px solid transparent;
 }
 
@@ -80,7 +81,7 @@ tooltip * {
 }
 
 /* === JANELA ATIVA ============================== */
-#window {
+#custom-active-window {
   font-weight: bold;
   color: @foreground;
   transition: all 0.3s ease;

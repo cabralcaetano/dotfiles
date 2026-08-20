@@ -503,14 +503,15 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 | `workspace-float.sh` | Toggle workspace float mode — flota todas as janelas, desativa warp no Alt+Tab |
 | `alttab.sh` | Alt+Tab via cyclenext+bringactivetotop, preserva cursor no float mode |
 | `super-workspace.sh` | Roteia bancos de workspaces: foco/move por slot, scratchpad por super workspace, ciclo `next/prev` e JSON da Waybar |
+| `waybar-active-window.sh` | Texto da janela ativa na Waybar com tooltip de CPU/RAM somando a árvore de processos do PID focado; atualiza instantaneamente por eventos do Hyprland e refresca métricas a cada 2s |
 
 ---
 
 ## Waybar
 
-**Esquerda:** ícone do super workspace ativo (`custom/super-workspace`, tooltip com lista e click next/prev) → workspaces filtrados do banco ativo (i–x) → título da janela ativa
+**Esquerda:** botão do super workspace no canto superior esquerdo (`custom/super-workspace`, tooltip com lista e click next/prev) → workspaces filtrados do banco ativo (i–x) → app/janela ativa (`custom/active-window`, tooltip com CPU/RAM do processo focado)
 
-**Super workspaces:** `hyprland/workspaces` mostra apenas workspaces cujo nome bate com `super-<ativo>-*`; `super-workspace.sh` reescreve `ignore-workspaces` e recarrega a Waybar com `SIGUSR2` a cada troca de banco. Ver [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
+**Super workspaces:** `hyprland/workspaces` mostra apenas workspaces cujo nome bate com `super-<ativo>-*`; `super-workspace.sh` reescreve `ignore-workspaces` e recarrega a Waybar com `SIGUSR2` a cada troca de banco. O botão `custom/super-workspace` é o primeiro módulo da barra e não tem padding/margem antes dele, então o click pega no extremo superior esquerdo da tela. Ver [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 
 **Centro:** relógio (clique abre painel Quickshell com player, calendário, tempo e status; tooltip mantém calendário nativo)
 

@@ -98,7 +98,7 @@ A barra da esquerda fica:
 
 Componentes:
 
-- `custom/super-workspace`: executa `super-workspace.sh waybar` e recebe JSON no formato `{"text":"...","tooltip":"...","class":[...]}`.
+- `custom/super-workspace`: fica no extremo superior esquerdo, executa `super-workspace.sh waybar` e recebe JSON no formato `{"text":"...","tooltip":"...","class":[...]}`. Como é o primeiro módulo e a barra não tem padding antes dele, o canto `x=0,y=0` também aciona o botão.
 - `hyprland/workspaces`: continua sendo o módulo nativo, preservando clique/scroll nos workspaces.
 - `ignore-workspaces`: é reescrito pelo script em cada `next`/`prev` para mostrar só nomes com prefixo do super workspace ativo.
 
@@ -114,6 +114,8 @@ Tooltip do ícone mostra somente a lista dos super workspaces, com marcador no a
 • > 1
   ~ 2
 ```
+
+No payload JSON, as linhas do tooltip usam `\r` em vez de `\n`; o `waybar-custom(5)` dessa versão só renderiza tooltip multilinha corretamente com carriage return.
 
 O ícone é clicável:
 

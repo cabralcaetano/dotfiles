@@ -13,7 +13,7 @@
   "margin-bottom": 1,
 
   // === MÓDULOS =================================
-  "modules-left": ["custom/icon", "custom/super-workspace", "hyprland/workspaces", "hyprland/window"],
+  "modules-left": ["custom/super-workspace", "hyprland/workspaces", "custom/active-window"],
   "modules-center": ["clock"],
   "modules-right": ["group/tray-drawer", "cpu", "memory", "network", "bluetooth", "pulseaudio", "custom/power-profile", "custom/battery-conservation", "custom/swaync-hotspot"],
 
@@ -57,7 +57,7 @@
     "disable-scroll": false,
     "tooltip": false,
     "format": "{icon}",
-    "ignore-workspaces": ["^(?!super-2-).*$"],
+    "ignore-workspaces": ["^(?!super-1-).*$"],
     "format-icons": {
       "super-1-1": "i",
       "super-1-2": "ii",
@@ -83,14 +83,13 @@
   },
 
   // === JANELA ATIVA ============================
-  "hyprland/window": {
-    "separate-outputs": true,
+  "custom/active-window": {
+    "exec": "~/.local/bin/waybar-active-window.sh",
+    "return-type": "json",
+    "restart-interval": 1,
+    "format": "{}",
     "max-length": 20,
-    "tooltip": false,
-    "format": "{class}",
-    "rewrite": {
-      "^com\\.mitchellh\\.ghostty$": "ghostty"
-    }
+    "tooltip": true
   },
 
   // === RELÓGIO =================================

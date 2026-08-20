@@ -142,7 +142,9 @@ icon_for() {
 
 waybar_payload() {
   local tooltip="" item line text class="[]"
-  text="$(icon_for "$SW")"
+  # Waybar só mostra tooltip sobre a área real do label, não sobre padding CSS.
+  # Espaços dos dois lados mantêm o hover/click no canto e tiram o símbolo da borda.
+  text=" $(icon_for "$SW")  "
 
   for item in "${SUPER_WORKSPACES[@]}"; do
     line="$(icon_for "$item") $item"
@@ -159,7 +161,7 @@ waybar_payload() {
     if [ -z "$tooltip" ]; then
       tooltip="$line"
     else
-      tooltip="${tooltip}\\n${line}"
+      tooltip="${tooltip}\\r${line}"
     fi
   done
 
