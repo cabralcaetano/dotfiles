@@ -3,10 +3,13 @@
 set -uo pipefail
 
 DUCK_LEVEL=0.3
-SPOTIFY_NORMAL=1.0
 FADE_STEPS=20
 FADE_DELAY=0.03
 is_ducked=false
+saved_spotify_volume=""
+DUCK_STATE="${XDG_RUNTIME_DIR:-/run/user/$UID}/spotify-duck-volume"
+
+
 
 get_spotify_id() {
   local spotify_client
@@ -17,6 +20,15 @@ get_spotify_id() {
     /client\.id /  { matched = ($3 == cid) }
     /object\.id /  { if (matched) { gsub(/"/, "", $3); print $3; exit } }
   '
+}
+
+get_spotify_volume() {
+  wpctl get-volume "$1" 2>/dev/null | awk '/^Volume:/ { print $2; exit }'
+}
+
+duck_target_volume() {
+  awk -v current="$1" -v duck="$DUCK_LEVEL" \
+    'BEGIN { printf "%.4f", (current < duck ? current : duck) }'
 }
 
 calc_volume() {
@@ -40,11 +52,16 @@ fade_volume() {
 }
 
 fade_out() {
-  fade_volume "$1" "$SPOTIFY_NORMAL" "$DUCK_LEVEL"
+  local current=$2
+  local target
+  target=$(duck_target_volume "$current")
+  fade_volume "$1" "$current" "$target"
 }
 
 fade_in() {
-  fade_volume "$1" "$DUCK_LEVEL" "$SPOTIFY_NORMAL"
+  local current=$2
+  local target=$3
+  fade_volume "$1" "$current" "$target"
 }
 
 resolve_hyprland_env() {
@@ -124,15 +141,27 @@ while true; do
   BRAVE_PLAYING=$(check_brave)
 
   if [ "$BRAVE_PLAYING" -gt 0 ] && [ "$is_ducked" = "false" ] && [ -n "$SPOTIFY_ID" ]; then
-    echo "$(date +%T.%N) - Brave tocando, fade_out"
-    fade_out "$SPOTIFY_ID"
-    is_ducked=true
+    saved_spotify_volume=$(get_spotify_volume "$SPOTIFY_ID")
+    if [ -n "$saved_spotify_volume" ]; then
+      printf '%s\n' "$saved_spotify_volume" > "$DUCK_STATE"
+      echo "$(date +%T.%N) - Brave tocando, fade_out para preservar volume $saved_spotify_volume"
+      fade_out "$SPOTIFY_ID" "$saved_spotify_volume"
+      is_ducked=true
+    fi
   elif [ "$BRAVE_PLAYING" -eq 0 ] && [ "$is_ducked" = "true" ]; then
     if brave_really_stopped; then
-      echo "$(date +%T.%N) - Brave parou, fade_in"
+      if [ -f "$DUCK_STATE" ]; then
+        saved_spotify_volume=$(cat "$DUCK_STATE")
+      fi
+      echo "$(date +%T.%N) - Brave parou, fade_in para $saved_spotify_volume"
       SPOTIFY_ID=$(get_spotify_id)
-      [ -n "$SPOTIFY_ID" ] && fade_in "$SPOTIFY_ID"
+      if [ -n "$SPOTIFY_ID" ] && [ -n "$saved_spotify_volume" ]; then
+        current_spotify_volume=$(get_spotify_volume "$SPOTIFY_ID")
+        [ -n "$current_spotify_volume" ] && fade_in "$SPOTIFY_ID" "$current_spotify_volume" "$saved_spotify_volume"
+      fi
       echo "$(date +%T.%N) - fade_in concluido"
+      rm -f "$DUCK_STATE"
+      saved_spotify_volume=""
       is_ducked=false
     fi
   fi

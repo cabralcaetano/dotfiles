@@ -207,6 +207,13 @@ ShellRoot {
     }
 
     Timer {
+        interval: 1000
+        running: root.panelVisible
+        repeat: true
+        onTriggered: root.refreshSpotifyVolume()
+    }
+
+    Timer {
         id: mediaRefreshTimer
         interval: 250
         repeat: true
@@ -444,6 +451,7 @@ ShellRoot {
 
             Row {
                 width: parent.width
+                height: {{ quick_clock_art_size }}
                 spacing: 10
 
                 Rectangle {
@@ -480,7 +488,7 @@ ShellRoot {
                 }
 
                 Column {
-                    width: parent.width - {{ quick_clock_art_size }} - 10
+                    width: parent.width - {{ quick_clock_art_size }} - 42 - parent.spacing * 2
                     height: {{ quick_clock_art_size }}
                     spacing: 5
 
@@ -515,6 +523,21 @@ ShellRoot {
                         text: albumText ? `󰀥 ${albumText}` : stateText
                     }
                 }
+
+                VolumeSlider {
+                    width: 42
+                    height: {{ quick_clock_art_size }}
+                    value: root.spotifyVolume
+                    muted: root.spotifyMuted
+                    available: root.spotifyVolumeAvailable
+                    onChanged: (pct) => root.setSpotifyVolume(pct)
+                    onMuteToggled: root.toggleSpotifyMute()
+                }
+            }
+
+            Item {
+                width: parent.width
+                height: 4
             }
 
             Row {
@@ -546,19 +569,10 @@ ShellRoot {
                     onClicked: root.scheduleMediaRefresh()
                 }
             }
-
-            VolumeSlider {
-                width: parent.width
-                value: root.spotifyVolume
-                muted: root.spotifyMuted
-                available: root.spotifyVolumeAvailable
-                onChanged: (pct) => root.setSpotifyVolume(pct)
-                onMuteToggled: root.toggleSpotifyMute()
-            }
         }
     }
 
-    component VolumeSlider: Item {
+    component VolumeSlider: Rectangle {
         id: volumeSlider
         required property int value
         required property bool muted
@@ -566,69 +580,52 @@ ShellRoot {
         signal changed(real pct)
         signal muteToggled
 
-        height: 20
+        radius: {{ quick_card_radius }}
+        color: "transparent"
+        border.width: 0
+        opacity: available ? 1 : 0.4
+        clip: true
 
-        Row {
-            anchors.fill: parent
-            spacing: 8
-
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                width: 16
-                horizontalAlignment: Text.AlignHCenter
-                color: "#deddda"
-                font.family: "JetBrainsMono Nerd Font"
-                font.pixelSize: 13
-                opacity: volumeSlider.available ? 1 : 0.4
-                text: volumeSlider.muted || !volumeSlider.available ? "󰝟" : volumeSlider.value > 60 ? "󰕾" : volumeSlider.value > 0 ? "󰖀" : "󰕿"
-
-                MouseArea {
-                    anchors.fill: parent
-                    enabled: volumeSlider.available
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: volumeSlider.muteToggled()
-                }
-            }
+        Rectangle {
+            id: track
+            width: 6
+            anchors.top: parent.top
+            anchors.topMargin: 8
+            anchors.bottom: volumeLabel.top
+            anchors.bottomMargin: 5
+            anchors.horizontalCenter: parent.horizontalCenter
+            radius: {{ quick_card_radius }}
+            color: root.colorWithAlpha("{{ accent }}", 0.28)
+            clip: true
 
             Rectangle {
-                id: track
-                width: parent.width - 16 - 34 - parent.spacing * 2
-                height: 3
-                anchors.verticalCenter: parent.verticalCenter
-                radius: {{ quick_button_radius }}
-                color: root.colorWithAlpha("{{ quick_card_background }}", {{ quick_card_opacity }})
-                border.color: root.colorWithAlpha("{{ accent }}", 0.28)
-                border.width: 1
-                opacity: volumeSlider.available ? 1 : 0.4
-
-                Rectangle {
-                    width: Math.max(0, track.width * Math.max(0, Math.min(100, volumeSlider.muted ? 0 : volumeSlider.value)) / 100 - 2)
-                    height: parent.height - 2
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    anchors.leftMargin: 1
-                    radius: 0
-                    color: "#ffffff"
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    enabled: volumeSlider.available
-                    cursorShape: Qt.PointingHandCursor
-                    onPressed: (mouse) => volumeSlider.changed(mouse.x / track.width * 100)
-                    onPositionChanged: (mouse) => { if (pressed) volumeSlider.changed(mouse.x / track.width * 100); }
-                }
+                width: parent.width
+                height: track.height * Math.max(0, Math.min(100, volumeSlider.muted ? 0 : volumeSlider.value)) / 100
+                anchors.bottom: parent.bottom
+                radius: {{ quick_card_radius }}
+                color: root.colorWithAlpha("#deddda", 0.92)
             }
+        }
 
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                width: 34
-                horizontalAlignment: Text.AlignRight
-                color: "#a0a0a0"
-                font.family: "JetBrainsMono Nerd Font"
-                font.pixelSize: 11
-                text: !volumeSlider.available ? "n/d" : volumeSlider.muted ? "mudo" : volumeSlider.value + "%"
-            }
+        Text {
+            id: volumeLabel
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 5
+            width: parent.width
+            horizontalAlignment: Text.AlignHCenter
+            color: "#deddda"
+            font.family: "JetBrainsMono Nerd Font"
+            font.pixelSize: 10
+            text: !volumeSlider.available ? "n/d" : volumeSlider.muted ? "mudo" : volumeSlider.value
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            enabled: volumeSlider.available
+            cursorShape: Qt.PointingHandCursor
+            onPressed: (mouse) => { if (mouse.y < volumeLabel.y) volumeSlider.changed(100 - (mouse.y - track.y) / track.height * 100); }
+            onPositionChanged: (mouse) => { if (pressed && mouse.y < volumeLabel.y) volumeSlider.changed(100 - (mouse.y - track.y) / track.height * 100); }
+            onClicked: (mouse) => { if (mouse.y >= volumeLabel.y) volumeSlider.muteToggled(); }
         }
     }
 

@@ -55,7 +55,7 @@ mais no config continua intocado.
 - **`normal`** — Adwaita/cinza escuro, arredondado; preserva o visual histórico
   do sistema e os painéis Quickshell cinza.
 - **`matte-black`** — preto fosco, quadrado, wallpaper próprio, ícones
-  MatteBlack, clock-panel Quickshell em 75% (`quick_clock_scale = 0.75`).
+  MatteBlack, mantendo o clock-panel Quickshell no tamanho padrão (`quick_clock_scale = 1.0`).
 - **`tokyo-night`** — paleta azul/roxa derivada do pacote Omarchy.
 - **`kanagawa`** — paleta escura Kanagawa derivada do pacote Omarchy.
 - **`catppuccin`** — flavor Mocha, paleta oficial (catppuccin.com/palette).

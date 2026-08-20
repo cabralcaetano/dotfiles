@@ -396,11 +396,11 @@ Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservatio
 
 ## Audio Ducking
 
-Abaixa automaticamente o volume do Spotify quando áudio do Brave toca.
+Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no Brave e restaura o volume exato que estava antes do ducking.
 
 - **Serviço:** `brave-duck.service` (systemd user)
-- **Implementação atual:** script PipeWire/Pulse com polling de áudio do Brave
-- **Pendente:** reconciliar contrato desejado "somente WhatsApp Web" vs comportamento real "qualquer áudio do Brave" — task registrada em `personal/_tasks.md`
+- **Implementação atual:** script PipeWire/Pulse com polling de áudio do Brave + filtro de janela WhatsApp no Hyprland
+  - Outros sites com áudio no Brave não ativam ducking.
 
 ---
 
@@ -446,8 +446,8 @@ Atalhos:
 | Super+Shift+W | Cicla wallpapers do diretório ativo |
 
 `normal` preserva os painéis Quickshell cinza/arredondados; `matte-black` aplica
-painéis pretos/quadrados e reduz o clock-panel para 75% via
-`quick_clock_scale`. Hyprland aplica blur nas layers `quickshell`,
+painéis pretos/quadrados mantendo o clock-panel no tamanho padrão
+(`quick_clock_scale = 1.0`). Hyprland aplica blur nas layers `quickshell`,
 `swaync-control-center` e `launcher` com `ignore_alpha` para não borrar a tela
 inteira.
 
@@ -497,6 +497,7 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 | `clock-panel-toggle.sh` | Toggle do painel Quickshell do relógio via IPC |
 | `clock-panel-status.sh` | Métricas do painel Quickshell: CPU, MEM, DISK e GPU em barras |
 | `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell |
+| `media-volume-spotify.sh` | Controle do volume interno do Spotify (slider do app) para o painel Quickshell; durante ducking atualiza o volume desejado e mantém o stream PipeWire temporariamente limitado |
 | `wifi-menu.sh` | Menu WiFi via Fuzzel |
 | `kb-toggle.sh` | Alterna layout de teclado ABNT2/ANSI |
 | `workspace-float.sh` | Toggle workspace float mode — flota todas as janelas, desativa warp no Alt+Tab |
