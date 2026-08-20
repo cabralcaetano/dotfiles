@@ -604,7 +604,7 @@ ShellRoot {
         signal changed(real pct)
         signal muteToggled
 
-        radius: 0
+        radius:  0
         color: "transparent"
         border.width: 0
         opacity: available ? 1 : 0.4
@@ -618,7 +618,7 @@ ShellRoot {
             anchors.bottom: volumeLabel.top
             anchors.bottomMargin: 5
             anchors.horizontalCenter: parent.horizontalCenter
-            radius: 0
+            radius:  0
             color: root.colorWithAlpha("#8a8a8d", 0.28)
             clip: true
 
@@ -626,7 +626,7 @@ ShellRoot {
                 width: parent.width
                 height: track.height * Math.max(0, Math.min(100, volumeSlider.muted ? 0 : volumeSlider.value)) / 100
                 anchors.bottom: parent.bottom
-                radius: 0
+                radius:  0
                 color: root.colorWithAlpha("#deddda", 0.92)
             }
         }

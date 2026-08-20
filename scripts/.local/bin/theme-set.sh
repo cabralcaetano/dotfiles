@@ -213,7 +213,14 @@ if pgrep -x waybar >/dev/null; then
     disown
 fi
 
-command -v swaync-client >/dev/null && swaync-client --reload-css >/dev/null 2>&1 || true
+if pgrep -x swaync >/dev/null; then
+    # SwayNC/GTK keeps imported @define-color files cached across --reload-css.
+    # Restarting is the reliable path when colors.css changes between themes.
+    swaync-client --close-panel >/dev/null 2>&1 || true
+    pkill -x swaync 2>/dev/null || true
+    setsid swaync >/dev/null 2>&1 &
+    disown
+fi
 
 
 if pgrep -x kitty >/dev/null; then

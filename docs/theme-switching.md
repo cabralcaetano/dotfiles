@@ -43,6 +43,7 @@ standalone — sem Walker/Elephant/CLI de outra distro.
 - **Blur por layer no Hyprland**: `quickshell`, `swaync-control-center` e
   `launcher` têm `hl.layer_rule({ blur = true, ignore_alpha = 0.10 })`, para
   borrar só atrás das superfícies semi-transparentes e não a tela inteira.
+- **SwayNC reinicia em vez de `--reload-css`**: o control center usa `@import url("colors.css")`; na prática o GTK/SwayNC manteve cores importadas em cache ao trocar `matte-black` → `normal`, deixando o painel lateral com a aparência antiga. `theme-set.sh` agora fecha o painel e reinicia `swaync` quando ele está rodando, que recarrega `colors.css` e `style.css` de forma confiável.
 
 ## Verificação feita
 
