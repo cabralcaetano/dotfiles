@@ -49,6 +49,16 @@ ShellRoot {
         mediaRefreshTimer.start();
     }
 
+    function previousTrack(): void {
+        mediaActionProc.exec(["playerctl", "previous"]);
+        scheduleMediaRefresh();
+    }
+
+    function nextTrack(): void {
+        mediaActionProc.exec(["playerctl", "next"]);
+        scheduleMediaRefresh();
+    }
+
     function updateMedia(raw) {
         const text = raw.trim();
         if (!text || text.indexOf("No players") >= 0 || text.indexOf("No player") >= 0) {
@@ -229,6 +239,10 @@ ShellRoot {
         id: mediaProc
         command: ["bash", "-lc", "playerctl metadata --format '{{status}}|{{xesam:title}}|{{xesam:artist}}|{{xesam:album}}|{{mpris:artUrl}}' 2>/dev/null || true"]
         stdout: StdioCollector { onStreamFinished: root.updateMedia(text) }
+    }
+
+    Process {
+        id: mediaActionProc
     }
 
     Process {
@@ -417,6 +431,16 @@ ShellRoot {
         Shortcut {
             sequence: "Ctrl+Down"
             onActivated: root.decreaseSpotifyVolume()
+        }
+
+        Shortcut {
+            sequence: "Ctrl+Left"
+            onActivated: root.previousTrack()
+        }
+
+        Shortcut {
+            sequence: "Ctrl+Right"
+            onActivated: root.nextTrack()
         }
     }
 
