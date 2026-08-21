@@ -174,10 +174,19 @@ if command -v gsettings >/dev/null && [[ -n ${DBUS_SESSION_BUS_ADDRESS:-} ]]; th
     else
         gsettings set org.gnome.desktop.interface color-scheme "prefer-dark" || true
     fi
-    gsettings set org.gnome.desktop.interface gtk-theme "$gtk4_theme" || true
+    gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme" || true
     gsettings set org.gnome.desktop.interface icon-theme "$(theme_get icon_theme Adwaita)" || true
     gsettings set org.gnome.desktop.interface cursor-theme "$(theme_get cursor_theme capitaine-cursors)" || true
     gsettings set org.gnome.desktop.interface cursor-size "$(theme_get cursor_size 24)" || true
+fi
+
+# xdg-desktop-portal-gtk does not reliably reload GTK theme files/gsettings in
+# place. Restart only the GTK backend so FileChooser follows the selected theme
+# on the next portal request without disrupting Hyprland screenshot/screencast.
+if command -v systemctl >/dev/null; then
+    systemctl --user restart xdg-desktop-portal-gtk.service 2>/dev/null || pkill -f '^/usr/lib/xdg-desktop-portal-gtk($| )' 2>/dev/null || true
+else
+    pkill -f '^/usr/lib/xdg-desktop-portal-gtk($| )' 2>/dev/null || true
 fi
 
 # === Browser chrome color ===========================================

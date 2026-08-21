@@ -154,7 +154,7 @@ tooltip * {
   background: transparent;
   color: transparent;
   margin: 0;
-  padding: 0 1px;
+  padding: 0;
   min-width: 2px;
   font-size: 1px;
 }
@@ -240,8 +240,16 @@ tooltip * {
 }
 
 /* === PERFIL / CONSERVAÇÃO ======================= */
-#custom-power-profile,
+#custom-power-profile {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 24px;
+  margin-right: -12px;
+}
+
 #custom-battery-conservation {
   font-size: 14px;
   font-weight: 700;
+  min-width: 63px;
+  margin-right: -22px;
 }

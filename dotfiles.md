@@ -355,17 +355,18 @@ Aliases e ferramentas configuradas no `.zshrc`:
 
 ## Perfil de energia
 
-Usa `tuned-adm` via `tuned-ppd` para alternar entre três modos:
+Usa `tuned-adm` via `tuned-ppd` para alternar entre quatro modos:
 
-| Perfil | Modo tuned |
-|---|---|
-| Balanceado | balanced |
-| Performance | latency-performance |
-| Economia | powersave |
+| Perfil | Modo tuned | Uso |
+|---|---|---|
+| Economia | powersave | bateria/viagem; prioriza duração máxima e reduz mais a responsividade |
+| Balanceado | balanced-battery | novo padrão diário: silencioso, turbo ligado e menos picos de fan |
+| Balanceado+ | balanced | perfil mais agressivo do Arch: turbo livre e resposta mais rápida, com mais fan |
+| Performance | latency-performance | VM/build/carga pesada |
 
-Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Indicador aparece na Waybar apenas quando fora do modo balanceado.
+Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Ciclo: Balanceado → Balanceado+ → Performance → Economia → Balanceado. Indicador aparece na Waybar apenas quando fora do Balanceado padrão.
 
-**Persistência no boot:** `tuned` em modo `manual` grava o último perfil em `/etc/tuned/active_profile` e restaura no boot (sem reset para default). O `default=balanced` de `/etc/tuned/ppd.conf` vale só para clientes PPD, não para o toggle. Fixar boot em Balanceado: `tuned-adm profile balanced`.
+**Persistência no boot:** `tuned` em modo `manual` grava o último perfil em `/etc/tuned/active_profile` e restaura no boot (sem reset para default). O `default=balanced` de `/etc/tuned/ppd.conf` vale só para clientes PPD, não para o toggle. Fixar boot no novo Balanceado silencioso: `tuned-adm profile balanced-battery`.
 
 ## Teclado — Alternância ABNT2 / ANSI
 
