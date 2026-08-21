@@ -31,6 +31,16 @@ Vale para qualquer app Qt6 sem tema próprio, não só o picker. Kvantum ficou d
 
 **Gap conhecido:** `qt5ct` não está instalado, então não há config equivalente pra Qt5. Se algum app Qt5 aparecer claro, é por aí.
 
+## Resolvido 2026-08-19 — file chooser do portal abria claro
+
+**Sintoma:** o diálogo de salvar/abrir arquivo do `xdg-desktop-portal-gtk` aparecia em tema branco, mesmo com o desktop em dark mode.
+
+**Causa:** `gsettings get org.gnome.desktop.interface gtk-theme` estava em `Adwaita-dark`, mas não havia `/usr/share/themes/Adwaita-dark`; o tema GTK3 instalado/versionado é `adw-gtk3-dark`. O `xdg-desktop-portal-gtk` é GTK3 (`ldd /usr/lib/xdg-desktop-portal-gtk` → `libgtk-3.so.0`), então caiu no fallback claro. A ordem de autostart também deixava os portals nascerem antes do `gsettings set` do tema.
+
+**Fix:** setado `gtk-theme='adw-gtk3-dark'` + `color-scheme='prefer-dark'` na sessão atual e reordenado `hyprland.lua` para aplicar os dois `gsettings` antes de iniciar `xdg-desktop-portal-hyprland`, `xdg-desktop-portal-gtk` e `xdg-desktop-portal`.
+
+**Verificação:** `gdbus` abriu um `org.freedesktop.portal.FileChooser.SaveFile` real via `xdg-desktop-portal-gtk`; screenshot com `grim` confirmou o file chooser escuro.
+
 ## Problema em aberto — accent color cinza não aplica em libadwaita
 
 **Sintoma:** `gsettings set org.gnome.desktop.interface accent-color 'slate'` aplica no namespace GNOME, mas Nautilus/Overskride/Pavucontrol continuam com accent **azul**.
