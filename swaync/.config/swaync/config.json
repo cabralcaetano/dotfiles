@@ -74,7 +74,7 @@
         },
         {
           "label": "󰓅",
-          "command": "/home/caetano/.local/bin/power-profile.sh"
+          "command": "/home/caetano/.local/bin/power-profile.sh menu"
         }
       ]
     }

@@ -365,7 +365,7 @@ Usa `tuned-adm` via `tuned-ppd` para alternar entre cinco modos:
 | Balanceado+ | balanced | perfil mais agressivo do Arch: turbo livre e resposta mais rápida, com mais fan |
 | Performance | latency-performance | VM/build/carga pesada |
 
-Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Ciclo: Super Economia → Economia → Balanceado → Balanceado+ → Performance → Super Economia. Indicador aparece na Waybar apenas quando fora do Balanceado padrão.
+Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, cicla pro próximo) ciclam; o botão `󰓅` no painel SwayNC (aberto clicando no sino da Waybar, `swaync-client -t`) abre um menu `fuzzel` pra escolher direto. Ciclo: Super Economia → Economia → Balanceado → Balanceado+ → Performance → Super Economia. Indicador aparece na Waybar apenas quando fora do Balanceado padrão.
 
 **Persistência no boot:** `tuned` em modo `manual` grava o último perfil em `/etc/tuned/active_profile` e restaura no boot (sem reset para default). O `default=balanced` de `/etc/tuned/ppd.conf` vale só para clientes PPD, não para o toggle. Fixar boot no novo Balanceado silencioso: `tuned-adm profile balanced-battery`.
 
@@ -394,6 +394,8 @@ rfkill list bluetooth   # espera: Soft blocked: no (sempre desbloqueia ao sair)
 `/etc/tuned/profiles/<nome>` tem prioridade sobre `/usr/lib/tuned/profiles/<nome>` pro mesmo nome — sobrevive a updates do pacote `tuned`. Como `super-powersave` não existe no `/usr/lib`, não há substituição a fazer, só criação.
 
 **Tooltip com tempo restante (2026-08-21):** o tooltip da Waybar (`battery-conservation.sh waybar`) mostra `energy_now`/`power_now` de `/sys/class/power_supply/BAT0` convertidos em horas:minutos (`Perfil · Preservação/100% · Xh YYmin restantes`) só quando `status=Discharging`. Carregando ou cheia, o sufixo some — a estimativa de tempo não faz sentido plugado na tomada.
+
+**Menu de escolha direta no painel SwayNC (2026-08-21):** o botão `` no painel SwayNC (`buttons-grid` do `swaync/config.json`) chamava `power-profile.sh` sem argumento — ciclava pro próximo perfil, igual ao clique na Waybar. Agora chama `power-profile.sh menu`, que abre um `fuzzel --dmenu` listando os 5 perfis (ícone + nome) e aplica direto o escolhido via a função `switch_to()` (mesma lógica de brilho/notify do ciclo, extraída pra evitar duplicação). Esc ou fechar sem escolher não faz nada. O clique na Waybar (`custom/battery-conservation`) continua ciclando — só o botão do painel abre o menu, por ser navegação de mouse onde escolha direta faz mais sentido que ciclar. **Correção junto:** a doc antiga dizia que `Super+N` abria o painel SwayNC — errado, esse bind é do painel do relógio (Quickshell); quem abre o SwayNC é o clique no sino da Waybar (`swaync-client -t`).
 
 ## Aceleração de vídeo por hardware — Brave (2026-08-21)
 
