@@ -395,6 +395,18 @@ rfkill list bluetooth   # espera: Soft blocked: no (sempre desbloqueia ao sair)
 
 **Tooltip com tempo restante (2026-08-21):** o tooltip da Waybar (`battery-conservation.sh waybar`) mostra `energy_now`/`power_now` de `/sys/class/power_supply/BAT0` convertidos em horas:minutos (`Perfil · Preservação/100% · Xh YYmin restantes`) só quando `status=Discharging`. Carregando ou cheia, o sufixo some — a estimativa de tempo não faz sentido plugado na tomada.
 
+## Aceleração de vídeo por hardware — Brave (2026-08-21)
+
+`libva` + `intel-media-driver` (driver `iHD_drv_video.so`, em `/usr/lib/dri/`) já estão instalados e prontos pro iGPU Intel, mas o Brave decodifica vídeo por **software** por padrão no Linux — confirmado: `--type=gpu-process` do Brave rodando não carregava nenhum flag de VA-API, e `enabled_labs_experiments` no `Local State` vinha vazio. Decode por software de 1080p sobe a CPU uns 15-20W sustentados; por hardware (Quick Sync) fica em 2-4W — maior alavanca de bateria pra uso real (vídeo/chamada) do que qualquer tuning de perfil, e sem trade-off em nenhum modo (Performance incluso: libera CPU, menos calor).
+
+**Ligar (manual — motivo abaixo):**
+1. `brave://flags/#enable-vaapi-video-decoder` → **Enabled**
+2. `brave://flags/#enable-vaapi-video-encoder` → **Enabled** (ajuda em chamada de vídeo)
+3. Botão **Relaunch** que aparece no rodapé da própria página de flags (preserva as abas abertas).
+4. Verificar: abrir um vídeo do YouTube, checar `brave://media-internals` → decoder deve aparecer como `Vda`/hardware, não `ffmpeg`.
+
+**Por que manual e não automatizado:** tentei via `browser` tool com `app.relay: true` (dirige o Brave real do usuário) — timeout. Checadas as 7 extensões instaladas no perfil (Bitwarden, Obsidian Web Clipper, Claude, React DevTools, Quick Tabs, Udemy Dark Theme, Video Download Helper): **a extensão OMP Browser Relay não está instalada**, então não há como o `browser` tool se conectar a essa instância. Alternativa seria editar `~/.config/BraveSoftware/Brave-Browser/Default/Local State` direto — descartado: o Brave estava rodando com abas abertas no momento, e esse arquivo é reescrito periodicamente pelo próprio processo vivo; editar por fora arrisca corromper o arquivo ou perder a mudança na próxima gravação automática, sem ganho sobre o toggle manual (que já usa o mecanismo de relançamento seguro do próprio Chromium). Se a extensão OMP Browser Relay for instalada no futuro, a automação via `browser` tool volta a ser viável e segura.
+
 ## Teclado — Alternância ABNT2 / ANSI
 
 Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB.
