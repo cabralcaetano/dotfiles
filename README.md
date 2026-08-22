@@ -394,7 +394,7 @@ Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservatio
 
 **Persistência no boot:** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — não há reset para um default. O `default=balanced` do `/etc/tuned/ppd.conf` só se aplica a clientes PPD (ex.: painel do GNOME), não ao toggle da Waybar, que usa `tuned-adm profile` direto. Para fixar o boot em Balanceado, aplique uma vez: `tuned-adm profile balanced`.
 
-**PCIe ASPM / Super Economia (2026-08-21):** `super-powersave` é perfil custom deste repo (sem equivalente no pacote `tuned`) que herda `powersave` e adiciona `[pcie_aspm] policy=powersave` — Economia e Balanceado ficam 100% stock. Detalhes e comando de instalação manual em `dotfiles.md`.
+**PCIe ASPM / Super Economia (2026-08-21):** `super-powersave` é perfil custom deste repo (sem equivalente no pacote `tuned`) que herda `powersave` e adiciona `[sysfs] /sys/module/pcie_aspm/parameters/policy=powersave` — Economia e Balanceado ficam 100% stock. `tuned` não tem plugin nativo `pcie_aspm` (usado erroneamente numa primeira versão, sem efeito real); o plugin genérico `[sysfs]` escreve direto no caminho informado. Detalhes e comando de instalação manual em `dotfiles.md`.
 
 ---
 

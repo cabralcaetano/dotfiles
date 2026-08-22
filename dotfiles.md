@@ -369,12 +369,15 @@ Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Ciclo: Balanceado → 
 
 **Persistência no boot:** `tuned` em modo `manual` grava o último perfil em `/etc/tuned/active_profile` e restaura no boot (sem reset para default). O `default=balanced` de `/etc/tuned/ppd.conf` vale só para clientes PPD, não para o toggle. Fixar boot no novo Balanceado silencioso: `tuned-adm profile balanced-battery`.
 
-**PCIe ASPM / Super Economia (2026-08-21):** `powersave` (Economia) e `balanced-battery` (Balanceado) ficam stock — não setam `[pcie_aspm]`, o link fica em `default` (herdado do firmware). `super-powersave` (Super Economia) é um perfil custom deste repo, sem equivalente no pacote `tuned`: `include=powersave` + `[pcie_aspm] policy=powersave`, forçando L0s/L1 em todo link PCIe suportado (NVMe, WiFi) só nesse modo mais extremo. `${i:PROFILE_DIR}/script.sh` do `powersave` incluído resolve pro diretório dele mesmo — a expansão acontece na carga do arquivo de origem, antes do merge do `include` — então não precisa copiar `script.sh` pro perfil novo. Instalação manual (fora do Stow, mesmo padrão do `greetd`):
+**PCIe ASPM / Super Economia (2026-08-21):** `powersave` (Economia) e `balanced-battery` (Balanceado) ficam stock — a política de ASPM fica em `default` (herdada do firmware). `super-powersave` (Super Economia) é um perfil custom deste repo, sem equivalente no pacote `tuned`: `include=powersave` + `[sysfs] /sys/module/pcie_aspm/parameters/policy=powersave`, forçando L0s/L1 em todo link PCIe suportado (NVMe, WiFi) só nesse modo mais extremo. **Correção (mesmo dia):** a primeira versão usava uma seção `[pcie_aspm]` que **não existe** — `tuned` não tem plugin nativo pra ASPM (confirmado em `/usr/lib/python3.14/site-packages/tuned/plugins/`, só há `plugin_sysfs.py` genérico). A seção era ignorada silenciosamente e a política continuava `[default]`. Corrigido pro plugin `[sysfs]`, que escreve direto no caminho `/sys/...` informado como chave. Validado offline com o `Loader` do próprio `tuned` (merge do `include=powersave` mantém todas as seções stock + a nova `[sysfs]`). `${i:PROFILE_DIR}/script.sh` do `powersave` incluído resolve pro diretório dele mesmo — a expansão acontece na carga do arquivo de origem, antes do merge do `include` — então não precisa copiar `script.sh` pro perfil novo. Instalação manual (fora do Stow, mesmo padrão do `greetd`; também remove os overrides antigos e incorretos de `powersave`/`balanced-battery` se você rodou a versão anterior deste comando):
 ```bash
+sudo rm -rf /etc/tuned/profiles/powersave /etc/tuned/profiles/balanced-battery
 sudo mkdir -p /etc/tuned/profiles/super-powersave
 sudo cp ~/Projects/dotfiles/tuned/etc/tuned/profiles/super-powersave/tuned.conf /etc/tuned/profiles/super-powersave/tuned.conf
 sudo tuned-adm profile super-powersave
-cat /sys/module/pcie_aspm/parameters/policy   # esperado: [powersave] em vez de [default]
+cat /sys/module/pcie_aspm/parameters/policy   # esperado: [powersave]
+sudo tuned-adm profile powersave
+cat /sys/module/pcie_aspm/parameters/policy   # esperado: [default] de volta (Economia é stock)
 ```
 `/etc/tuned/profiles/<nome>` tem prioridade sobre `/usr/lib/tuned/profiles/<nome>` pro mesmo nome — sobrevive a updates do pacote `tuned`. Como `super-powersave` não existe no `/usr/lib`, não há substituição a fazer, só criação.
 
