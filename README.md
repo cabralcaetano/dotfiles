@@ -261,7 +261,7 @@ Sistema local de bancos de workspaces: cada super workspace tem seus próprios s
 | Peça | Caminho | Papel |
 |---|---|---|
 | Lista | `hypr/.config/hypr/super-workspaces.txt` | Uma linha por super workspace; ordem do ciclo `SUPER+Tab`. |
-| Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `switch`, `scratchpad`, `next/prev` e payload JSON da Waybar. |
+| Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `switch`, `menu`, `scratchpad`, `next/prev` e payload JSON da Waybar. |
 | Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+Tab`, `SUPER+Tab+1..2`, `SUPER+S` chamam o roteador. |
 | Barra | `waybar/.config/waybar/config.jsonc` | Ícone do super workspace ativo + filtro `ignore-workspaces`. |
 
@@ -269,9 +269,7 @@ Nomes internos no Hyprland usam `name:super-<super>-<slot>` para evitar colisão
 
 O script também lembra o último slot focado em cada super workspace. Se você sai de `super-1-2` e depois volta para o super workspace `1`, ele restaura `super-1-2` em vez de cair sempre no slot `1`.
 
-Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar` e usa `>`, `~` para os super workspaces `1..2`; o tooltip lista todos e click esquerdo/direito navega próximo/anterior.
-
-Mapa salvo: `>` para o super workspace `1` e `~` para o `2`. Futuro planejado: expandir até `10` super workspaces mantendo esses dois símbolos.
+Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar`, mapa `>` `~` `=` `^` `*` para os 5 super workspaces. Tooltip mostra o banco ativo + qualquer outro banco com janela aberta (bancos vazios ficam de fora). Clique esquerdo abre um menu `fuzzel` com os 5 pra escolher direto; clique direito cicla pro anterior.
 
 Documentação completa: [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 
@@ -506,14 +504,14 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 | `kb-toggle.sh` | Alterna layout de teclado ABNT2/ANSI |
 | `workspace-float.sh` | Toggle workspace float mode — flota todas as janelas, desativa warp no Alt+Tab |
 | `alttab.sh` | Alt+Tab via cyclenext+bringactivetotop, preserva cursor no float mode |
-| `super-workspace.sh` | Roteia bancos de workspaces: foco/move por slot, scratchpad por super workspace, ciclo `next/prev` e JSON da Waybar |
+| `super-workspace.sh` | Roteia bancos de workspaces: foco/move por slot, scratchpad por super workspace, menu `fuzzel`/ciclo `next/prev` e JSON da Waybar |
 | `waybar-active-window.sh` | Texto da janela ativa na Waybar com tooltip de CPU/RAM somando a árvore de processos do PID focado; atualiza instantaneamente por eventos do Hyprland e refresca métricas a cada 2s |
 
 ---
 
 ## Waybar
 
-**Esquerda:** botão do super workspace no canto superior esquerdo (`custom/super-workspace`, tooltip com lista e click next/prev) → workspaces filtrados do banco ativo (i–x) → app/janela ativa (`custom/active-window`, tooltip com CPU/RAM do processo focado)
+**Esquerda:** botão do super workspace no canto superior esquerdo (`custom/super-workspace`, tooltip com banco ativo + bancos com janela aberta, clique abre menu `fuzzel`, clique direito cicla anterior) → workspaces filtrados do banco ativo (i–x) → app/janela ativa (`custom/active-window`, tooltip com CPU/RAM do processo focado)
 
 **Super workspaces:** `hyprland/workspaces` mostra apenas workspaces cujo nome bate com `super-<ativo>-*`; `super-workspace.sh` reescreve `ignore-workspaces` e recarrega a Waybar com `SIGUSR2` a cada troca de banco. O botão `custom/super-workspace` é o primeiro módulo da barra e não tem padding/margem antes dele, então o click pega no extremo superior esquerdo da tela. Ver [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 

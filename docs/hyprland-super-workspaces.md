@@ -50,9 +50,12 @@ Lista atual:
 ```text
 1
 2
+3
+4
+5
 ```
 
-Plano futuro: expandir a lista até o super workspace `10`. Os símbolos `>` para o `1` e `~` para o `2` ficam reservados; os símbolos `3..10` serão escolhidos só quando esses bancos forem ativados.
+Símbolos em `icon_for()`: `1`=`>`, `2`=`~`, `3`=`=`, `4`=`^`, `5`=`*`. Fallback (workspace fora desse mapa) mostra o próprio número.
 
 ## Nomes internos no Hyprland
 
@@ -108,20 +111,20 @@ Exemplo para super workspace `1`:
 "ignore-workspaces": ["^(?!super-1-).*$"]
 ```
 
-Tooltip do ícone mostra somente a lista dos super workspaces, com marcador no ativo:
+Tooltip do ícone mostra o banco ativo (marcado com `•`) + qualquer outro banco que tenha janela aberta (`bank_has_windows()`, checa `hyprctl clients -j` por prefixo `super-<n>-`). Bancos vazios não entram na lista — evita listar os 5 sempre que só 1-2 estão em uso:
 
 ```text
 • > 1
   ~ 2
 ```
 
-No payload JSON, as linhas do tooltip usam `\r` em vez de `\n`; o `waybar-custom(5)` dessa versão só renderiza tooltip multilinha corretamente com carriage return.
+(banco `2` só aparece porque tem janela aberta; `3..5`, vazios, ficam de fora). Se só o ativo tiver conteúdo, o tooltip é uma linha só (`• > 1`). Lista completa de todos os 5, independente de conteúdo, fica no popup do `fuzzel` do clique esquerdo (`super-workspace.sh menu`). `class:"urgent"` continua marcando o ícone quando algum banco não-ativo tem pendência.
 
 O ícone é clicável:
 
 | Ação | Comando |
 |---|---|
-| Click esquerdo | `super-workspace.sh next` |
+| Click esquerdo | `super-workspace.sh menu` — abre `fuzzel --dmenu` listando os super workspaces (marcador `•` no ativo), aplica direto o escolhido via `switch` |
 | Click direito | `super-workspace.sh prev` |
 
 ### Marca de urgente/notificação entre bancos
@@ -183,9 +186,12 @@ Mapa atual em `icon_for()`:
 |---|---:|
 | `1` | `>` |
 | `2` | `~` |
+| `3` | `=` |
+| `4` | `^` |
+| `5` | `*` |
 | fallback | valor do próprio super workspace |
 
-Os símbolos `>` e `~` foram escolhidos como mapa estável para os dois bancos atuais. Não trocar ao expandir; adicionar somente os símbolos faltantes para `3..10`.
+Símbolos ASCII simples, um caractere, mesmo estilo do `>`/`~` original. Ao expandir além de `5`, adicionar só o símbolo faltante — não trocar os existentes.
 
 ## Autostart
 
@@ -203,19 +209,19 @@ Isso preserva o layout antigo (`1` browser, `2` terminal/Obsidian, `3` Spotify, 
 
 ## Adicionar outro super workspace
 
-1. Adicione uma linha em `hypr/.config/hypr/super-workspaces.txt`:
+1. Adicione uma linha em `hypr/.config/hypr/super-workspaces.txt` (próximo livre — hoje `1..5` já existem):
 
    ```text
-   5
+   6
    ```
 
 2. Se quiser símbolo específico, adicione o caso em `icon_for()`:
 
    ```bash
-   5) printf '$' ;;
+   6) printf '$' ;;
    ```
 
-3. Se quiser que a Waybar mostre numerais para o novo banco, adicione chaves `super-5-1` até `super-5-10` em `format-icons`.
+3. Se quiser que a Waybar mostre numerais para o novo banco, adicione chaves `super-6-1` até `super-6-10` em `format-icons`.
 
 4. Recarregue:
 
@@ -231,6 +237,7 @@ Isso preserva o layout antigo (`1` browser, `2` terminal/Obsidian, `3` Spotify, 
 | `super-workspace.sh focus 1` | Vai para o slot `1` do super workspace ativo. |
 | `super-workspace.sh move 2` | Move a janela focada para o slot `2` do super workspace ativo. |
 | `super-workspace.sh switch 2` | Pula diretamente para o super workspace `2`. |
+| `super-workspace.sh menu` | Abre `fuzzel --dmenu` com os 5 super workspaces (ícone + número), aplica direto o escolhido via `switch`. |
 | `super-workspace.sh move-super next` | Move a janela focada pro mesmo slot no próximo super workspace e segue pra lá. |
 | `super-workspace.sh move-super prev` | Idem, no super workspace anterior. |
 | `super-workspace.sh next` | Cicla para o próximo super workspace. |
@@ -267,3 +274,4 @@ Também foi validado visualmente com `grim` na região da Waybar para confirmar:
 - Waybar usa `SIGUSR2` para reload de config. `SIGUSR1` é outro handler.
 - Empty workspaces criados por teste somem quando deixam de ser ativos e não têm janelas.
 - Workspaces nomeados têm IDs internos negativos no `hyprctl workspaces -j`; isso é normal.
+- `bank_has_windows()` (filtro do tooltip) depende de `jq` pra parsear `hyprctl clients -j` — já é dependência existente do resto do setup (usado em `battery-conservation.sh` etc.), sem pacote novo.

@@ -130,34 +130,51 @@ bank_has_urgent() {
   [ -f "$URGENT_STATE_FILE" ] && grep -qxF "$sw" "$URGENT_STATE_FILE"
 }
 
-# Símbolo por número de super workspace. Mapa escolhido: 1=">", 2="~".
-# Futuro: expandir super-workspaces.txt até 10 sem trocar esses dois símbolos.
+# Banco tem pelo menos uma janela aberta em algum slot (super-<sw>-*)? Usado
+# pra filtrar o tooltip — só lista bancos com conteúdo, não os 5 sempre.
+bank_has_windows() {
+  local sw="$1"
+  hyprctl clients -j 2>/dev/null \
+    | jq -e --arg pfx "super-${sw}-" \
+        '[.[] | select(.workspace.name | startswith($pfx))] | length > 0' \
+        >/dev/null 2>&1
+}
+
+# Símbolo por número de super workspace. Mapa escolhido: 1=">", 2="~",
+# 3="=", 4="^", 5="*".
 icon_for() {
   case "$1" in
     1) printf '>' ;;
     2) printf '~' ;;
+    3) printf '=' ;;
+    4) printf '^' ;;
+    5) printf '*' ;;
     *) printf '%s' "$1" ;;
   esac
 }
 
 waybar_payload() {
-  local tooltip="" item line text class="[]"
+  local text class="[]" item tooltip=""
   # Waybar só mostra tooltip sobre a área real do label, não sobre padding CSS.
   # Espaços dos dois lados mantêm o hover/click no canto e tiram o símbolo da borda.
   text=" $(icon_for "$SW")  "
 
+  # Tooltip: banco ativo sempre aparece (marcado com •); os outros só entram
+  # se tiverem janela aberta (bank_has_windows) — não lista os 5 à toa. Lista
+  # completa sempre disponível no menu (super-workspace.sh menu).
   for item in "${SUPER_WORKSPACES[@]}"; do
-    line="$(icon_for "$item") $item"
+    local line=""
     if [ "$item" = "$SW" ]; then
-      line="• $line"
-    else
-      line="  $line"
+      line="• $(icon_for "$item") $item"
+    elif bank_has_windows "$item"; then
+      line="  $(icon_for "$item") $item"
       if bank_has_urgent "$item"; then
         line="$line !"
         class='["urgent"]'
       fi
+    else
+      continue
     fi
-
     if [ -z "$tooltip" ]; then
       tooltip="$line"
     else
@@ -237,6 +254,19 @@ case "$cmd" in
   sync-waybar)
     sync_waybar "$SW"
     ;;
+  menu)
+    CHOICE=$(
+      for item in "${SUPER_WORKSPACES[@]}"; do
+        mark=" "
+        [ "$item" = "$SW" ] && mark="•"
+        printf '%s %s %s\n' "$mark" "$(icon_for "$item")" "$item"
+      done | fuzzel --dmenu --prompt "Super workspace: "
+    )
+    [ -n "$CHOICE" ] || exit 0
+    NEW="${CHOICE##* }"
+    known_sw "$NEW" || exit 0
+    exec "$0" switch "$NEW"
+    ;;
   icon)
     icon_for "${1:-$SW}"
     ;;
@@ -244,7 +274,7 @@ case "$cmd" in
     waybar_payload
     ;;
   *)
-    echo "usage: super-workspace.sh {focus|move|move-super|switch|scratchpad|scratchpad-move|next|prev|sync-waybar|icon|waybar} [n]" >&2
+    echo "usage: super-workspace.sh {focus|move|move-super|switch|scratchpad|scratchpad-move|next|prev|menu|sync-waybar|icon|waybar} [n]" >&2
     exit 1
     ;;
 esac
