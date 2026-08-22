@@ -74,6 +74,33 @@ neighbor_sw() {
   printf '%s' "${SUPER_WORKSPACES[$idx]}"
 }
 
+# Igual neighbor_sw(), mas só considera bancos com janela aberta
+# (bank_has_windows) — usado por next/prev (SUPER+Tab), não por move-super
+# (que precisa alcançar bancos vazios pra poder popular eles pela primeira
+# vez). Sem nenhum banco ativo, cai pro par 1/2.
+active_neighbor_sw() {
+  local dir="$1" item idx=-1 n i
+  local -a pool=()
+  for item in "${SUPER_WORKSPACES[@]}"; do
+    bank_has_windows "$item" && pool+=("$item")
+  done
+  [ "${#pool[@]}" -eq 0 ] && pool=(1 2)
+
+  for i in "${!pool[@]}"; do
+    [ "${pool[$i]}" = "$SW" ] && { idx=$i; break; }
+  done
+
+  n=${#pool[@]}
+  if [ "$idx" -eq -1 ]; then
+    if [ "$dir" = next ]; then idx=0; else idx=$((n - 1)); fi
+  elif [ "$dir" = next ]; then
+    idx=$(( (idx + 1) % n ))
+  else
+    idx=$(( (idx - 1 + n) % n ))
+  fi
+  printf '%s' "${pool[$idx]}"
+}
+
 slot_state_file() {
   local safe="${1//\//_}"
   printf '%s/%s' "$SLOT_STATE_DIR" "$safe"
@@ -243,7 +270,7 @@ case "$cmd" in
   next|prev)
     remember_slot "$SW"
 
-    NEW="$(neighbor_sw "$cmd")"
+    NEW="$(active_neighbor_sw "$cmd")"
     SLOT="$(saved_slot_for "$NEW")"
     printf '%s' "$NEW" > "$STATE_FILE"
     hyprctl dispatch "hl.dsp.focus({ workspace = \"name:$(workspace_name "$NEW" "$SLOT")\" })" >/dev/null

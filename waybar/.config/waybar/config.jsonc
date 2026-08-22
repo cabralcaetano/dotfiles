@@ -57,7 +57,7 @@
     "disable-scroll": false,
     "tooltip": false,
     "format": "{icon}",
-    "ignore-workspaces": ["^(?!super-1-).*$"],
+    "ignore-workspaces": ["^(?!super-2-).*$"],
     "format-icons": {
       "super-1-1": "i",
       "super-1-2": "ii",
