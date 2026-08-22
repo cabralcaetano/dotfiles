@@ -365,7 +365,7 @@ Usa `tuned-adm` via `tuned-ppd` para alternar entre cinco modos:
 | Balanceado+ | balanced | perfil mais agressivo do Arch: turbo livre e resposta mais rápida, com mais fan |
 | Performance | latency-performance | VM/build/carga pesada |
 
-Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Ciclo: Balanceado → Balanceado+ → Performance → Economia → Super Economia → Balanceado. Indicador aparece na Waybar apenas quando fora do Balanceado padrão.
+Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Ciclo: Super Economia → Economia → Balanceado → Balanceado+ → Performance → Super Economia. Indicador aparece na Waybar apenas quando fora do Balanceado padrão.
 
 **Persistência no boot:** `tuned` em modo `manual` grava o último perfil em `/etc/tuned/active_profile` e restaura no boot (sem reset para default). O `default=balanced` de `/etc/tuned/ppd.conf` vale só para clientes PPD, não para o toggle. Fixar boot no novo Balanceado silencioso: `tuned-adm profile balanced-battery`.
 

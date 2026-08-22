@@ -390,7 +390,7 @@ Sequência do `hypridle.conf`:
 | Economia | powersave | `󰌪` |
 | Super Economia | super-powersave | `󰳗` |
 
-Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, ver [Waybar](#waybar)), ou no botão `󰓅` no painel SwayNC (`Super+N`). Ciclo: Balanceado → Balanceado+ → Performance → Economia → Super Economia → Balanceado.
+Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, ver [Waybar](#waybar)), ou no botão `󰓅` no painel SwayNC (`Super+N`). Ciclo: Super Economia → Economia → Balanceado → Balanceado+ → Performance → Super Economia.
 
 **Persistência no boot:** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — não há reset para um default. O `default=balanced` do `/etc/tuned/ppd.conf` só se aplica a clientes PPD (ex.: painel do GNOME), não ao toggle da Waybar, que usa `tuned-adm profile` direto. Para fixar o boot em Balanceado, aplique uma vez: `tuned-adm profile balanced`.
 
