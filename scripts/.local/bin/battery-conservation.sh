@@ -152,7 +152,22 @@ case "${1:-toggle}" in
             super-powersave)      profile_label="Super Economia" ;;
             *)                    profile_label="Balanceado" ;;
         esac
-        jq -nc --arg text "$text" --arg tooltip "${profile_label} · ${cons_label}" '{text: $text, tooltip: $tooltip}'
+        time_suffix=""
+        if [ "$battery_status" = "Discharging" ]; then
+            energy_now="$(cat /sys/class/power_supply/BAT0/energy_now 2>/dev/null)"
+            power_now="$(cat /sys/class/power_supply/BAT0/power_now 2>/dev/null)"
+            if [ -n "${energy_now:-}" ] && [ -n "${power_now:-}" ] && [ "$power_now" -gt 0 ] 2>/dev/null; then
+                time_left="$(awk -v e="$energy_now" -v p="$power_now" 'BEGIN {
+                    h = e / p
+                    hh = int(h)
+                    mm = int((h - hh) * 60 + 0.5)
+                    if (mm == 60) { hh++; mm = 0 }
+                    printf "%dh%02dmin", hh, mm
+                }')"
+                time_suffix=" · ${time_left} restantes"
+            fi
+        fi
+        jq -nc --arg text "$text" --arg tooltip "${profile_label} · ${cons_label}${time_suffix}" '{text: $text, tooltip: $tooltip}'
         ;;
     waybar-check)
         require_control_path

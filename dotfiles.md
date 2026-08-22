@@ -381,6 +381,8 @@ cat /sys/module/pcie_aspm/parameters/policy   # esperado: [default] de volta (Ec
 ```
 `/etc/tuned/profiles/<nome>` tem prioridade sobre `/usr/lib/tuned/profiles/<nome>` pro mesmo nome — sobrevive a updates do pacote `tuned`. Como `super-powersave` não existe no `/usr/lib`, não há substituição a fazer, só criação.
 
+**Tooltip com tempo restante (2026-08-21):** o tooltip da Waybar (`battery-conservation.sh waybar`) mostra `energy_now`/`power_now` de `/sys/class/power_supply/BAT0` convertidos em horas:minutos (`Perfil · Preservação/100% · Xh YYmin restantes`) só quando `status=Discharging`. Carregando ou cheia, o sufixo some — a estimativa de tempo não faz sentido plugado na tomada.
+
 ## Teclado — Alternância ABNT2 / ANSI
 
 Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB.
