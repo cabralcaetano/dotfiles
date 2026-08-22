@@ -8,7 +8,8 @@ case "${1:-}" in
     case "$CURRENT" in
       balanced)            echo "󰾅" ;;
       latency-performance) echo "󱐋" ;;
-      powersave)           echo "󰌪" ;;
+      powersave)            echo "󰌪" ;;
+      super-powersave)      echo "󰳗" ;;
     esac
     ;;
   waybar-check)
@@ -19,7 +20,8 @@ case "${1:-}" in
       balanced-battery)    NEXT="balanced"            ; LABEL="󰾅 Balanceado+" ;;
       balanced)            NEXT="latency-performance" ; LABEL="󱐋 Performance"  ;;
       latency-performance) NEXT="powersave"           ; LABEL="󰌪 Economia"     ;;
-      powersave)           NEXT="balanced-battery"    ; LABEL="󰾅 Balanceado"   ;;
+      powersave)            NEXT="super-powersave"     ; LABEL="󰳗 Super Economia" ;;
+      super-powersave)      NEXT="balanced-battery"    ; LABEL="󰾅 Balanceado"   ;;
       *)                   NEXT="balanced-battery"    ; LABEL="󰾅 Balanceado"   ;;
     esac
     tuned-adm profile "$NEXT" && notify-send "Perfil de energia" "$LABEL"

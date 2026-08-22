@@ -148,7 +148,8 @@ case "${1:-toggle}" in
             balanced-battery)    profile_label="Balanceado" ;;
             balanced)            profile_label="Balanceado+" ;;
             latency-performance) profile_label="Performance" ;;
-            powersave)           profile_label="Economia" ;;
+            powersave)            profile_label="Economia" ;;
+            super-powersave)      profile_label="Super Economia" ;;
             *)                    profile_label="Balanceado" ;;
         esac
         jq -nc --arg text "$text" --arg tooltip "${profile_label} · ${cons_label}" '{text: $text, tooltip: $tooltip}'
