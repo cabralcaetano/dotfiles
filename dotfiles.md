@@ -368,6 +368,18 @@ Alternância: botão `󰓅` no painel SwayNC (`Super+N`). Ciclo: Balanceado → 
 
 **Persistência no boot:** `tuned` em modo `manual` grava o último perfil em `/etc/tuned/active_profile` e restaura no boot (sem reset para default). O `default=balanced` de `/etc/tuned/ppd.conf` vale só para clientes PPD, não para o toggle. Fixar boot no novo Balanceado silencioso: `tuned-adm profile balanced-battery`.
 
+**PCIe ASPM (2026-08-21):** os perfis stock `powersave` (Economia) e `balanced-battery` (Balanceado) do pacote `tuned` não setam `[pcie_aspm]` — o link fica em `default` (herdado do firmware, geralmente conservador). Override local em `tuned/etc/tuned/profiles/{powersave,balanced-battery}/tuned.conf` deste repo adiciona `policy=powersave`, forçando L0s/L1 em todo link PCIe suportado (NVMe, WiFi). `Balanceado+`/`Performance` ficam intocados (latência de exit do L1 é indesejável em carga pesada). Instalação manual (fora do Stow, mesmo padrão do `greetd`):
+```bash
+sudo mkdir -p /etc/tuned/profiles/powersave /etc/tuned/profiles/balanced-battery
+sudo cp ~/Projects/dotfiles/tuned/etc/tuned/profiles/powersave/tuned.conf /etc/tuned/profiles/powersave/tuned.conf
+sudo cp ~/Projects/dotfiles/tuned/etc/tuned/profiles/powersave/script.sh /etc/tuned/profiles/powersave/script.sh
+sudo chmod +x /etc/tuned/profiles/powersave/script.sh
+sudo cp ~/Projects/dotfiles/tuned/etc/tuned/profiles/balanced-battery/tuned.conf /etc/tuned/profiles/balanced-battery/tuned.conf
+sudo tuned-adm profile "$(tuned-adm active | awk '{print $NF}')"
+cat /sys/module/pcie_aspm/parameters/policy   # esperado: [powersave] em vez de [default]
+```
+`/etc/tuned/profiles/<nome>` tem prioridade sobre `/usr/lib/tuned/profiles/<nome>` pro mesmo nome (substituição completa, sem merge) — sobrevive a updates do pacote `tuned`. `script.sh` do `powersave` precisa ser copiado junto porque a linha `[script] script=${i:PROFILE_DIR}/script.sh` resolve pro diretório do override.
+
 ## Teclado — Alternância ABNT2 / ANSI
 
 Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB.
