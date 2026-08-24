@@ -229,11 +229,15 @@ hl.bind(mainMod .. " + Tab", function()
     hl.dispatch(hl.dsp.submap("super-workspace-select"))
     hl.dispatch(hl.dsp.exec_cmd("sh -c 'sleep 1; hyprctl dispatch submap reset' &"))
 end)
+hl.bind(mainMod .. " + Space", function()
+    hl.dispatch(hl.dsp.submap("super-workspace-select"))
+    hl.dispatch(hl.dsp.exec_cmd("sh -c 'sleep 1.5; hyprctl dispatch submap reset' &"))
+end)
 hl.bind(mainMod .. " + SHIFT + Tab", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh move-super next"))
 hl.bind(mainMod .. " + SHIFT + G", hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh prev"))
 
 hl.define_submap("super-workspace-select", function()
-    for i = 1, 2 do
+    for i = 1, 5 do
         local switch_super = function()
             hl.dispatch(hl.dsp.exec_cmd("~/.local/bin/super-workspace.sh switch " .. i))
             hl.dispatch(hl.dsp.submap("reset"))

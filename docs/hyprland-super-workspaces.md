@@ -78,14 +78,17 @@ O prefixo `name:` é obrigatório nos dispatches de foco/move. Sem ele, Hyprland
 | `SUPER+0` | Vai para o slot `10` dentro do super workspace ativo. |
 | `SUPER+SHIFT+1..9` | Move a janela focada para o slot `1..9` do super workspace ativo. |
 | `SUPER+SHIFT+0` | Move a janela focada para o slot `10` do super workspace ativo. |
-| `SUPER+Tab` | Próximo super workspace **com janela aberta** (`bank_has_windows()`); grava o slot atual, restaura o último slot do destino e sincroniza Waybar. Sem nenhum banco ativo, alterna entre `1` e `2`. |
-| `SUPER+Tab+1..2` | Pula direto para o super workspace `1..2`, restaurando o último slot salvo daquele banco. |
+| `SUPER+Tab` | Próximo super workspace **com janela aberta** (`bank_has_windows()`); grava o slot atual, restaura o último slot do destino e sincroniza Waybar. Sem nenhum banco ativo, alterna entre `1` e `2`. Também abre por 1s o submap de seleção direta. |
+| `SUPER+Space` | Entra no submap de seleção direta de super workspace sem ciclar; timeout automático de 1,5s. |
+| `1..5` dentro do submap | Pula direto para o super workspace `1..5`, restaurando o último slot salvo daquele banco. Funciona após `SUPER+Tab` ou `SUPER+Space`; `SUPER+<n>` também é aceito dentro do submap. |
 | `SUPER+SHIFT+G` | Super workspace anterior, mesmo filtro de `SUPER+Tab`; mesma restauração de slot. |
 | `SUPER+SHIFT+Tab` | Move a janela focada para o mesmo slot no próximo super workspace e segue para lá (troca o super workspace ativo, restaura foco e sincroniza Waybar). **Não filtra por janela aberta** — precisa alcançar bancos vazios pra poder populá-los pela primeira vez. |
 | `SUPER+S` | Toggle do scratchpad do super workspace ativo. |
 | `SUPER+SHIFT+S` | Move a janela focada para o scratchpad do super workspace ativo. |
 
 `SUPER+Scroll` continua global (`e+1`/`e-1`) de propósito. Ele pode atravessar workspaces de outros super workspaces, mas não altera o estado salvo do super workspace ativo.
+
+`SUPER+Space` antes era o atalho default do Fcitx5 para alternar grupos (`Super+Space`/`Super+Shift+Space`). O repo versiona `fcitx5/.config/fcitx5/config` com `EnumerateGroupForwardKeys=` e `EnumerateGroupBackwardKeys=` vazios para liberar esse chord para o Hyprland; troca manual de layout continua em `SUPER+K`.
 
 Quando você está em `super-1-2`, alterna para outro super workspace e depois volta, o script retorna para `super-1-2` em vez de cair sempre em `super-1-1`.
 

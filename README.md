@@ -118,6 +118,7 @@ waybar/         → config.jsonc, style.css
 swaync/         → config.json, style.css
 quickshell/     → clock-panel/shell.qml
 fuzzel/         → fuzzel.ini
+fcitx5/         → config global sem Super+Space; Hyprland usa esse atalho como layer de super workspace
 ghostty/        → config
 tmux/           → tmux.conf, plugins TPM/tmux-power; scrollback por mouse via copy-mode -e
 kitty/          → kitty.conf
@@ -205,7 +206,8 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Super+1..0 | Vai para workspace 1–10 dentro do super workspace ativo |
 | Super+Shift+1..0 | Move janela para workspace 1–10 dentro do super workspace ativo |
 | Super+Tab | Próximo super workspace |
-| Super+Tab+1..2 | Vai direto para o super workspace 1–2 |
+| Super+Tab, 1..5 | Vai direto para o super workspace 1–5 |
+| Super+Space, 1..5 | Layer anatômico para trocar direto para o super workspace 1–5 |
 | Super+Shift+G | Super workspace anterior |
 | Super+S | Toggle scratchpad do super workspace ativo |
 | Super+Shift+S | Move janela para scratchpad do super workspace ativo |
@@ -262,7 +264,7 @@ Sistema local de bancos de workspaces: cada super workspace tem seus próprios s
 |---|---|---|
 | Lista | `hypr/.config/hypr/super-workspaces.txt` | Uma linha por super workspace; ordem do ciclo `SUPER+Tab`. |
 | Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `switch`, `menu`, `scratchpad`, `next/prev` e payload JSON da Waybar. |
-| Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+Tab`, `SUPER+Tab+1..2`, `SUPER+S` chamam o roteador. |
+| Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+Tab`, `SUPER+Space`, seleção direta `1..5` e `SUPER+S` chamam o roteador. |
 | Barra | `waybar/.config/waybar/config.jsonc` | Ícone do super workspace ativo + filtro `ignore-workspaces`. |
 
 Nomes internos no Hyprland usam `name:super-<super>-<slot>` para evitar colisão com workspaces numéricos globais. Ex.: super workspace `1`, slot `4` vira `name:super-1-4`; scratchpad vira `special:super-1-magic`.
@@ -463,6 +465,8 @@ referência técnica de schema/templates em [`themes/README.md`](themes/README.m
 Toggle `Super+K` alterna entre ABNT2 (notebook) e ANSI US (teclado mecânico externo).
 
 O setup ativo usa layouts padrão (`br,us`) com `kb_options = compose:rctrl`. O antigo layout customizado `us-br` foi preservado em `legacy/xkb/`, mas está fora do fluxo ativo e não deve ser instalado por padrão.
+
+Fcitx5 fica com a troca de grupo `Super+Space`/`Super+Shift+Space` desativada em `fcitx5/.config/fcitx5/config`, porque o Hyprland é dono de `Super+Space` para o layer anatômico de super workspace. A troca explícita de teclado continua em `Super+K`.
 
 O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `device {}` do Hyprland, porque o receptor enumera Alt/Super trocados. O teclado do notebook segue sem swap.
 

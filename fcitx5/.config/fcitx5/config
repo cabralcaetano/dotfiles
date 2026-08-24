@@ -1,0 +1,5 @@
+[Hotkey]
+# Hyprland owns SUPER+Space for the super-workspace layer.
+# Disable Fcitx's default group switch keys: Super+Space / Super+Shift+Space.
+EnumerateGroupForwardKeys=
+EnumerateGroupBackwardKeys=
