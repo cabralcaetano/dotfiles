@@ -301,8 +301,22 @@ hl.bind("CTRL + Print",    hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh
 hl.bind("ALT + S",         hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh full"))
 hl.bind("ALT + SHIFT + S", hl.dsp.exec_cmd("~/.config/hypr/scripts/screenshot.sh area"))
 
--- Regras de float dinâmico por workspace (gerenciado por workspace-float.sh)
-dofile(os.getenv("HOME") .. "/.config/hypr/workspace-float.lua")
+-- Regras de float dinâmico por workspace (sessão atual; resetadas no boot).
+do
+    local runtime_dir = os.getenv("XDG_RUNTIME_DIR")
+    if not runtime_dir then
+        local uid_cmd = io.popen("id -u")
+        local uid = uid_cmd and uid_cmd:read("*l")
+        if uid_cmd then uid_cmd:close() end
+        runtime_dir = uid and ("/run/user/" .. uid) or "/tmp"
+    end
+    local float_rules = runtime_dir .. "/hypr/workspace-float.lua"
+    local file = io.open(float_rules, "r")
+    if file then
+        file:close()
+        dofile(float_rules)
+    end
+end
 
 -- === LAYER RULES =================================
 
