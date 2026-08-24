@@ -306,30 +306,8 @@ dofile(os.getenv("HOME") .. "/.config/hypr/workspace-float.lua")
 
 -- === LAYER RULES =================================
 
--- Quickshell usa uma layer transparente fullscreen; ignore_alpha evita borrar a tela inteira
--- e aplica o blur só nos pixels semi-opacos dos painéis.
-hl.layer_rule({
-    name = "quickshell-blur",
-    match = { namespace = "^quickshell$" },
-    blur = true,
-    ignore_alpha = 0.10,
-})
-
--- SwayNC e Fuzzel também são layers transparentes; blur + ignore_alpha mantém
--- o wallpaper nítido fora das caixas e borra só atrás das superfícies visíveis.
-hl.layer_rule({
-    name = "swaync-blur",
-    match = { namespace = "^swaync-control-center$" },
-    blur = true,
-    ignore_alpha = 0.10,
-})
-
-hl.layer_rule({
-    name = "fuzzel-launcher-blur",
-    match = { namespace = "^launcher$" },
-    blur = true,
-    ignore_alpha = 0.10,
-})
+-- Sem blur em layers transparentes: mantém Fuzzel, SwayNC e o painel Quickshell
+-- translúcidos, mas sem borrar o wallpaper/janelas por trás.
 
 -- === WINDOW RULES ================================
 
