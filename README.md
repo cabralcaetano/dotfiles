@@ -380,19 +380,18 @@ Sequência do `hypridle.conf`:
 
 ## Perfil de energia
 
-`tuned-adm` via `tuned-ppd` alterna entre cinco modos:
+`tuned-adm` via `tuned-ppd` alterna entre quatro modos:
 
 | Perfil | Modo tuned | Ícone Waybar |
 |---|---|---|
-| Balanceado | balanced-battery | oculto |
-| Balanceado+ | balanced | `󰾅` |
+| Balanceado | balanced | oculto |
 | Performance | latency-performance | `󱐋` |
 | Economia | powersave | `󰌪` |
 | Super Economia | super-powersave | `󰳗` |
 
-Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, ver [Waybar](#waybar)) cicla pro próximo perfil. No painel SwayNC (aberto clicando no sino da Waybar), o botão `󰓅` abre um menu `fuzzel` pra escolher o perfil direto, sem ciclar. Ciclo da Waybar: Super Economia → Economia → Balanceado → Balanceado+ → Performance → Super Economia.
+Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, ver [Waybar](#waybar)) cicla pro próximo perfil. No painel SwayNC (aberto clicando no sino da Waybar), o botão `󰓅` abre um menu `fuzzel` pra escolher o perfil direto, sem ciclar. Ciclo da Waybar: Super Economia → Economia → Balanceado → Performance → Super Economia.
 
-**Persistência no boot:** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — não há reset para um default. O `default=balanced` do `/etc/tuned/ppd.conf` só se aplica a clientes PPD (ex.: painel do GNOME), não ao toggle da Waybar, que usa `tuned-adm profile` direto. Para fixar o boot em Balanceado, aplique uma vez: `tuned-adm profile balanced`.
+**Persistência no boot:** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — não há reset para um default. O `default=balanced` do `/etc/tuned/ppd.conf` se aplica aos clientes PPD. Para fixar o boot em Balanceado normal quando `tuned-ppd` está ativo, defina também o perfil base PPD como `balanced` (`/etc/tuned/ppd_base_profile`).
 
 **Super Economia (2026-08-21):** `super-powersave` é perfil custom deste repo (sem equivalente no pacote `tuned`), herda `powersave` e soma PCIe ASPM `powersave`, `max_perf_pct=50`, `usb autosuspend=1`, brilho em 25% (via `power-profile.sh`, restaura ao sair) e bloqueio de Bluetooth via `rfkill` — só se `bluetoothctl devices Connected` vier vazio (não derruba mouse/fone em uso; desbloqueia sozinho ao trocar de perfil). Economia e Balanceado continuam 100% stock. Detalhes e comando de instalação manual em `dotfiles.md`.
 

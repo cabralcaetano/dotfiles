@@ -28,21 +28,19 @@ case "${1:-}" in
     esac
     ;;
   waybar-check)
-    [ "$CURRENT" != "balanced-battery" ]
+    [ "$CURRENT" != "balanced" ]
     ;;
   menu)
     CHOICE=$(printf '%s\n' \
       "󰳗 Super Economia" \
       "󰌪 Economia" \
       "󰾅 Balanceado" \
-      "󰾅 Balanceado+" \
       "󱐋 Performance" \
       | fuzzel --dmenu --prompt "Perfil de energia: ")
     case "$CHOICE" in
       *"Super Economia"*) switch_to super-powersave "$CHOICE" ;;
-      *"Balanceado+"*)    switch_to balanced "$CHOICE" ;;
       *"Economia"*)       switch_to powersave "$CHOICE" ;;
-      *"Balanceado"*)     switch_to balanced-battery "$CHOICE" ;;
+      *"Balanceado"*)     switch_to balanced "$CHOICE" ;;
       *"Performance"*)    switch_to latency-performance "$CHOICE" ;;
       *) exit 0 ;;   # Esc / fechou sem escolher
     esac
@@ -50,11 +48,10 @@ case "${1:-}" in
   *)
     case "$CURRENT" in
       super-powersave)      NEXT="powersave"           ; LABEL="󰌪 Economia"     ;;
-      powersave)            NEXT="balanced-battery"    ; LABEL="󰾅 Balanceado"   ;;
-      balanced-battery)     NEXT="balanced"            ; LABEL="󰾅 Balanceado+" ;;
+      powersave)            NEXT="balanced"            ; LABEL="󰾅 Balanceado"   ;;
       balanced)             NEXT="latency-performance" ; LABEL="󱐋 Performance"  ;;
       latency-performance)  NEXT="super-powersave"     ; LABEL="󰳗 Super Economia" ;;
-      *)                    NEXT="balanced-battery"    ; LABEL="󰾅 Balanceado"   ;;
+      *)                    NEXT="balanced"            ; LABEL="󰾅 Balanceado"   ;;
     esac
     switch_to "$NEXT" "$LABEL"
     ;;

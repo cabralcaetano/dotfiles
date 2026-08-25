@@ -355,19 +355,18 @@ Aliases e ferramentas configuradas no `.zshrc`:
 
 ## Perfil de energia
 
-Usa `tuned-adm` via `tuned-ppd` para alternar entre cinco modos:
+Usa `tuned-adm` via `tuned-ppd` para alternar entre quatro modos:
 
 | Perfil | Modo tuned | Uso |
 |---|---|---|
 | Super Economia | super-powersave | emergência/viagem longa; CPU capada em 50%, USB autosuspend, BT desliga se ocioso, brilho 25%, PCIe ASPM |
 | Economia | powersave | bateria/viagem curta; reduz responsividade, stock sem ASPM extra |
-| Balanceado | balanced-battery | novo padrão diário: silencioso, turbo ligado e menos picos de fan |
-| Balanceado+ | balanced | perfil mais agressivo do Arch: turbo livre e resposta mais rápida, com mais fan |
+| Balanceado | balanced | padrão diário normal do tuned/Arch: responsivo, turbo livre, stock |
 | Performance | latency-performance | VM/build/carga pesada |
 
-Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, cicla pro próximo) ciclam; o botão `󰓅` no painel SwayNC (aberto clicando no sino da Waybar, `swaync-client -t`) abre um menu `fuzzel` pra escolher direto. Ciclo: Super Economia → Economia → Balanceado → Balanceado+ → Performance → Super Economia. Indicador aparece na Waybar apenas quando fora do Balanceado padrão.
+Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, cicla pro próximo); o botão `󰓅` no painel SwayNC (aberto clicando no sino da Waybar, `swaync-client -t`) abre um menu `fuzzel` pra escolher direto. Ciclo: Super Economia → Economia → Balanceado → Performance → Super Economia. Indicador aparece na Waybar apenas quando fora do Balanceado padrão.
 
-**Persistência no boot:** `tuned` em modo `manual` grava o último perfil em `/etc/tuned/active_profile` e restaura no boot (sem reset para default). O `default=balanced` de `/etc/tuned/ppd.conf` vale só para clientes PPD, não para o toggle. Fixar boot no novo Balanceado silencioso: `tuned-adm profile balanced-battery`.
+**Persistência no boot:** `tuned` em modo `manual` grava o último perfil em `/etc/tuned/active_profile` e restaura no boot (sem reset para default). O `default=balanced` de `/etc/tuned/ppd.conf` vale para clientes PPD. Com `tuned-ppd` ativo, o perfil base PPD também precisa ficar `balanced` (`/etc/tuned/ppd_base_profile`), senão eventos de bateria/AC podem reaplicar outro modo.
 
 **Super Economia — o que tem a mais que o Economia (2026-08-21):** `super-powersave` é perfil custom deste repo (sem equivalente no pacote `tuned`), `include=powersave` +:
 - `[cpu] max_perf_pct=50` — capa o clock não-turbo em metade do máximo (opção nativa do plugin `cpu`).
@@ -377,9 +376,10 @@ Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservatio
 - `[sysfs] .../nvme_core/parameters/default_ps_max_latency_us=200000` — teto de latência mais permissivo pro APST do NVMe, permite estados de energia mais profundos do SSD (ganho marginal, mas sem risco).
 - Brilho: `power-profile.sh` (fora do tuned) salva o brilho atual em `/tmp/.power-profile-brightness-before-super-economia` e desce pra 25% ao entrar em Super Economia; restaura o valor salvo ao sair.
 
-`powersave` (Economia) e `balanced-battery` (Balanceado) continuam 100% stock. Validado offline com o `Loader` real do tuned antes de aplicar (merge do `include=powersave` mantém todas as seções stock + as novas). `${i:PROFILE_DIR}/script.sh` do `powersave` incluído resolve pro diretório dele mesmo — a expansão acontece na carga do arquivo de origem, antes do merge do `include` — só o `script.sh` novo (Bluetooth) precisa ser copiado. Instalação manual (fora do Stow, mesmo padrão do `greetd`; substitui a versão anterior sem `[usb]`/`[cpu]`/Bluetooth):
+`powersave` (Economia) e `balanced` (Balanceado normal) continuam 100% stock. Validado offline com o `Loader` real do tuned antes de aplicar (merge do `include=powersave` mantém todas as seções stock + as novas). `${i:PROFILE_DIR}/script.sh` do `powersave` incluído resolve pro diretório dele mesmo — a expansão acontece na carga do arquivo de origem, antes do merge do `include` — só o `script.sh` novo (Bluetooth) precisa ser copiado. Instalação manual (fora do Stow, mesmo padrão do `greetd`; substitui a versão anterior sem `[usb]`/`[cpu]`/Bluetooth):
 ```bash
 sudo rm -rf /etc/tuned/profiles/powersave /etc/tuned/profiles/balanced-battery /etc/tuned/profiles/super-powersave
+sudo cp ~/Projects/dotfiles/tuned/etc/tuned/ppd.conf /etc/tuned/ppd.conf
 sudo mkdir -p /etc/tuned/profiles/super-powersave
 sudo cp ~/Projects/dotfiles/tuned/etc/tuned/profiles/super-powersave/tuned.conf /etc/tuned/profiles/super-powersave/tuned.conf
 sudo cp ~/Projects/dotfiles/tuned/etc/tuned/profiles/super-powersave/script.sh /etc/tuned/profiles/super-powersave/script.sh
@@ -390,6 +390,7 @@ rfkill list bluetooth   # bloqueado só se nada tava conectado ao entrar
 sudo tuned-adm profile powersave
 cat /sys/module/pcie_aspm/parameters/policy /sys/devices/system/cpu/intel_pstate/max_perf_pct
 rfkill list bluetooth   # espera: Soft blocked: no (sempre desbloqueia ao sair)
+busctl set-property net.hadess.PowerProfiles /net/hadess/PowerProfiles net.hadess.PowerProfiles ActiveProfile s balanced
 ```
 `/etc/tuned/profiles/<nome>` tem prioridade sobre `/usr/lib/tuned/profiles/<nome>` pro mesmo nome — sobrevive a updates do pacote `tuned`. Como `super-powersave` não existe no `/usr/lib`, não há substituição a fazer, só criação.
 
