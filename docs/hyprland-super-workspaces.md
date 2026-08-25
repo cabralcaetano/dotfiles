@@ -235,6 +235,78 @@ Isso preserva o layout antigo (`1` browser, `2` terminal/Obsidian, `3` Spotify, 
    ~/.local/bin/super-workspace.sh sync-waybar
    ```
 
+## Perfis de navegador on-demand (RAM)
+
+**Status:** implementado e verificado (2026-08-25).
+
+**Problema:** profiles diferentes dentro do mesmo Brave economizam RAM, mas
+continuam compartilhando o mesmo processo do navegador. Quando o OMP Browser
+Relay/depuração prende um target desse processo, o aviso de debug aparece em
+todo o Brave — inclusive no profile pessoal do SW1.
+
+**Solução atual:** SW1 fica no Brave pessoal (`swprofile1`). SW2+ usam
+Chromium dedicado aos super workspaces. Isso cria um limite de processo entre
+o browser pessoal e os browsers de trabalho/automação: se o OMP depurar o
+Chromium, o banner não contamina o Brave pessoal. Tradeoff aceito: existe um
+segundo engine Chromium/Chromium-like rodando quando SW2+ estiverem abertos.
+
+`scripts/.local/bin/brave-profile.sh [--app|--browser] <profile> <slot ex: super-1-1> [url]`:
+
+- Usado para o SW1/pessoal.
+- `<profile>` é o nome visível do profile no Brave, ex. `swprofile1`. Antes
+  de chamar o Brave, o script resolve esse nome no `Local State`
+  (`~/.config/BraveSoftware/Brave-Browser/Local State`) e passa o diretório
+  interno correto para `--profile-directory` (`Default`, `Profile 1`, etc.).
+  Isso é necessário porque o Brave separa **nome visível** e **diretório do
+  profile**.
+
+`scripts/.local/bin/chromium-profile.sh <profile> <slot ex: super-2-1> [url]`:
+
+- Usado para SW2+.
+- Usa `~/.config/chromium-super-workspaces` como `--user-data-dir` dedicado e
+  `--profile-directory=swprofile<N>` para separar cookies/sessões por banco.
+- Mantém o custo de automação/debug fora do Brave pessoal.
+
+`scripts/.local/bin/browser-super-workspace.sh [url]` é o roteador de alto nível:
+
+- `SUPER+B` chama esse script via `hyprland.lua`.
+- `xdg-open`/links `http` e `https` chamam esse script via
+  `desktop-apps/.config/mimeapps.list` +
+  `browser-super-workspace.desktop`.
+- O roteamento usa o super workspace ativo (`hyprctl activeworkspace -j`, com
+  fallback para `~/.cache/hypr/super-workspace`). O protocolo `xdg-open` não
+  informa qual app originou o link; se um processo em background abrir link
+  enquanto outro super workspace está focado, vale o banco focado naquele
+  instante.
+
+Mapa atual:
+
+| Super workspace | Navegador | Profile | Slot |
+|---|---|---|---|
+| `1` | Brave | `swprofile1` | `super-1-1` |
+| `2` | Chromium | `swprofile2` | `super-2-1` |
+| `3` | Chromium | `swprofile3` | `super-3-1` |
+| `N` | Chromium | `swprofile<N>` | `super-<N>-1` |
+
+Uso — abrir o browser do super workspace ativo:
+
+```bash
+browser-super-workspace.sh
+```
+
+Uso — abrir link no browser do super workspace ativo:
+
+```bash
+browser-super-workspace.sh "https://example.com"
+```
+
+**Fora do escopo de propósito:** Spotify e Discord ficam nativos (Electron),
+não migram para abas do Brave. Cada um já paga o mesmo tipo de tax (GPU +
+zygote + network service próprios), mas `brave-duck.sh` identifica o Spotify
+pelo client PipeWire nativo (`get_spotify_id` via `wpctl status`); virando
+aba do Brave, o áudio apareceria como cliente "brave" e o ducking automático
+pararia de funcionar. Não compensa a troca.
+
 ## Comandos úteis
 
 | Comando | Uso |

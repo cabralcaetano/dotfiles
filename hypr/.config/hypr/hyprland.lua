@@ -12,7 +12,8 @@ hl.monitor({ output = "", mode = "1920x1200@60", position = "0x0", scale = 1.25 
 local terminal    = "ghostty"
 local fileManager = "nautilus"
 local menu        = "fuzzel"
-local browser     = "brave"
+local browser     = "~/.local/bin/browser-super-workspace.sh"
+local browserAutostart = "~/.local/bin/brave-profile.sh --browser swprofile1 super-1-1"
 local mainMod     = "SUPER"
 local vscode      = "code"
 local discord     = "discord"
@@ -40,7 +41,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd(waterReminder)
 
     -- aplicativos com workspace fixo, no super workspace 1 (padrão do boot)
-    hl.dispatch(hl.dsp.exec_cmd(browser, { workspace = "name:super-1-1 silent" }))
+    hl.dispatch(hl.dsp.exec_cmd(browserAutostart))
     hl.dispatch(hl.dsp.exec_cmd(terminal .. " -e zsh -lc \"tmux new-session -A -s wiki-ia -c ~/Projects/wiki-ia\"", { workspace = "name:super-1-2 silent" }))
     hl.dispatch(hl.dsp.exec_cmd(obsidian, { workspace = "name:super-1-2 silent" }))
     hl.dispatch(hl.dsp.exec_cmd(spotify, { workspace = "name:super-1-3 silent" }))

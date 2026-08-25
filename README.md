@@ -266,12 +266,16 @@ Sistema local de bancos de workspaces: cada super workspace tem seus próprios s
 | Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `switch`, `menu`, `scratchpad`, `next/prev` e payload JSON da Waybar. |
 | Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+Tab`, `SUPER+Space`, seleção direta `1..5` e `SUPER+S` chamam o roteador. |
 | Barra | `waybar/.config/waybar/config.jsonc` | Ícone do super workspace ativo + filtro `ignore-workspaces`. |
+| Browser router | `scripts/.local/bin/browser-super-workspace.sh` | `SUPER+B` e `xdg-open` escolhem o navegador pelo super workspace ativo. |
+| Chromium SW | `scripts/.local/bin/chromium-profile.sh` | SW2+ usam Chromium isolado em `~/.config/chromium-super-workspaces`. |
 
 Nomes internos no Hyprland usam `name:super-<super>-<slot>` para evitar colisão com workspaces numéricos globais. Ex.: super workspace `1`, slot `4` vira `name:super-1-4`; scratchpad vira `special:super-1-magic`.
 
 O script também lembra o último slot focado em cada super workspace. Se você sai de `super-1-2` e depois volta para o super workspace `1`, ele restaura `super-1-2` em vez de cair sempre no slot `1`.
 
 Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar`, mapa `>` `~` `=` `^` `*` para os 5 super workspaces. Tooltip mostra o banco ativo + qualquer outro banco com janela aberta (bancos vazios ficam de fora). Clique esquerdo abre um menu `fuzzel` com os 5 pra escolher direto; clique direito cicla pro anterior.
+
+Navegadores seguem o banco ativo: SW1 abre o Brave pessoal (`swprofile1` em `super-1-1`); SW2+ abrem Chromium com profile correspondente (`swprofileN` em `super-N-1`). Isso isola o banner de depuração do OMP/Browser Relay fora do Brave pessoal.
 
 Documentação completa: [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 

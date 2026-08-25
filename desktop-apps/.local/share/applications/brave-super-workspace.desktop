@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Browser Super Workspace
+Comment=Open links in the browser mapped to the active Hyprland super workspace
+Exec=browser-super-workspace.sh %u
+Terminal=false
+Type=Application
+Icon=brave-browser
+Categories=Network;WebBrowser;
+MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/about;x-scheme-handler/unknown;
+NoDisplay=true
