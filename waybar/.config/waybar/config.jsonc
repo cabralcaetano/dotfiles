@@ -13,7 +13,7 @@
   "margin-bottom": 1,
 
   // === MÓDULOS =================================
-  "modules-left": ["custom/super-workspace", "hyprland/workspaces", "custom/active-window"],
+  "modules-left": ["custom/super-workspace", "hyprland/workspaces", "custom/active-window", "custom/super-workspace-name"],
   "modules-center": ["clock"],
   "modules-right": ["group/tray-drawer", "cpu", "memory", "network", "bluetooth", "pulseaudio", "custom/power-profile", "custom/battery-conservation", "custom/swaync-hotspot"],
 
@@ -57,7 +57,7 @@
     "disable-scroll": false,
     "tooltip": false,
     "format": "{icon}",
-    "ignore-workspaces": ["^(?!super-2-).*$"],
+    "ignore-workspaces": ["^(?!super-1-).*$"],
     "format-icons": {
       "super-1-1": "i",
       "super-1-2": "ii",
@@ -119,6 +119,14 @@
     "restart-interval": 1,
     "format": "{}",
     "max-length": 20,
+    "tooltip": true
+  },
+
+  // === NOME DO SUPER WORKSPACE ATIVO ============
+  "custom/super-workspace-name": {
+    "exec": "~/.local/bin/super-workspace.sh name",
+    "return-type": "json",
+    "format": "{}",
     "tooltip": true
   },
 

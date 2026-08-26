@@ -107,6 +107,7 @@ A barra da esquerda fica:
 Componentes:
 
 - `custom/super-workspace`: fica no extremo superior esquerdo, executa `super-workspace.sh waybar` e recebe JSON no formato `{"text":"...","tooltip":"...","class":[...]}`. Como é o primeiro módulo e a barra não tem padding antes dele, o canto `x=0,y=0` também aciona o botão.
+- `custom/super-workspace-name`: renderiza o alias do banco ativo depois de `custom/active-window`; fica vazio quando o banco não tem nome.
 - `hyprland/workspaces`: continua sendo o módulo nativo, preservando clique/scroll nos workspaces.
 - `ignore-workspaces`: é reescrito pelo script em cada `next`/`prev` para mostrar só nomes com prefixo do super workspace ativo.
 
@@ -119,17 +120,17 @@ Exemplo para super workspace `1`:
 Tooltip do ícone mostra o banco ativo (marcado com `•`) + qualquer outro banco que tenha janela aberta (`bank_has_windows()`, checa `hyprctl clients -j` por prefixo `super-<n>-`). Bancos vazios não entram na lista — evita listar os 5 sempre que só 1-2 estão em uso:
 
 ```text
-• > 1
+• > 1 — docs
   ~ 2
 ```
 
-(banco `2` só aparece porque tem janela aberta; `3..5`, vazios, ficam de fora). Se só o ativo tiver conteúdo, o tooltip é uma linha só (`• > 1`). Lista completa de todos os 5, independente de conteúdo, fica no popup do `fuzzel` do clique esquerdo (`super-workspace.sh menu`). `class:"urgent"` continua marcando o ícone quando algum banco não-ativo tem pendência.
+(banco `2` só aparece porque tem janela aberta; `3..5`, vazios, ficam de fora). Se só o ativo tiver conteúdo, o tooltip é uma linha só (`• > 1 — docs` quando o banco tem alias). Lista completa de todos os 5, independente de conteúdo, fica no popup do `fuzzel` do clique esquerdo (`super-workspace.sh menu`). O mesmo popup aceita texto livre para gravar o nome do banco ativo; a opção `✎ nomear workspace atual` abre um prompt dedicado e entrada vazia apaga o nome. `class:"urgent"` continua marcando o ícone quando algum banco não-ativo tem pendência.
 
 O ícone é clicável:
 
 | Ação | Comando |
 |---|---|
-| Click esquerdo | `super-workspace.sh menu` — abre `fuzzel --dmenu` listando os super workspaces (marcador `•` no ativo), aplica direto o escolhido via `switch` |
+| Click esquerdo | `super-workspace.sh menu` — abre `fuzzel --dmenu` listando os super workspaces (marcador `•` no ativo), aplica direto o escolhido via `switch` ou grava texto livre como nome do banco ativo |
 | Click direito | `super-workspace.sh prev` |
 
 ### Marca de urgente/notificação entre bancos
@@ -314,7 +315,7 @@ pararia de funcionar. Não compensa a troca.
 | `super-workspace.sh focus 1` | Vai para o slot `1` do super workspace ativo. |
 | `super-workspace.sh move 2` | Move a janela focada para o slot `2` do super workspace ativo. |
 | `super-workspace.sh switch 2` | Pula diretamente para o super workspace `2`. |
-| `super-workspace.sh menu` | Abre `fuzzel --dmenu` com os 5 super workspaces (ícone + número), aplica direto o escolhido via `switch`. |
+| `super-workspace.sh menu` | Abre `fuzzel --dmenu` com os 5 super workspaces (ícone + número), aplica direto o escolhido via `switch` ou grava texto livre como nome do banco ativo. |
 | `super-workspace.sh move-super next` | Move a janela focada pro mesmo slot no próximo super workspace e segue pra lá. |
 | `super-workspace.sh move-super prev` | Idem, no super workspace anterior. |
 | `super-workspace.sh next` | Cicla para o próximo super workspace. |

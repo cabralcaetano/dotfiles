@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # Super workspaces: independent banks of numbered workspaces (1-9/0), each
-# with its own scratchpad. User-facing identity stays numeric; Waybar symbols
-# come from icon_for().
+# with its own scratchpad. User-facing identity stays numeric; optional labels
+# are user-facing aliases rendered by Waybar only.
 #
 # Mechanism: the active super workspace number is persisted in $STATE_FILE; the
 # last focused slot of each super workspace is persisted under $SLOT_STATE_DIR.
 # SUPER+N and SUPER+SHIFT+N binds call this script instead of a raw workspace
 # number, so they always resolve to name:super-<sw>-<n>. The Hyprland internal
-# name is only a collision-free target; notifications and Waybar expose the
-# numeric super workspace and its configured symbol.
+# name is only a collision-free target; notifications, labels and Waybar expose
+# the numeric super workspace and any configured alias.
 #
 # Waybar: on next/prev/sync this rewrites the "ignore-workspaces" regex in
 # config.jsonc (plain sed — JSONC comments must survive) and reloads the bar
@@ -24,7 +24,7 @@
 #   super-workspace.sh switch <sw>          switch directly to a specific super workspace
 #   super-workspace.sh move-super <next|prev>  move focused window to same
 #                                               slot in neighboring super workspace, and follow it there
-#   super-workspace.sh sync-waybar|icon|waybar
+#   super-workspace.sh sync-waybar|icon|waybar|name
 set -euo pipefail
 export PATH="/usr/local/bin:/usr/bin:/bin:${PATH:-}"
 
@@ -32,8 +32,9 @@ LIST_FILE="$HOME/.config/hypr/super-workspaces.txt"
 STATE_FILE="$HOME/.cache/hypr/super-workspace"
 URGENT_STATE_FILE="$HOME/.cache/hypr/super-workspace-urgent-banks"
 SLOT_STATE_DIR="$HOME/.cache/hypr/super-workspace-slots"
+NAME_STATE_DIR="$HOME/.cache/hypr/super-workspace-names"
 WAYBAR_CONFIG="$HOME/.config/waybar/config.jsonc"
-mkdir -p "$(dirname "$STATE_FILE")" "$SLOT_STATE_DIR"
+mkdir -p "$(dirname "$STATE_FILE")" "$SLOT_STATE_DIR" "$NAME_STATE_DIR"
 
 mapfile -t SUPER_WORKSPACES < "$LIST_FILE"
 [ "${#SUPER_WORKSPACES[@]}" -gt 0 ] || { notify-send "Super workspace" "lista vazia"; exit 1; }
@@ -101,9 +102,46 @@ active_neighbor_sw() {
   printf '%s' "${pool[$idx]}"
 }
 
-slot_state_file() {
+safe_state_key() {
   local safe="${1//\//_}"
-  printf '%s/%s' "$SLOT_STATE_DIR" "$safe"
+  printf '%s' "$safe"
+}
+
+slot_state_file() {
+  printf '%s/%s' "$SLOT_STATE_DIR" "$(safe_state_key "$1")"
+}
+
+name_state_file() {
+  printf '%s/%s' "$NAME_STATE_DIR" "$(safe_state_key "$1")"
+}
+
+sanitize_name() {
+  local name="$1"
+  name="${name//$'\r'/}"
+  name="${name//$'\n'/ }"
+  while [[ "$name" =~ ^[[:space:]] ]]; do name="${name:1}"; done
+  while [[ "$name" =~ [[:space:]]$ ]]; do name="${name:0:${#name}-1}"; done
+  printf '%.40s' "$name"
+}
+
+name_for() {
+  local file name
+  file="$(name_state_file "$1")"
+  if [ -f "$file" ]; then
+    IFS= read -r name < "$file" || true
+    sanitize_name "$name"
+  fi
+}
+
+set_name_for() {
+  local sw="$1" name file
+  name="$(sanitize_name "${2:-}")"
+  file="$(name_state_file "$sw")"
+  if [ -n "$name" ]; then
+    printf '%s' "$name" > "$file"
+  else
+    rm -f "$file"
+  fi
 }
 
 active_slot_for() {
@@ -190,11 +228,14 @@ waybar_payload() {
   # se tiverem janela aberta (bank_has_windows) — não lista os 5 à toa. Lista
   # completa sempre disponível no menu (super-workspace.sh menu).
   for item in "${SUPER_WORKSPACES[@]}"; do
-    local line=""
+    local line="" label="" display=""
+    label="$(name_for "$item")"
+    display="$item"
+    [ -n "$label" ] && display="$display — $label"
     if [ "$item" = "$SW" ]; then
-      line="• $(icon_for "$item") $item"
+      line="• $(icon_for "$item") $display"
     elif bank_has_windows "$item"; then
-      line="  $(icon_for "$item") $item"
+      line="  $(icon_for "$item") $display"
       if bank_has_urgent "$item"; then
         line="$line !"
         class='["urgent"]'
@@ -209,7 +250,39 @@ waybar_payload() {
     fi
   done
 
-  printf '{"text":"%s","tooltip":"%s","class":%s}\n' "$text" "$tooltip" "$class"
+  jq -cn --arg text "$text" --arg tooltip "$tooltip" --argjson class "$class" \
+    '{text:$text, tooltip:$tooltip, class:$class}'
+}
+
+super_workspace_name_payload() {
+  local label
+  label="$(name_for "$SW")"
+  if [ -z "$label" ]; then
+    jq -cn --arg text "" --arg tooltip "" '{text:$text, tooltip:$tooltip, class:[]}'
+    return 0
+  fi
+
+  jq -cn --arg text "  $label" --arg tooltip "Super workspace $SW: $label" \
+    '{text:$text, tooltip:$tooltip, class:[]}'
+}
+
+prompt_name_for_current_sw() {
+  local current name status
+  current="$(name_for "$SW")"
+  set +e
+  name="$(fuzzel --dmenu --prompt-only "Nome SW $SW: " --placeholder "vazio apaga" --search "$current")"
+  status=$?
+  set -e
+  [ "$status" -eq 0 ] || return 0
+
+  set_name_for "$SW" "$name"
+  sync_waybar "$SW"
+  name="$(name_for "$SW")"
+  if [ -n "$name" ]; then
+    notify-send -t 1200 "Super workspace" "$SW — $name"
+  else
+    notify-send -t 1200 "Super workspace" "nome apagado para $SW"
+  fi
 }
 
 
@@ -282,26 +355,52 @@ case "$cmd" in
     sync_waybar "$SW"
     ;;
   menu)
+    set +e
     CHOICE=$(
-      for item in "${SUPER_WORKSPACES[@]}"; do
-        mark=" "
-        [ "$item" = "$SW" ] && mark="•"
-        printf '%s %s %s\n' "$mark" "$(icon_for "$item")" "$item"
-      done | fuzzel --dmenu --prompt "Super workspace: "
+      {
+        printf 'rename\t✎ nomear workspace atual\n'
+        for item in "${SUPER_WORKSPACES[@]}"; do
+          mark=" "
+          label="$(name_for "$item")"
+          [ "$item" = "$SW" ] && mark="•"
+          if [ -n "$label" ]; then
+            printf 'switch:%s\t%s %s %s — %s\n' "$item" "$mark" "$(icon_for "$item")" "$item" "$label"
+          else
+            printf 'switch:%s\t%s %s %s\n' "$item" "$mark" "$(icon_for "$item")" "$item"
+          fi
+        done
+      } | fuzzel --dmenu --prompt "Super workspace: " --with-nth=2 --accept-nth=1
     )
+    status=$?
+    set -e
+    [ "$status" -eq 0 ] || exit 0
     [ -n "$CHOICE" ] || exit 0
-    NEW="${CHOICE##* }"
-    known_sw "$NEW" || exit 0
-    exec "$0" switch "$NEW"
+    case "$CHOICE" in
+      rename)
+        prompt_name_for_current_sw
+        ;;
+      switch:*)
+        NEW="${CHOICE#switch:}"
+        known_sw "$NEW" || exit 0
+        exec "$0" switch "$NEW"
+        ;;
+      *)
+        set_name_for "$SW" "$CHOICE"
+        sync_waybar "$SW"
+        ;;
+    esac
     ;;
   icon)
     icon_for "${1:-$SW}"
+    ;;
+  name)
+    super_workspace_name_payload
     ;;
   waybar)
     waybar_payload
     ;;
   *)
-    echo "usage: super-workspace.sh {focus|move|move-super|switch|scratchpad|scratchpad-move|next|prev|menu|sync-waybar|icon|waybar} [n]" >&2
+    echo "usage: super-workspace.sh {focus|move|move-super|switch|scratchpad|scratchpad-move|next|prev|menu|sync-waybar|icon|name|waybar} [n]" >&2
     exit 1
     ;;
 esac

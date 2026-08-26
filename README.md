@@ -263,9 +263,9 @@ Sistema local de bancos de workspaces: cada super workspace tem seus próprios s
 | Peça | Caminho | Papel |
 |---|---|---|
 | Lista | `hypr/.config/hypr/super-workspaces.txt` | Uma linha por super workspace; ordem do ciclo `SUPER+Tab`. |
-| Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `switch`, `menu`, `scratchpad`, `next/prev` e payload JSON da Waybar. |
+| Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `switch`, `menu`, aliases editáveis, `scratchpad`, `next/prev` e payload JSON da Waybar. |
 | Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+Tab`, `SUPER+Space`, seleção direta `1..5` e `SUPER+S` chamam o roteador. |
-| Barra | `waybar/.config/waybar/config.jsonc` | Ícone do super workspace ativo + filtro `ignore-workspaces`. |
+| Barra | `waybar/.config/waybar/config.jsonc` | Ícone do super workspace ativo, nome opcional depois da janela ativa + filtro `ignore-workspaces`. |
 | Browser router | `scripts/.local/bin/browser-super-workspace.sh` | `SUPER+B` e `xdg-open` escolhem o navegador pelo super workspace ativo. |
 | Chromium SW | `scripts/.local/bin/chromium-profile.sh` | SW2+ usam Chromium isolado em `~/.config/chromium-super-workspaces`. |
 
@@ -273,7 +273,7 @@ Nomes internos no Hyprland usam `name:super-<super>-<slot>` para evitar colisão
 
 O script também lembra o último slot focado em cada super workspace. Se você sai de `super-1-2` e depois volta para o super workspace `1`, ele restaura `super-1-2` em vez de cair sempre no slot `1`.
 
-Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar`, mapa `>` `~` `=` `^` `*` para os 5 super workspaces. Tooltip mostra o banco ativo + qualquer outro banco com janela aberta (bancos vazios ficam de fora). Clique esquerdo abre um menu `fuzzel` com os 5 pra escolher direto; clique direito cicla pro anterior.
+Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar`, mapa `>` `~` `=` `^` `*` para os 5 super workspaces. Tooltip mostra o banco ativo + qualquer outro banco com janela aberta (bancos vazios ficam de fora). Clique esquerdo abre um menu `fuzzel` com os 5 pra escolher direto ou digitar um nome para o banco ativo; clique direito cicla pro anterior. O nome salvo aparece depois de `custom/active-window`.
 
 Navegadores seguem o banco ativo: SW1 abre o Brave pessoal (`swprofile1` em `super-1-1`); SW2+ abrem Chromium com profile correspondente (`swprofileN` em `super-N-1`). Isso isola o banner de depuração do OMP/Browser Relay fora do Brave pessoal.
 
@@ -518,7 +518,7 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 
 ## Waybar
 
-**Esquerda:** botão do super workspace no canto superior esquerdo (`custom/super-workspace`, tooltip com banco ativo + bancos com janela aberta, clique abre menu `fuzzel`, clique direito cicla anterior) → workspaces filtrados do banco ativo (i–x) → app/janela ativa (`custom/active-window`, tooltip com CPU/RAM do processo focado)
+**Esquerda:** botão do super workspace no canto superior esquerdo (`custom/super-workspace`, tooltip com banco ativo + bancos com janela aberta, clique abre menu `fuzzel`, clique direito cicla anterior) → workspaces filtrados do banco ativo (i–x) → app/janela ativa (`custom/active-window`, tooltip com CPU/RAM do processo focado) → nome opcional do banco ativo (`custom/super-workspace-name`)
 
 **Super workspaces:** `hyprland/workspaces` mostra apenas workspaces cujo nome bate com `super-<ativo>-*`; `super-workspace.sh` reescreve `ignore-workspaces` e recarrega a Waybar com `SIGUSR2` a cada troca de banco. O botão `custom/super-workspace` é o primeiro módulo da barra e não tem padding/margem antes dele, então o click pega no extremo superior esquerdo da tela. Ver [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 

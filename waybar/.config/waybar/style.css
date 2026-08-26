@@ -87,6 +87,12 @@ tooltip * {
   transition: all 0.3s ease;
 }
 
+/* === NOME DO SUPER WORKSPACE =================== */
+#custom-super-workspace-name {
+  font-weight: bold;
+  color: @foreground;
+}
+
 /* === WORKSPACES ================================ */
 #workspaces {
   font-weight: bold;
