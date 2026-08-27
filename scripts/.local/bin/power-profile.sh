@@ -31,6 +31,17 @@ case "${1:-}" in
     [ "$CURRENT" != "balanced" ]
     ;;
   menu)
+    # Ao contrário dos outros binds que abrem fuzzel (fuzzel-toggle.sh, clipboard,
+    # rofimoji), este era o único sem guarda: se sobrar um fuzzel travado (lock
+    # `$XDG_RUNTIME_DIR/fuzzel-$WAYLAND_DISPLAY.lock` não liberado a tempo), o
+    # `fuzzel --dmenu` falha com "failed to acquire lock" e sai na hora — o
+    # menu nunca aparece e o clique parece não fazer nada. Mata qualquer
+    # instância viva e espera o lock liberar antes de abrir a nossa.
+    pkill -x fuzzel 2>/dev/null
+    for _ in 1 2 3 4 5 6 7 8 9 10; do
+        pgrep -x fuzzel >/dev/null || break
+        sleep 0.05
+    done
     CHOICE=$(printf '%s\n' \
       "󰳗 Super Economia" \
       "󰌪 Economia" \
