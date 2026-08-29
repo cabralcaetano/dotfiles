@@ -1,0 +1,15 @@
+[Unit]
+Description=9Router local AI router
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+Environment=PATH=/home/caetano/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+Environment=NODE_ENV=production
+ExecStart=/home/caetano/.npm-global/bin/9router --host 127.0.0.1 --port 20128 --no-browser --skip-update --log
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
