@@ -4,6 +4,26 @@
 # Teachflow unless TEAM_BOARD_ALLOW_TEACHFLOW=1 is set explicitly.
 set -euo pipefail
 
+# Permanent credential resolution: if the caller's shell doesn't already export
+# HORIZON_CRM_EMAIL/PASSWORD (or HORIZON_CRM_ACCESS_TOKEN), load them from an external
+# 0600/0400 file outside the vault/repo. Same convention as HORIZON_OPS_SECRETS_FILE used
+# by deploy/ops/lib/horizon-ops.sh — secrets never live in the vault, repo, or chat.
+# Explicit env vars already set in the calling shell always win over the file.
+HORIZON_CRM_SECRETS_FILE="${HORIZON_CRM_SECRETS_FILE:-$HOME/.config/horizon-crm/board.env}"
+if [[ -z "${HORIZON_CRM_ACCESS_TOKEN:-}" && ( -z "${HORIZON_CRM_EMAIL:-}" || -z "${HORIZON_CRM_PASSWORD:-}" ) ]]; then
+  if [[ -f "$HORIZON_CRM_SECRETS_FILE" ]]; then
+    perm=$(stat -c '%a' "$HORIZON_CRM_SECRETS_FILE" 2>/dev/null || stat -f '%Lp' "$HORIZON_CRM_SECRETS_FILE" 2>/dev/null || echo '')
+    if [[ -n "$perm" && "$perm" != "600" && "$perm" != "400" ]]; then
+      echo "Erro: $HORIZON_CRM_SECRETS_FILE deve ter permissão 0600 ou 0400 (atual: $perm). Rode: chmod 600 '$HORIZON_CRM_SECRETS_FILE'" >&2
+      exit 1
+    fi
+    set -a
+    # shellcheck disable=SC1090
+    source "$HORIZON_CRM_SECRETS_FILE"
+    set +a
+  fi
+fi
+
 BOARD_TARGET="${TEAM_BOARD_TARGET:-horizon}" # horizon | teachflow (legacy, guarded)
 
 case "$BOARD_TARGET" in
@@ -14,7 +34,7 @@ case "$BOARD_TARGET" in
     chmod 700 "$(dirname "$SESSION_FILE")" 2>/dev/null || true
     ;;
   horizon)
-    API_URL="${HORIZON_CRM_API_URL:-http://localhost:5029}"
+    API_URL="${HORIZON_CRM_API_URL:-https://api-crm.consultoriahorizon.com.br}"
     SESSION_FILE="${HORIZON_CRM_TOKEN_FILE:-$HOME/.cache/horizon-crm-board/token.json}"
     mkdir -p "$(dirname "$SESSION_FILE")"
     chmod 700 "$(dirname "$SESSION_FILE")" 2>/dev/null || true
@@ -67,53 +87,6 @@ login_horizon() {
   chmod 600 "$SESSION_FILE" 2>/dev/null || true
 }
 
-refresh_horizon() {
-  [[ -s "$SESSION_FILE" ]] || return 1
-  local refresh_token
-  refresh_token=$(python3 -c '
-import json, sys
-try:
-    print(json.load(open(sys.argv[1]))["refreshToken"])
-except Exception:
-    pass
-' "$SESSION_FILE" 2>/dev/null)
-  [[ -n "$refresh_token" ]] || return 1
-
-  local tmp status
-  tmp=$(mktemp)
-  status=$(curl -sS -o "$tmp" -w '%{http_code}' \
-    -X POST "$API_URL/api/v1/auth/refresh" \
-    -H 'Content-Type: application/json' \
-    -d "{\"refreshToken\":\"$refresh_token\"}")
-  if [[ "$status" != "200" ]]; then
-    rm -f "$tmp"
-    return 1
-  fi
-  mv "$tmp" "$SESSION_FILE"
-  chmod 600 "$SESSION_FILE" 2>/dev/null || true
-  return 0
-}
-
-# Epoch seconds for the cached token's expiresAt, or 0 if unreadable.
-horizon_token_expiry_epoch() {
-  python3 -c '
-import re, sys
-from datetime import datetime
-try:
-    d = __import__("json").load(open(sys.argv[1]))
-    s = d.get("expiresAt", "")
-    m = re.match(r"^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})(\.\d+)?(Z)?$", s)
-    if not m:
-        print(0); sys.exit()
-    base, frac, _ = m.groups()
-    frac6 = (frac or ".0")[1:7].ljust(6, "0")
-    dt = datetime.fromisoformat(f"{base}.{frac6}+00:00")
-    print(int(dt.timestamp()))
-except Exception:
-    print(0)
-' "$SESSION_FILE" 2>/dev/null || echo 0
-}
-
 login() {
   case "$BOARD_TARGET" in
     teachflow) login_teachflow ;;
@@ -127,19 +100,6 @@ horizon_access_token() {
     return
   fi
   [[ -s "$SESSION_FILE" ]] || login_horizon
-
-  # Proactively refresh when the cached token is expired or expiring within 60s,
-  # instead of waiting for a 401 mid-batch. Best-effort: horizon_access_token()
-  # runs inside a command substitution, so a hard exit here would only kill the
-  # subshell, not the script — leave real failure handling to req_horizon's
-  # top-level 401 branch, which runs outside any subshell.
-  local exp_epoch now_epoch
-  exp_epoch=$(horizon_token_expiry_epoch)
-  now_epoch=$(date -u +%s)
-  if [[ "$exp_epoch" -gt 0 && $((exp_epoch - now_epoch)) -lt 60 ]]; then
-    refresh_horizon || true
-  fi
-
   python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["accessToken"])' "$SESSION_FILE"
 }
 
@@ -191,7 +151,8 @@ req_horizon() {
   resp=$(sed '$d' <<<"$out")
 
   if [[ "$status" == "401" ]]; then
-    refresh_horizon || { rm -f "$SESSION_FILE"; login_horizon; }
+    rm -f "$SESSION_FILE"
+    login_horizon
     out=$(_do)
     status=$(tail -n1 <<<"$out")
     resp=$(sed '$d' <<<"$out")
@@ -215,11 +176,12 @@ usage() {
   cat >&2 <<'EOF'
 uso: tb.sh <comando> [args]
 
-alvo:
   TEAM_BOARD_TARGET=horizon    usa o Activity Board do Horizon CRM (default)
   TEAM_BOARD_TARGET=teachflow  legado Teachflow/CodeUp; bloqueado sem TEAM_BOARD_ALLOW_TEACHFLOW=1
 
+
   login                                   força novo login e recria cookie/token
+  spaces                                  Horizon: lista espaços de cliente para resolver clientSpaceId
   list [query_string]                     lista cards do board; filtra com "status=em_andamento&limit=10&offset=0"
   get <card_id>                           detalhe de um card (members/comments/checklists/attachments)
   create '<json>'                         cria card
@@ -238,7 +200,7 @@ alvo:
   users [query_string]                    Horizon: usuários internos; Teachflow: alias de profiles
 
 JSON Horizon CRM usa camelCase:
-  create {"title":"...","description":"...","criticality":"media","status":"backlog","memberUserIds":["..."]}
+  create {"title":"...","description":"...","criticality":"media","status":"backlog","clientSpaceId":"...","memberUserIds":["..."]}
   member-add {"cardId":"...","userId":"..."}
   checklist-add {"cardId":"...","title":"..."}
   item-add {"checklistId":"...","title":"..."}
@@ -261,6 +223,14 @@ cmd="$1"; shift || true
 
 case "$cmd" in
   login) login; echo "ok" ;;
+  spaces)
+    if [[ "$BOARD_TARGET" == "teachflow" ]]; then
+      echo "Erro: spaces existe apenas no Horizon CRM." >&2
+      exit 1
+    else
+      req GET "/api/v1/client-spaces/"
+    fi
+    ;;
   list)
     if [[ "$BOARD_TARGET" == "teachflow" ]]; then
       req GET "/api/admin/team-board-cards-bundle${1:+?$1}"
