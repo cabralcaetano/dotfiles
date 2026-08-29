@@ -11,6 +11,8 @@ PROFILE="${1:?uso: chromium-profile.sh <profile ex: swprofile2> <slot ex: super-
 SLOT="${2:?uso: chromium-profile.sh <profile ex: swprofile2> <slot ex: super-2-1> [url]}"
 URL="${3:-}"
 USER_DATA_DIR="${CHROMIUM_SW_USER_DATA_DIR:-$HOME/.config/chromium-super-workspaces}"
+TAB_MOVER_EXTENSION="${TAB_MOVER_EXTENSION:-$HOME/.local/share/browser-tab-mover}"
+TAB_MOVER_SHORTCUTS="${TAB_MOVER_SHORTCUTS:-$HOME/.local/bin/browser-tab-mover-sync-shortcuts.sh}"
 STATE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/chromium-profile-windows"
 STATE_KEY="$(printf '%s' "$PROFILE" | tr -c 'A-Za-z0-9_.-' '_')"
 STATE_FILE="$STATE_DIR/$STATE_KEY.address"
@@ -36,6 +38,14 @@ focus_and_place() {
   hyprctl dispatch "hl.dsp.window.move({ workspace = \"name:$SLOT\" })" >/dev/null
 }
 
+sync_tab_mover_shortcuts() {
+  # Chromium rewrites profile Preferences on exit. Only patch before a cold start.
+  pgrep -x chromium >/dev/null && return 0
+  [ -d "$TAB_MOVER_EXTENSION" ] || return 0
+  [ -x "$TAB_MOVER_SHORTCUTS" ] || return 0
+  "$TAB_MOVER_SHORTCUTS" "$USER_DATA_DIR/$PROFILE/Preferences" >/dev/null 2>&1 || true
+}
+
 launch_chromium() {
   local args=(
     "--user-data-dir=$USER_DATA_DIR"
@@ -43,6 +53,12 @@ launch_chromium() {
     "--no-first-run"
     "--no-default-browser-check"
   )
+  if [ -d "$TAB_MOVER_EXTENSION" ]; then
+    args+=("--load-extension=$TAB_MOVER_EXTENSION")
+  fi
+
+  sync_tab_mover_shortcuts
+
 
   if [ -n "$URL" ]; then
     chromium "${args[@]}" "$URL" >/dev/null 2>&1 &

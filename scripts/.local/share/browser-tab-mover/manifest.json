@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "OMP Tab Mover",
+  "version": "1.0.0",
+  "description": "Move the active tab with browser-native shortcuts.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAopCqvFKp4MJAGdpAY9e0/Mpv+km7/OgFPULQUL4Cw2/HCd+pLWiUAbdEUH6K2uWco6O65u/tSuUubA8BviwA+LPOBhqKSW9ruSBfaAlDE8NYA2/JOkBfe7mSZWs6hw5fW24mIwnvhvhBnvW4NrKbfjl2TM0kffAii+1/cYwmOk8WxwFHnYINb1cbPkIQcew+Q1Svnduu098iKvQvnhNUzaQq4ugyk3ARXr5CAERTc/5w/yRwDf65TV9t6j+u6AGiRNzU2hxhg3O1NnJCUoYpXTikmmtbSPAtnkx3E2cXszc51xBwJRXe7s+0p6mGUwGUiR9tXLr7kKoLnd0GPePxJwIDAQAB",
+  "permissions": ["tabs"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "move-left": { "description": "Move active tab left" },
+    "move-right": { "description": "Move active tab right" },
+    "move-to-1": { "description": "Move active tab to position 1" },
+    "move-to-2": { "description": "Move active tab to position 2" },
+    "move-to-3": { "description": "Move active tab to position 3" },
+    "move-to-4": { "description": "Move active tab to position 4" },
+    "move-to-5": { "description": "Move active tab to position 5" },
+    "move-to-6": { "description": "Move active tab to position 6" },
+    "move-to-7": { "description": "Move active tab to position 7" },
+    "move-to-8": { "description": "Move active tab to position 8" },
+    "move-to-9": { "description": "Move active tab to position 9" },
+    "move-to-10": { "description": "Move active tab to position 10" }
+  }
+}

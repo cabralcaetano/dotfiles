@@ -268,6 +268,27 @@ segundo engine Chromium/Chromium-like rodando quando SW2+ estiverem abertos.
   `--profile-directory=swprofile<N>` para separar cookies/sessões por banco.
 - Mantém o custo de automação/debug fora do Brave pessoal.
 
+
+### Atalhos nativos para mover abas
+
+`scripts/.local/share/browser-tab-mover/` é uma extensão local MV3 carregada
+pelos launchers de Brave/Chromium com `--load-extension`. Ela registra comandos
+do próprio navegador e move a aba ativa via `chrome.tabs.move`, sem bind do
+Hyprland e sem script por tecla.
+
+Atalhos:
+
+- `ALT+SHIFT+H`: move a aba ativa uma posição à esquerda.
+- `ALT+SHIFT+L`: move a aba ativa uma posição à direita.
+- `ALT+SHIFT+1..9`: move a aba ativa para a posição 1..9.
+- `ALT+SHIFT+0`: move a aba ativa para a posição 10.
+
+`scripts/.local/bin/browser-tab-mover-sync-shortcuts.sh` grava esses comandos em
+`Preferences` antes de um cold start do navegador. Brave/Chromium reescrevem
+`Preferences` ao fechar; por isso `brave-profile.sh` e `chromium-profile.sh`
+sincronizam os atalhos apenas quando não há processo do respectivo navegador em
+execução.
+
 `scripts/.local/bin/browser-super-workspace.sh [url]` é o roteador de alto nível:
 
 - `SUPER+B` chama esse script via `hyprland.lua`.

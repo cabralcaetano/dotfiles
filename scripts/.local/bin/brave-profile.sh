@@ -32,6 +32,8 @@ URL="${3:-}"
 
 BRAVE_USER_DATA_DIR="${BRAVE_USER_DATA_DIR:-$HOME/.config/BraveSoftware/Brave-Browser}"
 LOCAL_STATE="$BRAVE_USER_DATA_DIR/Local State"
+TAB_MOVER_EXTENSION="${TAB_MOVER_EXTENSION:-$HOME/.local/share/browser-tab-mover}"
+TAB_MOVER_SHORTCUTS="${TAB_MOVER_SHORTCUTS:-$HOME/.local/bin/browser-tab-mover-sync-shortcuts.sh}"
 
 resolve_profile_dir() {
   local wanted="$1"
@@ -87,17 +89,34 @@ focus_and_place() {
   hyprctl dispatch "hl.dsp.window.move({ workspace = \"name:$SLOT\" })" >/dev/null
 }
 
+sync_tab_mover_shortcuts() {
+  # Brave rewrites profile Preferences on exit. Only patch before a cold start.
+  pgrep -x brave >/dev/null && return 0
+  [ -d "$TAB_MOVER_EXTENSION" ] || return 0
+  [ -x "$TAB_MOVER_SHORTCUTS" ] || return 0
+  "$TAB_MOVER_SHORTCUTS" "$BRAVE_USER_DATA_DIR/$PROFILE_DIR/Preferences" >/dev/null 2>&1 || true
+}
+
 launch_brave() {
+  local args=(
+    "--profile-directory=$PROFILE_DIR"
+  )
+  if [ -d "$TAB_MOVER_EXTENSION" ]; then
+    args+=("--load-extension=$TAB_MOVER_EXTENSION")
+  fi
+
+  sync_tab_mover_shortcuts
+
   if [ "$MODE" = "browser" ]; then
     if [ -n "$URL" ]; then
-      brave "--profile-directory=$PROFILE_DIR" "$URL" >/dev/null 2>&1 &
+      brave "${args[@]}" "$URL" >/dev/null 2>&1 &
     else
-      brave "--profile-directory=$PROFILE_DIR" --new-window >/dev/null 2>&1 &
+      brave "${args[@]}" --new-window >/dev/null 2>&1 &
     fi
   elif [ -n "$URL" ]; then
-    brave "--profile-directory=$PROFILE_DIR" "--app=$URL" >/dev/null 2>&1 &
+    brave "${args[@]}" "--app=$URL" >/dev/null 2>&1 &
   else
-    brave "--profile-directory=$PROFILE_DIR" --new-window >/dev/null 2>&1 &
+    brave "${args[@]}" --new-window >/dev/null 2>&1 &
   fi
 }
 
