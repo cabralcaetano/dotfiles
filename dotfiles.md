@@ -173,23 +173,23 @@ Sequência do `hypridle.conf`:
 | Alt+Tab | Próxima janela (traz para frente) |
 | Alt+Shift+Tab | Janela anterior |
 | Super+P | Pseudo-tile |
-| Super+J | Alterna split |
-| Super+Setas | Move foco |
-| Super+Shift+Setas | Swap janelas |
+| Super+A | Alterna split (era Super+J — liberado p/ foco via H/J/K/L) |
+| Super+Setas / Super+H,J,K,L | Move foco |
+| Super+Shift+Setas / Super+Shift+H,J,K,L | Swap janelas |
 | Super+F | Tela cheia (toggle) |
 
 **Sistema**
 
 | Atalho | Ação |
 |---|---|
-| Super+L | Bloqueia tela |
+| Super+Shift+Q → L | Bloqueia tela (dentro do wlogout; Super+L direto liberado p/ foco de janela) |
 | Super+Shift+Q | wlogout (menu de energia) |
 | Super+M | Sai do Hyprland |
 | Super+N | Abre/fecha painel do relógio (Quickshell) |
 | Super+Shift+N | Dismiss notificações |
 | Super+W | Alterna codec do fone Bluetooth (LDAC ↔ mSBC) |
 | Super+Shift+W | Alterna wallpaper |
-| Super+K | Alterna layout de teclado (ABNT2 ↔ ANSI) |
+| Super+I | Alterna layout de teclado (ABNT2 ↔ ANSI) — era Super+K, liberado p/ foco de janela |
 | Super+. | Emoji picker (rofimoji) |
 | Super+S | Toggle scratchpad |
 | Super+Shift+S | Move janela para scratchpad |
@@ -412,7 +412,7 @@ busctl set-property net.hadess.PowerProfiles /net/hadess/PowerProfiles net.hades
 
 ## Teclado — Alternância ABNT2 / ANSI
 
-Toggle via `Super+K` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB.
+Toggle via `Super+I` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB. Era `Super+K` — liberado p/ foco de janela via `Super+H/J/K/L` (ver "Keybindings" acima).
 
 ## Display manager — greetd + tuigreet
 

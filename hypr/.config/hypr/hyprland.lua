@@ -194,7 +194,7 @@ hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("~/.local/bin/workspace-float
 hl.bind(mainMod .. " + C", hl.dsp.window.close())
 hl.bind(mainMod .. " + V", hl.dsp.window.float())
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
-hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))
+hl.bind(mainMod .. " + A", hl.dsp.layout("togglesplit")) -- era + J; liberado p/ Super+H/J/K/L de foco
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(spotify))
 
 -- Tela cheia
@@ -203,17 +203,25 @@ hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({
     action = "toggle",
 }))
 
--- Trocar posição das janelas
+-- Trocar posição das janelas (setas + hjkl)
 hl.bind(mainMod .. " + SHIFT + left",  hl.dsp.window.swap({ direction = "l" }))
 hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.swap({ direction = "r" }))
 hl.bind(mainMod .. " + SHIFT + up",    hl.dsp.window.swap({ direction = "u" }))
 hl.bind(mainMod .. " + SHIFT + down",  hl.dsp.window.swap({ direction = "d" }))
+hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.swap({ direction = "l" }))
+hl.bind(mainMod .. " + SHIFT + L", hl.dsp.window.swap({ direction = "r" }))
+hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.swap({ direction = "u" }))
+hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.swap({ direction = "d" }))
 
--- — Foco —
+-- — Foco — (setas + hjkl)
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "l" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "r" }))
 hl.bind(mainMod .. " + up",    hl.dsp.focus({ direction = "u" }))
 hl.bind(mainMod .. " + down",  hl.dsp.focus({ direction = "d" }))
+hl.bind(mainMod .. " + H", hl.dsp.focus({ direction = "l" }))
+hl.bind(mainMod .. " + L", hl.dsp.focus({ direction = "r" })) -- era hyprlock; lock via Super+Shift+Q → L (wlogout) ou lid switch
+hl.bind(mainMod .. " + K", hl.dsp.focus({ direction = "u" })) -- era kb-toggle.sh; realocado p/ Super+I
+hl.bind(mainMod .. " + J", hl.dsp.focus({ direction = "d" }))
 
 -- — Workspaces (dentro do super workspace ativo, ver super-workspaces.txt) —
 -- SUPER+Tab troca em ciclo; SUPER+Tab+1..2 pula direto para o super workspace.
@@ -279,7 +287,7 @@ hl.bind("XF86AudioNext",  hl.dsp.exec_cmd("playerctl next"),       { locked = tr
 hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = true })
 
 -- — Teclado —
-hl.bind(mainMod .. " + K", hl.dsp.exec_cmd("~/.local/bin/kb-toggle.sh"))
+hl.bind(mainMod .. " + I", hl.dsp.exec_cmd("~/.local/bin/kb-toggle.sh")) -- era + K ("Idioma"); liberado p/ Super+H/J/K/L de foco
 
 -- — Fone Bluetooth —
 hl.bind(mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("~/.local/bin/bt-codec-toggle.sh"))
@@ -288,7 +296,6 @@ hl.bind(mainMod .. " + T", hl.dsp.exec_cmd("~/.local/bin/theme-picker.sh"))
 hl.bind(mainMod .. " + CTRL + SHIFT + Space", hl.dsp.exec_cmd("~/.local/bin/theme-picker.sh"))
 
 -- — Sistema —
-hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
 hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("hyprlock"), { locked = true })
 hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("wlogout --layout ~/.config/wlogout/layout.json --css ~/.config/wlogout/style.css"))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("~/.local/bin/clock-panel-toggle.sh"))

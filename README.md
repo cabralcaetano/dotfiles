@@ -192,9 +192,9 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Alt+Tab | Próxima janela (cyclenext + bringactivetotop) |
 | Alt+Shift+Tab | Janela anterior |
 | Super+P | Pseudo-tile |
-| Super+J | Alterna split |
-| Super+Setas | Move foco |
-| Super+Shift+Setas | Swap janelas |
+| Super+A | Alterna split (era Super+J — liberado p/ foco via H/J/K/L) |
+| Super+Setas / Super+H,J,K,L | Move foco |
+| Super+Shift+Setas / Super+Shift+H,J,K,L | Swap janelas |
 | Super+F | Tela cheia (toggle) |
 | Super+LMB | Move janela (mouse) |
 | Super+RMB | Redimensiona janela (mouse) |
@@ -217,13 +217,13 @@ Ordem de inicialização definida no `hyprland.lua`:
 
 | Atalho | Ação |
 |---|---|
-| Super+L | Bloqueia tela (Hyprlock) |
+| Super+Shift+Q → L | Bloqueia tela (dentro do menu wlogout; Super+L direto foi liberado p/ foco de janela) |
 | Super+Shift+Q | Menu de energia (wlogout; desligar/reiniciar pedem confirmação) |
 | Super+N | Abre/fecha painel do relógio (Quickshell) |
 | Super+Shift+N | Dismiss notificações |
 | Super+Shift+B | Alterna codec do fone Bluetooth |
 | Super+Shift+W | Alterna wallpaper |
-| Super+K | Alterna layout de teclado (ABNT2 ↔ ANSI) |
+| Super+I | Alterna layout de teclado (ABNT2 ↔ ANSI) — era Super+K, liberado p/ foco de janela |
 | Super+. | Emoji picker (rofimoji) |
 
 **Clipboard**
@@ -465,11 +465,11 @@ referência técnica de schema/templates em [`themes/README.md`](themes/README.m
 
 ## Teclado
 
-Toggle `Super+K` alterna entre ABNT2 (notebook) e ANSI US (teclado mecânico externo).
+Toggle `Super+I` alterna entre ABNT2 (notebook) e ANSI US (teclado mecânico externo) — era `Super+K`, liberado p/ foco de janela via `Super+H/J/K/L` (ver "Janelas" acima).
 
 O setup ativo usa layouts padrão (`br,us`) com `kb_options = compose:rctrl`. O antigo layout customizado `us-br` foi preservado em `legacy/xkb/`, mas está fora do fluxo ativo e não deve ser instalado por padrão.
 
-Fcitx5 fica com a troca de grupo `Super+Space`/`Super+Shift+Space` desativada em `fcitx5/.config/fcitx5/config`, porque o Hyprland é dono de `Super+Space` para o layer anatômico de super workspace. A troca explícita de teclado continua em `Super+K`.
+Fcitx5 fica com a troca de grupo `Super+Space`/`Super+Shift+Space` desativada em `fcitx5/.config/fcitx5/config`, porque o Hyprland é dono de `Super+Space` para o layer anatômico de super workspace. A troca explícita de teclado continua em `Super+I`.
 
 O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `device {}` do Hyprland, porque o receptor enumera Alt/Super trocados. O teclado do notebook segue sem swap.
 

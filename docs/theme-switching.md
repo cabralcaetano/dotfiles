@@ -50,7 +50,7 @@ standalone — sem Walker/Elephant/CLI de outra distro.
 - **Idempotência do tema "normal"**: arquivos de cor gerados foram commitados (`git add`) e o script rodado de novo com `normal` — `git diff` ficou **vazio**, confirmando que a regeneração é byte-idêntica ao estado manual original.
 - **Aplicação do "catppuccin"**: `git diff --stat` mostrou os 7 arquivos mudando; `hyprctl configerrors` sem erros; screenshot da barra do Waybar + borda da janela confirmou visualmente o roxo/mauve do Catppuccin Mocha aplicado.
 - **Reversão pro "normal"**: rodado de novo, `git diff` voltou a ficar vazio — reversão também byte-perfeita.
-- **Hyprlock não foi testado ao vivo** (rodar travaria a sessão de verdade, não tem modo de teste como o `sddm-greeter-qt6 --test-mode` usado noutro doc). Verificação estática: as 5 variáveis usadas no `hyprlock.conf` (`$bg_color`, `$fg_color`, `$accent_color`, `$accent_faint`, `$error_color`) batem exatamente com as definidas no `colors.conf` gerado. Testar manualmente com `Super+L` quando conveniente.
+- **Hyprlock não foi testado ao vivo** (rodar travaria a sessão de verdade, não tem modo de teste como o `sddm-greeter-qt6 --test-mode` usado noutro doc). Verificação estática: as 5 variáveis usadas no `hyprlock.conf` (`$bg_color`, `$fg_color`, `$accent_color`, `$accent_faint`, `$error_color`) batem exatamente com as definidas no `colors.conf` gerado. Testar manualmente via `Super+Shift+Q → L` (wlogout) quando conveniente.
 
 ## Gap conhecido — conflito de stow pré-existente
 
