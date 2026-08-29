@@ -28,7 +28,7 @@ case "${1:-}" in
     esac
     ;;
   waybar-check)
-    [ "$CURRENT" != "balanced" ]
+    [ "$CURRENT" != "balanced-battery" ]
     ;;
   menu)
     # Ao contrário dos outros binds que abrem fuzzel (fuzzel-toggle.sh, clipboard,
@@ -46,12 +46,14 @@ case "${1:-}" in
       "󰳗 Super Economia" \
       "󰌪 Economia" \
       "󰾅 Balanceado" \
+      "󰾅 Balanceado+" \
       "󱐋 Performance" \
       | fuzzel --dmenu --prompt "Perfil de energia: ")
     case "$CHOICE" in
       *"Super Economia"*) switch_to super-powersave "$CHOICE" ;;
+      *"Balanceado+"*)    switch_to balanced "$CHOICE" ;;
       *"Economia"*)       switch_to powersave "$CHOICE" ;;
-      *"Balanceado"*)     switch_to balanced "$CHOICE" ;;
+      *"Balanceado"*)     switch_to balanced-battery "$CHOICE" ;;
       *"Performance"*)    switch_to latency-performance "$CHOICE" ;;
       *) exit 0 ;;   # Esc / fechou sem escolher
     esac
@@ -59,10 +61,11 @@ case "${1:-}" in
   *)
     case "$CURRENT" in
       super-powersave)      NEXT="powersave"           ; LABEL="󰌪 Economia"     ;;
-      powersave)            NEXT="balanced"            ; LABEL="󰾅 Balanceado"   ;;
+      powersave)            NEXT="balanced-battery"    ; LABEL="󰾅 Balanceado"   ;;
+      balanced-battery)     NEXT="balanced"            ; LABEL="󰾅 Balanceado+" ;;
       balanced)             NEXT="latency-performance" ; LABEL="󱐋 Performance"  ;;
       latency-performance)  NEXT="super-powersave"     ; LABEL="󰳗 Super Economia" ;;
-      *)                    NEXT="balanced"            ; LABEL="󰾅 Balanceado"   ;;
+      *)                    NEXT="balanced-battery"    ; LABEL="󰾅 Balanceado"   ;;
     esac
     switch_to "$NEXT" "$LABEL"
     ;;

@@ -145,8 +145,8 @@ case "${1:-toggle}" in
             *)             cons_label="100%" ;;
         esac
         case "$(tuned-adm active | awk '{print $NF}')" in
-            balanced)            profile_label="Balanceado" ;;
-            balanced-battery)    profile_label="Economia leve" ;;
+            balanced-battery)    profile_label="Balanceado" ;;
+            balanced)            profile_label="Balanceado+" ;;
             latency-performance) profile_label="Performance" ;;
             powersave)            profile_label="Economia" ;;
             super-powersave)      profile_label="Super Economia" ;;
