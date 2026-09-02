@@ -120,6 +120,7 @@ swaync/         → config.json, style.css
 quickshell/     → clock-panel/shell.qml
 fuzzel/         → fuzzel.ini
 fcitx5/         → config global sem Super+Space; Hyprland usa esse atalho como layer de super workspace
+xcompose/      → `.XCompose` com tabela en_US para Compose funcionar no layout US mesmo com `LANG=pt_BR.UTF-8`
 ghostty/        → config
 tmux/           → tmux.conf, plugins TPM/tmux-power; scrollback por mouse via copy-mode -e
 kitty/          → kitty.conf
@@ -473,7 +474,7 @@ O setup ativo usa layouts padrão (`br,us`) com `kb_options = compose:rctrl,comp
 
 Fcitx5 fica com a troca de grupo `Super+Space`/`Super+Shift+Space` desativada em `fcitx5/.config/fcitx5/config`, porque o Hyprland é dono de `Super+Space` para o layer anatômico de super workspace. A troca explícita de teclado continua em `Super+I`.
 
-`keyd` é o mecanismo ativo para navegação por home row e Compose: tap em `CapsLock` mantém CapsLock real e LED; segurar `CapsLock+h/j/k/l` emite `Left/Down/Up/Right`; `Right Ctrl` emite Compose também com `keyd` ativo. A config fica versionada em `system/etc/keyd/default.conf` e precisa ser instalada em `/etc/keyd/default.conf`.
+`keyd` é o mecanismo ativo para navegação por home row e Compose: tap em `CapsLock` mantém CapsLock real e LED; segurar `CapsLock+h/j/k/l` emite `Left/Down/Up/Right`; `Right Ctrl` emite Compose também com `keyd` ativo. Como `LANG=pt_BR.UTF-8` escolhe uma tabela Compose sem sequências US comuns (`Multi_key + apostrophe + e`), `xcompose/.XCompose` inclui a tabela `en_US.UTF-8` para o layout US principal. A config do `keyd` fica versionada em `system/etc/keyd/default.conf` e precisa ser instalada em `/etc/keyd/default.conf`.
 
 O teclado mecânico AULA F75/Compx tem bug de firmware/receptor: Alt físico e Super físico chegam trocados. Antes isso era compensado no Hyprland com `altwin:swap_alt_win` por device; com `keyd` ativo, o Hyprland recebe `keyd-virtual-keyboard`, então a correção confiável fica em `system/etc/keyd/f75.conf` (`leftalt = layer(meta)`, `leftmeta = layer(alt)`). A regra `altwin:swap_alt_win` permanece no Hyprland como fallback se `keyd` for desativado.
 

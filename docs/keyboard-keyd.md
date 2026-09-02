@@ -19,6 +19,7 @@ O objetivo é ter navegação por `CapsLock+h/j/k/l` sem quebrar:
 | `system/etc/keyd/default.conf` | `/etc/keyd/default.conf` | Regra geral para teclados normais; exclui receptores que precisam correção própria. |
 | `system/etc/keyd/f75.conf` | `/etc/keyd/f75.conf` | Regra específica para AULA F75/Compx e receptor compatível `2.4G Wireless Device`. |
 | `hypr/.config/hypr/hyprland.lua` | `~/.config/hypr/hyprland.lua` | Layouts `br,us`, `compose:rctrl,compose:menu`, atalhos `Super+h/j/k/l`; `altwin:swap_alt_win` fica como fallback por device. |
+| `xcompose/.XCompose` | `~/.XCompose` | Força tabela Compose `en_US.UTF-8` para o layout US principal, mesmo com `LANG=pt_BR.UTF-8`. |
 
 `system/` não é pacote Stow. Arquivos abaixo de `/etc` precisam ser instalados manualmente com `sudo install`.
 
@@ -114,6 +115,8 @@ O Hyprland passa a receber o `keyd-virtual-keyboard`, então a correção por `h
 
 O mesmo vale para Compose: com `keyd` ativo, `Right Ctrl` físico vira `compose` no teclado virtual. No XKB esse evento chega como `<COMP>`, não como `<RCTL>`; por isso o Hyprland precisa de `compose:menu` além de `compose:rctrl`. `compose:rctrl` cobre o caminho sem `keyd`; `compose:menu` cobre o caminho com `keyd`.
 
+Há ainda um detalhe de locale: `LANG=pt_BR.UTF-8` faz libxkbcommon/GTK escolherem `/usr/share/X11/locale/pt_BR.UTF-8/Compose`, que não contém sequências US comuns como `Multi_key + apostrophe + e => é`. Por isso o repo versiona `xcompose/.XCompose` incluindo `/usr/share/X11/locale/en_US.UTF-8/Compose`.
+
 A regra do Hyprland continua como fallback documentado caso o `keyd` seja desativado.
 
 ## Instalação em máquina nova
@@ -126,6 +129,7 @@ sudo install -Dm644 system/etc/keyd/default.conf /etc/keyd/default.conf
 sudo install -Dm644 system/etc/keyd/f75.conf /etc/keyd/f75.conf
 sudo systemctl enable --now keyd
 sudo keyd reload
+stow --target="$HOME" xcompose
 ```
 
 ## Verificação
@@ -134,6 +138,7 @@ sudo keyd reload
 systemctl is-active keyd
 keyd check /etc/keyd/default.conf /etc/keyd/f75.conf
 hyprctl devices -j | jq '.keyboards[] | select(.name == "keyd-virtual-keyboard")'
+xkbcli compile-compose /home/caetano/.XCompose
 ```
 
 Checks comportamentais:
@@ -142,7 +147,7 @@ Checks comportamentais:
 2. Hold `CapsLock+h/j/k/l` → cursor navega por esquerda/baixo/cima/direita.
 3. `Super+h/j/k/l` → Hyprland muda foco das janelas.
 4. No AULA F75/Compx, tecla física `Super` dispara atalhos `Super`; tecla física `Alt` dispara atalhos `Alt`.
-5. No layout US, `Right Ctrl`, depois `'`, depois `e` → `é`; `Right Ctrl`, depois `~`, depois `n` → `ñ`.
+5. No layout US, `Right Ctrl`, depois `'`, depois `e` → `é`; `Right Ctrl`, depois `~`, depois `n` → `ñ`. Se um app já estava aberto antes de criar/alterar `~/.XCompose`, reiniciar o app.
 
 ## Troubleshooting
 
@@ -197,6 +202,21 @@ O Hyprland também deve ter:
 kb_options = "compose:rctrl,compose:menu"
 ```
 
+
+Se `keyd` e Hyprland estiverem corretos mas o layout US ainda não compõe acentos, verificar `~/.XCompose`:
+
+```bash
+test -f ~/.XCompose
+xkbcli compile-compose ~/.XCompose
+```
+
+O arquivo deve incluir:
+
+```text
+include "/usr/share/X11/locale/en_US.UTF-8/Compose"
+```
+
+Depois de criar/alterar `~/.XCompose`, reiniciar o app onde o Compose será usado. Muitos toolkits carregam a tabela Compose no start do processo.
 
 ### Teclado ficou inutilizável
 

@@ -1,0 +1,6 @@
+# User Compose table.
+# LANG=pt_BR.UTF-8 selects /usr/share/X11/locale/pt_BR.UTF-8/Compose,
+# which does not include common US compose sequences such as
+# Multi_key + apostrophe + e => é.
+# Keep the full en_US table so Compose works on the US keyboard layout.
+include "/usr/share/X11/locale/en_US.UTF-8/Compose"
