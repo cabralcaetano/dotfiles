@@ -2,7 +2,7 @@
 
 Este setup separa duas responsabilidades:
 
-1. **Hyprland/XKB** mantém layout, atalhos do compositor e `compose:rctrl` como fallback quando `keyd` está desligado.
+1. **Hyprland/XKB** mantém layout, atalhos do compositor, `compose:rctrl` para o teclado físico e `compose:menu` para o `compose` emitido pelo `keyd`.
 2. **keyd** faz remap system-wide de teclas físicas antes do Hyprland, incluindo `Right Ctrl` como Compose enquanto `keyd` está ativo.
 
 O objetivo é ter navegação por `CapsLock+h/j/k/l` sem quebrar:
@@ -18,7 +18,7 @@ O objetivo é ter navegação por `CapsLock+h/j/k/l` sem quebrar:
 |---|---|---|
 | `system/etc/keyd/default.conf` | `/etc/keyd/default.conf` | Regra geral para teclados normais; exclui receptores que precisam correção própria. |
 | `system/etc/keyd/f75.conf` | `/etc/keyd/f75.conf` | Regra específica para AULA F75/Compx e receptor compatível `2.4G Wireless Device`. |
-| `hypr/.config/hypr/hyprland.lua` | `~/.config/hypr/hyprland.lua` | Layouts `br,us`, `compose:rctrl`, atalhos `Super+h/j/k/l`; `altwin:swap_alt_win` fica como fallback por device. |
+| `hypr/.config/hypr/hyprland.lua` | `~/.config/hypr/hyprland.lua` | Layouts `br,us`, `compose:rctrl,compose:menu`, atalhos `Super+h/j/k/l`; `altwin:swap_alt_win` fica como fallback por device. |
 
 `system/` não é pacote Stow. Arquivos abaixo de `/etc` precisam ser instalados manualmente com `sudo install`.
 
@@ -112,7 +112,7 @@ flowchart LR
 
 O Hyprland passa a receber o `keyd-virtual-keyboard`, então a correção por `hl.device({ name = ... kb_options = "altwin:swap_alt_win" })` deixa de ser a fonte confiável da correção. A troca Alt/Super precisa acontecer no `keyd`, no config que casa com o vendor/product físico.
 
-O mesmo vale para Compose: com `keyd` ativo, `Right Ctrl` físico vira evento controlado pelo `keyd`; por isso `rightcontrol = compose` precisa existir nos configs do `keyd`. O `compose:rctrl` do Hyprland permanece como fallback para o caminho sem `keyd`.
+O mesmo vale para Compose: com `keyd` ativo, `Right Ctrl` físico vira `compose` no teclado virtual. No XKB esse evento chega como `<COMP>`, não como `<RCTL>`; por isso o Hyprland precisa de `compose:menu` além de `compose:rctrl`. `compose:rctrl` cobre o caminho sem `keyd`; `compose:menu` cobre o caminho com `keyd`.
 
 A regra do Hyprland continua como fallback documentado caso o `keyd` seja desativado.
 
@@ -176,7 +176,7 @@ keyd check /etc/keyd/default.conf /etc/keyd/f75.conf
 
 ### Right Ctrl não faz Compose
 
-Causa provável: `keyd` ativo sem `rightcontrol = compose`. O `compose:rctrl` do Hyprland só é confiável quando o Hyprland recebe o teclado físico direto; com `keyd`, o compositor recebe o teclado virtual.
+Causa provável: `keyd` ativo sem `rightcontrol = compose`, ou Hyprland sem `compose:menu`. O `compose:rctrl` do Hyprland só enxerga `<RCTL>`; com `keyd`, `rightcontrol = compose` emite `<COMP>`, que precisa de `compose:menu`.
 
 Verificar:
 
@@ -191,6 +191,13 @@ Os dois configs devem ter:
 rightcontrol = compose
 ```
 
+O Hyprland também deve ter:
+
+```lua
+kb_options = "compose:rctrl,compose:menu"
+```
+
+
 ### Teclado ficou inutilizável
 
 `keyd` tem sequência de emergência: segurar `Backspace+Escape+Enter` encerra o daemon.
@@ -204,5 +211,5 @@ sudo systemctl stop keyd
 ## Decisão atual
 
 - **keyd** é o mecanismo ativo para `CapsLock+h/j/k/l`, `Right Ctrl` como Compose e correção Alt/Super do AULA F75.
-- **Hyprland** continua dono de `Super+h/j/k/l`, troca de layout (`Super+I`) e `compose:rctrl` apenas como fallback sem `keyd`.
+- **Hyprland** continua dono de `Super+h/j/k/l`, troca de layout (`Super+I`) e opções XKB `compose:rctrl,compose:menu`.
 - **XKB custom local** não faz parte do setup ativo porque quebra o LED do CapsLock.

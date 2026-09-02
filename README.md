@@ -469,7 +469,7 @@ referência técnica de schema/templates em [`themes/README.md`](themes/README.m
 
 Toggle `Super+I` alterna entre ABNT2 (notebook) e ANSI US (teclado mecânico externo) — era `Super+K`, liberado p/ foco de janela via `Super+H/J/K/L` (ver "Janelas" acima).
 
-O setup ativo usa layouts padrão (`br,us`) com `kb_options = compose:rctrl`. O antigo layout customizado `us-br` foi preservado em `legacy/xkb/`, mas está fora do fluxo ativo e não deve ser instalado por padrão.
+O setup ativo usa layouts padrão (`br,us`) com `kb_options = compose:rctrl,compose:menu`. O antigo layout customizado `us-br` foi preservado em `legacy/xkb/`, mas está fora do fluxo ativo e não deve ser instalado por padrão.
 
 Fcitx5 fica com a troca de grupo `Super+Space`/`Super+Shift+Space` desativada em `fcitx5/.config/fcitx5/config`, porque o Hyprland é dono de `Super+Space` para o layer anatômico de super workspace. A troca explícita de teclado continua em `Super+I`.
 

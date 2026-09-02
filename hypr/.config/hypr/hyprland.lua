@@ -124,7 +124,7 @@ hl.config({
         kb_layout  = "br,us",
         kb_variant = "abnt2,",
         kb_model   = "",
-        kb_options = "compose:rctrl",
+        kb_options = "compose:rctrl,compose:menu",
         -- NOTA: altwin:swap_alt_win NÃO fica no global — senão trocaria Alt/Super
         -- também no teclado do notebook. O swap é aplicado só no Aula F75 via
         -- hl.device() abaixo (o receptor enumera Alt/Super trocados).
@@ -169,7 +169,7 @@ local f75_devices = {
     "2.4g-wireless-device-system-control",
 }
 for _, name in ipairs(f75_devices) do
-    hl.device({ name = name, kb_options = "compose:rctrl, altwin:swap_alt_win" })
+    hl.device({ name = name, kb_options = "compose:rctrl,compose:menu, altwin:swap_alt_win" })
 end
 
 -- === KEYBINDINGS =================================
