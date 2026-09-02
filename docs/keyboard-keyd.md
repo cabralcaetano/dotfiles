@@ -3,7 +3,7 @@
 Este setup separa duas responsabilidades:
 
 1. **Hyprland/XKB** mantém layout, atalhos do compositor, `compose:rctrl` para o teclado físico e `compose:menu` para o `compose` emitido pelo `keyd`.
-2. **keyd** faz remap system-wide de teclas físicas antes do Hyprland, incluindo `Right Ctrl` como Compose enquanto `keyd` está ativo.
+2. **keyd** faz remap system-wide de teclas físicas antes do Hyprland, incluindo `Right Ctrl` como Compose e tap em `Right Shift` como Compose sem perder `Right Shift` quando segurado.
 
 O objetivo é ter navegação por `CapsLock+h/j/k/l` sem quebrar:
 
@@ -11,6 +11,7 @@ O objetivo é ter navegação por `CapsLock+h/j/k/l` sem quebrar:
 - `Super+h/j/k/l` do Hyprland para foco de janelas;
 - correção Alt/Super do teclado mecânico AULA F75/Compx.
 - `Right Ctrl` como Compose key nos layouts `br` e `us`;
+- tap em `Right Shift` como Compose key no layout US principal, preservando `Right Shift` quando segurado;
 
 ## Arquivos versionados
 
@@ -38,6 +39,7 @@ O objetivo é ter navegação por `CapsLock+h/j/k/l` sem quebrar:
 [main]
 capslock = overload(nav, capslock)
 rightcontrol = compose
+rightshift = overload(shift, compose)
 
 [nav]
 h = left
@@ -53,7 +55,8 @@ Resultado:
 - hold `CapsLock+j` → `Down`;
 - hold `CapsLock+k` → `Up`;
 - hold `CapsLock+l` → `Right`;
-- `Right Ctrl` → Compose (`Multi_key`) para acentos/símbolos compostos.
+- `Right Ctrl` → Compose (`Multi_key`) para acentos/símbolos compostos;
+- tap em `Right Shift` → Compose; hold `Right Shift` continua como Shift.
 
 Os IDs `k:3554:fa09` e `k:1d57:fa60` são excluídos daqui para não receberem duas configs do keyd.
 
@@ -71,6 +74,7 @@ capslock = overload(nav, capslock)
 leftalt = layer(meta)
 leftmeta = layer(alt)
 rightcontrol = compose
+rightshift = overload(shift, compose)
 
 [nav]
 h = left
@@ -84,7 +88,7 @@ Resultado adicional:
 - tecla física `Alt` → `Super/Meta` lógico;
 - tecla física `Super` → `Alt` lógico;
 - corrige o bug de firmware em que o receptor emite Alt/Super trocados;
-- `Right Ctrl` continua sendo Compose também no teclado externo.
+- `Right Ctrl` e tap em `Right Shift` continuam sendo Compose também no teclado externo.
 
 Uso de `layer(meta)` e `layer(alt)` é intencional. O `keyd check` alerta contra atribuir `leftmeta`/`leftalt` diretamente; camadas preservam semântica de modificador.
 
@@ -113,7 +117,7 @@ flowchart LR
 
 O Hyprland passa a receber o `keyd-virtual-keyboard`, então a correção por `hl.device({ name = ... kb_options = "altwin:swap_alt_win" })` deixa de ser a fonte confiável da correção. A troca Alt/Super precisa acontecer no `keyd`, no config que casa com o vendor/product físico.
 
-O mesmo vale para Compose: com `keyd` ativo, `Right Ctrl` físico vira `compose` no teclado virtual. No XKB esse evento chega como `<COMP>`, não como `<RCTL>`; por isso o Hyprland precisa de `compose:menu` além de `compose:rctrl`. `compose:rctrl` cobre o caminho sem `keyd`; `compose:menu` cobre o caminho com `keyd`.
+O mesmo vale para Compose: com `keyd` ativo, `Right Ctrl` físico vira `compose` no teclado virtual. No XKB esse evento chega como `<COMP>`, não como `<RCTL>`; por isso o Hyprland precisa de `compose:menu` além de `compose:rctrl`. `compose:rctrl` cobre o caminho sem `keyd`; `compose:menu` cobre o caminho com `keyd`. `rightshift = overload(shift, compose)` usa o mesmo evento `<COMP>` no tap, mas preserva `Right Shift` normal quando segurado.
 
 Há ainda um detalhe de locale: `LANG=pt_BR.UTF-8` faz libxkbcommon/GTK escolherem `/usr/share/X11/locale/pt_BR.UTF-8/Compose`, que não contém sequências US comuns como `Multi_key + apostrophe + e => é`. Por isso o repo versiona `xcompose/.XCompose` incluindo `/usr/share/X11/locale/en_US.UTF-8/Compose`.
 
@@ -147,7 +151,7 @@ Checks comportamentais:
 2. Hold `CapsLock+h/j/k/l` → cursor navega por esquerda/baixo/cima/direita.
 3. `Super+h/j/k/l` → Hyprland muda foco das janelas.
 4. No AULA F75/Compx, tecla física `Super` dispara atalhos `Super`; tecla física `Alt` dispara atalhos `Alt`.
-5. No layout US, `Right Ctrl`, depois `'`, depois `e` → `é`; `Right Ctrl`, depois `~`, depois `n` → `ñ`. Se um app já estava aberto antes de criar/alterar `~/.XCompose`, reiniciar o app.
+5. No layout US, `Right Ctrl` ou tap em `Right Shift`, depois `'`, depois `e` → `é`; `Right Ctrl`/tap `Right Shift`, depois `~`, depois `n` → `ñ`. Se um app já estava aberto antes de criar/alterar `~/.XCompose`, reiniciar o app.
 
 ## Troubleshooting
 
@@ -179,9 +183,9 @@ sudo keyd reload
 keyd check /etc/keyd/default.conf /etc/keyd/f75.conf
 ```
 
-### Right Ctrl não faz Compose
+### Right Ctrl / Right Shift não faz Compose
 
-Causa provável: `keyd` ativo sem `rightcontrol = compose`, ou Hyprland sem `compose:menu`. O `compose:rctrl` do Hyprland só enxerga `<RCTL>`; com `keyd`, `rightcontrol = compose` emite `<COMP>`, que precisa de `compose:menu`.
+Causa provável: `keyd` ativo sem `rightcontrol = compose` / `rightshift = overload(shift, compose)`, ou Hyprland sem `compose:menu`. O `compose:rctrl` do Hyprland só enxerga `<RCTL>`; com `keyd`, `rightcontrol = compose` e o tap de `rightshift = overload(shift, compose)` emitem `<COMP>`, que precisa de `compose:menu`.
 
 Verificar:
 
@@ -194,6 +198,7 @@ Os dois configs devem ter:
 ```ini
 [main]
 rightcontrol = compose
+rightshift = overload(shift, compose)
 ```
 
 O Hyprland também deve ter:
@@ -230,6 +235,6 @@ sudo systemctl stop keyd
 
 ## Decisão atual
 
-- **keyd** é o mecanismo ativo para `CapsLock+h/j/k/l`, `Right Ctrl` como Compose e correção Alt/Super do AULA F75.
+- **keyd** é o mecanismo ativo para `CapsLock+h/j/k/l`, `Right Ctrl`/tap em `Right Shift` como Compose e correção Alt/Super do AULA F75.
 - **Hyprland** continua dono de `Super+h/j/k/l`, troca de layout (`Super+I`) e opções XKB `compose:rctrl,compose:menu`.
 - **XKB custom local** não faz parte do setup ativo porque quebra o LED do CapsLock.
