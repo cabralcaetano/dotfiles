@@ -79,8 +79,9 @@ networkmanager
 networkmanager-dmenu
 inotify-tools
 
-# --- Input method / compose key ---
+# --- Input method / keyboard ---
 fcitx5
+keyd
 fcitx5-gtk
 fcitx5-qt
 fcitx5-configtool

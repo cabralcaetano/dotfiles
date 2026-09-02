@@ -50,6 +50,7 @@ stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship
 | fastfetch | System info alternativo (mais rápido) — instalado, usado junto com neofetch |
 | zsh-syntax-highlighting | Highlight de comandos em tempo real |
 | zsh-autosuggestions | Sugestões baseadas em histórico |
+| keyd | Remap system-wide: `CapsLock+h/j/k/l` como setas e correção Alt/Super do AULA F75 |
 | Spicetify | Customização do cliente Spotify |
 
 ## Estrutura do repo
@@ -80,7 +81,8 @@ gtk-4/          → settings.ini
 qt6ct/          → qt6ct.conf + colors/dotfiles-dark.conf (tema dark para apps Qt6)
 desktop-apps/   → mimeapps.list + .desktop/ícones de apps instalados manualmente
                   (fora do dnf/flatpak), ex: Antigravity IDE/2.0
-xkb/            → us-br.xkb, install.sh
+system/         → configs system-wide manuais em /etc: keyd, earlyoom, zram
+legacy/xkb/     → layout customizado antigo `us-br` preservado, fora do setup ativo
 udev/deprecated → configs antigas (não instalar)
 ```
 
@@ -553,18 +555,40 @@ sudo cp -r /usr/share/sddm/themes/silent/fonts/{redhat,redhat-vf} /usr/share/fon
 
 **Diagnóstico:** confirmado via `wev` — tecla física Alt emitindo `sym: Super_L` (keycode 133 / evdev `KEY_LEFTMETA`).
 
-**Fix:** adicionada opção XKB padrão `altwin:swap_alt_win` em `kb_options`, que troca Alt↔Super em nível de software (compositor), efetiva independentemente da causa real ser firmware ou não.
+**Fix original:** adicionada opção XKB padrão `altwin:swap_alt_win` em `kb_options`, que troca Alt↔Super em nível de software (compositor), efetiva enquanto o Hyprland recebe o teclado físico direto.
 
 ```
 kb_options = compose:rctrl, altwin:swap_alt_win
 ```
 
-**Notas abertas:** se o bug reaparecer trocado de novo (ex: firmware "corrigir" sozinho após reconexão do receptor), essa opção passaria a *causar* o problema em vez de corrigi-lo — reavaliar com `wev` antes de assumir que a causa é a mesma.
+**Atualização 2026-09-02 — keyd ativo:** para preservar o LED do CapsLock e adicionar `CapsLock+h/j/k/l` como setas, o setup passou a usar `keyd`. Como o `keyd` intercepta o teclado físico e entrega eventos ao Hyprland por `keyd-virtual-keyboard`, a correção Alt/Super por `hl.device({ name = ..., kb_options = "altwin:swap_alt_win" })` deixa de ser a fonte confiável. A correção atual do AULA F75/Compx fica em `/etc/keyd/f75.conf`:
+
+```
+[ids]
+k:3554:fa09
+k:1d57:fa60
+
+[main]
+capslock = overload(nav, capslock)
+leftalt = layer(meta)
+leftmeta = layer(alt)
+
+[nav]
+h = left
+j = down
+k = up
+l = right
+```
+
+O config geral `/etc/keyd/default.conf` aplica o mesmo layer `CapsLock+h/j/k/l` para teclados normais, mas exclui `k:3554:fa09` e `k:1d57:fa60` para evitar dupla aplicação. Documentação completa versionada em `docs/keyboard-keyd.md`; configs system-wide versionadas em `system/etc/keyd/`.
+
+**Notas abertas:** se o bug reaparecer trocado de novo (ex: firmware "corrigir" sozinho após reconexão do receptor), a correção em `f75.conf` passaria a *causar* o problema em vez de corrigi-lo — reavaliar com `wev`/`keyd monitor` antes de assumir que a causa é a mesma.
 
 **Histórico:**
 - **03/07/2026** — bug detectado, `altwin:swap_alt_win` adicionado (commit `29ae784`).
 - **05/07/2026** — opção removida **acidentalmente** dentro de um commit de docs sobre `tuned` (`586578e`), cuja mensagem não menciona teclado. O sintoma de Alt/Super trocados voltou.
 - **06/07/2026** — `altwin:swap_alt_win` readicionado após confirmação de que as teclas estavam trocadas novamente. Fix ativo de novo.
+- **02/09/2026** — `keyd` adicionado para `CapsLock+h/j/k/l`; correção Alt/Super movida para `system/etc/keyd/f75.conf` porque o Hyprland agora recebe `keyd-virtual-keyboard`.
 
 ### Fn-layer sem modificador diferenciável (mesmo receptor Compx/AULA F75)
 

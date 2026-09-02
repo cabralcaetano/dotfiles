@@ -153,12 +153,11 @@ hl.device({
     sensitivity   = 0.3,
 })
 
--- === Aula F75 (receptor Compx 2.4G) — swap Alt/Super só neste teclado ===
+-- === Aula F75 (receptor Compx 2.4G) — fallback de swap Alt/Super só neste teclado ===
 -- O receptor enumera as teclas Alt/Super trocadas (ver dotfiles.md, bug
--- "Alt/Super trocados"). Aplica altwin:swap_alt_win apenas aqui; o teclado
--- do notebook (at-translated-set-2-keyboard) segue o global, sem swap.
--- Cobre todas as interfaces HID do receptor (ambos os nomes que ele expõe)
--- para garantir que a interface que emite os modificadores seja corrigida.
+-- "Alt/Super trocados"). Com keyd ativo, a correção principal fica em
+-- /etc/keyd/f75.conf, porque o Hyprland recebe keyd-virtual-keyboard.
+-- Mantém altwin:swap_alt_win aqui como fallback se keyd for desativado.
 local f75_devices = {
     "compx-2.4g-wireless-receiver",
     "compx-2.4g-wireless-receiver-keyboard",

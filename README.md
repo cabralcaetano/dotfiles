@@ -89,6 +89,7 @@ O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma v
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
 > | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md); não é o caminho primário atual |
 > | **Reflector (mirrorlist automático)** | `/etc/xdg/reflector/reflector.conf` | copiar `reflector/etc/xdg/reflector/reflector.conf`; depois `sudo systemctl enable --now reflector.timer` (ranqueia mirrors do Brasil por velocidade, semanalmente) |
+> | **keyd keyboard layer** | `/etc/keyd/` | copiar `system/etc/keyd/*.conf`; depois `sudo systemctl enable --now keyd && sudo keyd reload` |
 > | **Impressora (HP DeskJet 2774)** | CUPS + hplip, Wi-Fi da impressora | ver [`docs/printer-hp-deskjet-2774.md`](docs/printer-hp-deskjet-2774.md) — assistente gráfico da HP é instável, usar `scripts/.local/bin/hp-wifi-connect.py` |
 
 ### Manifestos de pacote
@@ -142,6 +143,7 @@ reflector/      → reflector.conf (mirrorlist Brasil, sort rate) + reflector.ti
 ducking/        → guia completo do audio ducking
 themes/         → theme-set (troca de paleta system-wide, normal/catppuccin); ver themes/README.md
 claude/         → skills pessoais do Claude Code / harnesses de agente; ver docs/agent-harnesses-and-skills.md
+system/          → configs system-wide manuais em /etc: earlyoom, zram, keyd
 ```
 
 ---
@@ -471,7 +473,11 @@ O setup ativo usa layouts padrão (`br,us`) com `kb_options = compose:rctrl`. O 
 
 Fcitx5 fica com a troca de grupo `Super+Space`/`Super+Shift+Space` desativada em `fcitx5/.config/fcitx5/config`, porque o Hyprland é dono de `Super+Space` para o layer anatômico de super workspace. A troca explícita de teclado continua em `Super+I`.
 
-O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `device {}` do Hyprland, porque o receptor enumera Alt/Super trocados. O teclado do notebook segue sem swap.
+`keyd` é o mecanismo ativo para navegação por home row: tap em `CapsLock` mantém CapsLock real e LED; segurar `CapsLock+h/j/k/l` emite `Left/Down/Up/Right`. A config fica versionada em `system/etc/keyd/default.conf` e precisa ser instalada em `/etc/keyd/default.conf`.
+
+O teclado mecânico AULA F75/Compx tem bug de firmware/receptor: Alt físico e Super físico chegam trocados. Antes isso era compensado no Hyprland com `altwin:swap_alt_win` por device; com `keyd` ativo, o Hyprland recebe `keyd-virtual-keyboard`, então a correção confiável fica em `system/etc/keyd/f75.conf` (`leftalt = layer(meta)`, `leftmeta = layer(alt)`). A regra `altwin:swap_alt_win` permanece no Hyprland como fallback se `keyd` for desativado.
+
+Documentação completa: [`docs/keyboard-keyd.md`](docs/keyboard-keyd.md).
 
 ---
 
@@ -555,6 +561,7 @@ O teclado mecânico AULA F75/Compx recebe `altwin:swap_alt_win` só nos blocos `
 | btop | 1.4.6 | Monitor de recursos |
 | jq | — | Processador de JSON |
 | podman | — | Containers (alternativa rootless ao Docker) |
+| keyd | 2.6.0 | Remap system-wide: `CapsLock+h/j/k/l` como setas e correção Alt/Super do AULA F75 |
 | starship | 1.24.2 | Prompt configurável |
 | zsh-syntax-highlighting | — | Highlight de comandos em tempo real |
 | zsh-autosuggestions | — | Sugestões de histórico |
