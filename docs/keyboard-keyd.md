@@ -2,14 +2,15 @@
 
 Este setup separa duas responsabilidades:
 
-1. **Hyprland/XKB** mantém layout, Compose e atalhos do compositor.
-2. **keyd** faz remap system-wide de teclas físicas antes do Hyprland.
+1. **Hyprland/XKB** mantém layout, atalhos do compositor e `compose:rctrl` como fallback quando `keyd` está desligado.
+2. **keyd** faz remap system-wide de teclas físicas antes do Hyprland, incluindo `Right Ctrl` como Compose enquanto `keyd` está ativo.
 
 O objetivo é ter navegação por `CapsLock+h/j/k/l` sem quebrar:
 
 - `CapsLock` normal no tap, incluindo LED de ligado/desligado;
 - `Super+h/j/k/l` do Hyprland para foco de janelas;
 - correção Alt/Super do teclado mecânico AULA F75/Compx.
+- `Right Ctrl` como Compose key nos layouts `br` e `us`;
 
 ## Arquivos versionados
 
@@ -35,6 +36,7 @@ O objetivo é ter navegação por `CapsLock+h/j/k/l` sem quebrar:
 
 [main]
 capslock = overload(nav, capslock)
+rightcontrol = compose
 
 [nav]
 h = left
@@ -49,7 +51,8 @@ Resultado:
 - hold `CapsLock+h` → `Left`;
 - hold `CapsLock+j` → `Down`;
 - hold `CapsLock+k` → `Up`;
-- hold `CapsLock+l` → `Right`.
+- hold `CapsLock+l` → `Right`;
+- `Right Ctrl` → Compose (`Multi_key`) para acentos/símbolos compostos.
 
 Os IDs `k:3554:fa09` e `k:1d57:fa60` são excluídos daqui para não receberem duas configs do keyd.
 
@@ -66,6 +69,7 @@ k:1d57:fa60
 capslock = overload(nav, capslock)
 leftalt = layer(meta)
 leftmeta = layer(alt)
+rightcontrol = compose
 
 [nav]
 h = left
@@ -78,7 +82,8 @@ Resultado adicional:
 
 - tecla física `Alt` → `Super/Meta` lógico;
 - tecla física `Super` → `Alt` lógico;
-- corrige o bug de firmware em que o receptor emite Alt/Super trocados.
+- corrige o bug de firmware em que o receptor emite Alt/Super trocados;
+- `Right Ctrl` continua sendo Compose também no teclado externo.
 
 Uso de `layer(meta)` e `layer(alt)` é intencional. O `keyd check` alerta contra atribuir `leftmeta`/`leftalt` diretamente; camadas preservam semântica de modificador.
 
@@ -106,6 +111,8 @@ flowchart LR
 ```
 
 O Hyprland passa a receber o `keyd-virtual-keyboard`, então a correção por `hl.device({ name = ... kb_options = "altwin:swap_alt_win" })` deixa de ser a fonte confiável da correção. A troca Alt/Super precisa acontecer no `keyd`, no config que casa com o vendor/product físico.
+
+O mesmo vale para Compose: com `keyd` ativo, `Right Ctrl` físico vira evento controlado pelo `keyd`; por isso `rightcontrol = compose` precisa existir nos configs do `keyd`. O `compose:rctrl` do Hyprland permanece como fallback para o caminho sem `keyd`.
 
 A regra do Hyprland continua como fallback documentado caso o `keyd` seja desativado.
 
@@ -135,6 +142,7 @@ Checks comportamentais:
 2. Hold `CapsLock+h/j/k/l` → cursor navega por esquerda/baixo/cima/direita.
 3. `Super+h/j/k/l` → Hyprland muda foco das janelas.
 4. No AULA F75/Compx, tecla física `Super` dispara atalhos `Super`; tecla física `Alt` dispara atalhos `Alt`.
+5. No layout US, `Right Ctrl`, depois `'`, depois `e` → `é`; `Right Ctrl`, depois `~`, depois `n` → `ñ`.
 
 ## Troubleshooting
 
@@ -166,6 +174,23 @@ sudo keyd reload
 keyd check /etc/keyd/default.conf /etc/keyd/f75.conf
 ```
 
+### Right Ctrl não faz Compose
+
+Causa provável: `keyd` ativo sem `rightcontrol = compose`. O `compose:rctrl` do Hyprland só é confiável quando o Hyprland recebe o teclado físico direto; com `keyd`, o compositor recebe o teclado virtual.
+
+Verificar:
+
+```bash
+keyd check /etc/keyd/default.conf /etc/keyd/f75.conf
+```
+
+Os dois configs devem ter:
+
+```ini
+[main]
+rightcontrol = compose
+```
+
 ### Teclado ficou inutilizável
 
 `keyd` tem sequência de emergência: segurar `Backspace+Escape+Enter` encerra o daemon.
@@ -178,6 +203,6 @@ sudo systemctl stop keyd
 
 ## Decisão atual
 
-- **keyd** é o mecanismo ativo para `CapsLock+h/j/k/l` e correção Alt/Super do AULA F75.
-- **Hyprland** continua dono de `Super+h/j/k/l`, troca de layout (`Super+I`) e `compose:rctrl`.
+- **keyd** é o mecanismo ativo para `CapsLock+h/j/k/l`, `Right Ctrl` como Compose e correção Alt/Super do AULA F75.
+- **Hyprland** continua dono de `Super+h/j/k/l`, troca de layout (`Super+I`) e `compose:rctrl` apenas como fallback sem `keyd`.
 - **XKB custom local** não faz parte do setup ativo porque quebra o LED do CapsLock.
