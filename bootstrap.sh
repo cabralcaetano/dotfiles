@@ -104,6 +104,7 @@ if command -v git >/dev/null; then
   declare -A ZSH_PLUGINS=(
     [zsh-syntax-highlighting]="https://github.com/zsh-users/zsh-syntax-highlighting.git"
     [zsh-autosuggestions]="https://github.com/zsh-users/zsh-autosuggestions.git"
+    [zsh-shift-select]="https://github.com/jirutka/zsh-shift-select.git"
   )
   for name in "${!ZSH_PLUGINS[@]}"; do
     dest="$HOME/.zsh/$name"
