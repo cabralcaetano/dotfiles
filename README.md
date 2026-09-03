@@ -289,6 +289,7 @@ Documentação completa: [`docs/hyprland-super-workspaces.md`](docs/hyprland-sup
 Plugins carregados manualmente de `~/.zsh/`:
 - `zsh-syntax-highlighting` — highlight em tempo real
 - `zsh-autosuggestions` — sugestões baseadas em histórico
+- `zsh-shift-select` ([jirutka/zsh-shift-select](https://github.com/jirutka/zsh-shift-select)) — seleção de texto no prompt com Shift, como em editor GUI
 
 **Aliases**
 
@@ -317,6 +318,20 @@ Plugins carregados manualmente de `~/.zsh/`:
 **Histórico**
 
 - 10.000 entradas, `HIST_IGNORE_ALL_DUPS`, `SHARE_HISTORY` (compartilhado entre sessões)
+
+**Seleção e cópia de texto no prompt**
+
+| Atalho | Ação |
+|---|---|
+| Alt+H / Alt+L | Pula palavra pra trás/frente (`backward-word`/`forward-word`; Ctrl+H/J/K/L não dá — são os control-codes ASCII fixos de Backspace/Enter/kill-line/clear-screen em qualquer terminal) |
+| Ctrl+Setas | Pula palavra pra trás/frente (bind padrão, sem seleção) |
+| Shift+Setas | Seleciona caractere/linha (`zsh-shift-select`) |
+| Ctrl+Shift+Setas | Seleciona palavra (`zsh-shift-select`) |
+| Delete / Backspace (com seleção ativa) | Apaga a seleção, sem tocar o clipboard |
+| Alt+W ou Ctrl+Shift+C (com seleção ativa) | Copia a seleção pro clipboard do sistema via `wl-copy` |
+| Ctrl+Shift+V | Cola do clipboard (nativo do Ghostty, `paste_from_clipboard`) |
+
+Ctrl+Shift+C só chega ao zsh como `\e[99;6u` (CSI-u) por causa do `bind-key -n C-S-c` em `tmux.conf` — ver [Terminal — tmux](#terminal--tmux). Fora do tmux essa combinação não funciona (degrada pra Ctrl+C/SIGINT).
 
 ---
 
@@ -359,6 +374,14 @@ Atalhos úteis:
 | `v` em copy-mode | Copia para `wl-copy` e continua em copy-mode |
 | `y` em copy-mode | Copia para `wl-copy` e sai do copy-mode |
 | `q` em copy-mode | Sai do copy-mode |
+
+### Ctrl+Shift+C fora do copy-mode
+
+`extended-keys` ligado (`set -s extended-keys on`) permite ao tmux distinguir Ctrl+Shift+C de Ctrl+C. Dentro do copy-mode ele copia a seleção do tmux pro `wl-copy` (igual a tecla `y`). Fora do copy-mode ele repassa pro shell como CSI-u (`\e[99;6u`, via `send-keys -H`) em vez de ser engolido — sem esse repasse explícito a tecla degradaria pra Ctrl+C puro (SIGINT) ao chegar no pane. O zsh liga essa sequência na cópia de seleção do `zsh-shift-select` — ver [Shell — Zsh](#shell--zsh).
+
+### Home/End dentro do tmux
+
+`default-terminal "tmux-256color"` faz o tmux repassar Home/End no formato vt220 (`\e[1~`/`\e[4~`, terminado em `~`), não no `\e[H`/`\e[F` que várias configs assumem por padrão. O `zsh/.zshrc` liga os dois formatos para as mesmas ações (`beginning-of-line`/`end-of-line`), cobrindo tanto dentro quanto fora do tmux.
 
 ---
 
