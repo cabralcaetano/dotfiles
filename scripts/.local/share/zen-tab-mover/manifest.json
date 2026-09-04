@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "Tab Shifter",
+  "version": "1.0.3",
+  "description": "Move vertical tabs with Alt+Shift+J/K.",
+  "applications": {
+    "gecko": {
+      "id": "omp-tab-mover@caetano.local",
+      "strict_min_version": "109.0"
+    }
+  },
+  "permissions": ["tabs"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "commands": {
+    "move-up": {
+      "suggested_key": { "default": "Alt+Shift+K" },
+      "description": "Move active tab up"
+    },
+    "move-down": {
+      "suggested_key": { "default": "Alt+Shift+J" },
+      "description": "Move active tab down"
+    }
+  }
+}

@@ -49,6 +49,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 - [Window Rules](#window-rules)
 - [Hyprland Super Workspaces](#hyprland-super-workspaces)
 - [Scripts customizados](#scripts-customizados)
+- [Browser tabs](#browser-tabs)
 - [Waybar](#waybar)
 - [Ferramentas instaladas](#ferramentas-instaladas)
 - [Apps (Flatpak)](#apps-flatpak)
@@ -545,6 +546,17 @@ Documentação completa: [`docs/keyboard-keyd.md`](docs/keyboard-keyd.md).
 | `alttab.sh` | Alt+Tab via cyclenext+bringactivetotop, preserva cursor no float mode |
 | `super-workspace.sh` | Roteia bancos de workspaces: foco/move por slot, scratchpad por super workspace, menu `fuzzel`/ciclo `next/prev` e JSON da Waybar |
 | `waybar-active-window.sh` | Texto da janela ativa na Waybar com tooltip de CPU/RAM somando a árvore de processos do PID focado; atualiza instantaneamente por eventos do Hyprland e refresca métricas a cada 2s |
+
+---
+
+## Browser tabs
+
+Extensão local `Tab Shifter` no Zen Browser move abas verticais com `Alt+Shift+J/K`.
+Nova aba manual no Zen fica no fim da lista para preservar WhatsApp em `Alt+1`.
+Fechar abas em sequência com `Ctrl+W` mantém foco na vizinhança da lista, sem voltar para WhatsApp.
+O Brave mantém a extensão original `browser-tab-mover` para mover abas/posições.
+
+Documentação completa: [`docs/browser-tab-shifter.md`](docs/browser-tab-shifter.md).
 
 ---
 
