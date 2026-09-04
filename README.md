@@ -183,6 +183,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Super+D | Discord |
 | Super+M | Spotify |
 | Super+O | Obsidian |
+| Super+Ctrl+N | Bloco de notas (GNOME Text Editor) |
 | Super+Shift+C | VS Code |
 
 **Janelas**
@@ -513,6 +514,7 @@ Documentação completa: [`docs/keyboard-keyd.md`](docs/keyboard-keyd.md).
 | pavucontrol | Float, 800×500, centralizado |
 | btop via Waybar | Ghostty dedicado, 80×24 efetivo (`window-width=84`, `window-height=25`), sem decoração, float, centralizado |
 | GNOME Calendar (Quickshell) | Float, 882×575, centralizado |
+| GNOME Text Editor | Float, 882×575, centralizado |
 | GNOME Calculator | Float, 380×540, centralizado |
 | Bitwarden | Float, 1000×800, centralizado |
 | Waydroid YouCine | Fullscreen, renderiza no tamanho lógico do monitor |

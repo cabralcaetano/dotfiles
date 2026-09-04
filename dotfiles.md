@@ -163,6 +163,7 @@ Sequência do `hypridle.conf`:
 | Super+D | Discord |
 | Super+M | Spotify |
 | Super+O | Obsidian |
+| Super+Ctrl+N | Bloco de notas (GNOME Text Editor) |
 | Super+Shift+C | VSCode |
 
 **Janelas**
@@ -645,6 +646,7 @@ Ver guia completo: [[ducking]]
 | pavucontrol (áudio) | Float, 800×500, centralizado |
 | GNOME Calendar (Quickshell) | Float, 882×575, centralizado |
 | xdg-desktop-portal-gtk (file chooser nativo, ex.: Ctrl+K Ctrl+O no VS Code) | Float, 882×575, centralizado — mesmo tamanho do GNOME Calendar |
+| GNOME Text Editor | Float, 882×575, centralizado |
 | GNOME Calculator | Float, 380×540, centralizado |
 | Bitwarden | Float, 1000×800, centralizado |
 | Waydroid YouCine | Fullscreen, renderiza no tamanho lógico do monitor |

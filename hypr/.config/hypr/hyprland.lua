@@ -19,6 +19,7 @@ local vscode      = "code"
 local discord     = "discord"
 local spotify     = "spotify-launcher"
 local obsidian    = "flatpak run md.obsidian.Obsidian"
+local notepad     = "gnome-text-editor"
 local waterReminder = "~/.local/bin/water-reminder"
 
 -- === TEMA (cores) — gerado por theme-set.sh, ver themes/ no root do repo ===
@@ -185,6 +186,7 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.local/bin/fuzzel-toggle.sh"))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(discord))
 hl.bind(mainMod .. " + O", hl.dsp.exec_cmd(obsidian))
+hl.bind(mainMod .. " + CTRL + N", hl.dsp.exec_cmd(notepad))
 
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd(vscode))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("~/.local/bin/workspace-float.sh"))
@@ -376,6 +378,15 @@ hl.window_rule({
 hl.window_rule({
     name   = "portal-filechooser-float",
     match  = { class = "^(xdg-desktop-portal-gtk)$" },
+    float  = true,
+    size   = {882, 575},
+    center = true,
+})
+
+-- GNOME Text Editor abre como bloco de notas flutuante
+hl.window_rule({
+    name   = "gnome-text-editor-float",
+    match  = { class = "^(org.gnome.TextEditor)$" },
     float  = true,
     size   = {882, 575},
     center = true,
