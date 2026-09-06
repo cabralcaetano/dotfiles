@@ -736,6 +736,7 @@ MIT
 
 - [[docs/agent-harnesses-and-skills|Agent Harnesses & Skills]]
 - [[docs/arch-migration|Migração Fedora → Arch Linux]]
+- [[docs/browser-tab-shifter|Browser tab shifter]]
 - [[docs/gtk-qt-theming|GTK/Qt Theming — Hyprland sem DE completo]]
 - [[docs/headset-easyeffects|EasyEffects — QCY H3 Pro]]
 - [[docs/keyboard-keyd|Teclado — keyd, Caps navigation e AULA F75]]
@@ -745,9 +746,6 @@ MIT
 - [[docs/theme-switching|Theme switching — troca de paleta system-wide]]
 - [[docs/windows-vm-incogniton|Windows VM — Incogniton / multilogin]]
 - [[nvim/.config/nvim/README|💤 LazyVim]]
-- [[obsidian/plugins/obsidian-default-zoom-fixer/CLAUDE|CLAUDE]]
-- [[obsidian/plugins/obsidian-default-zoom-fixer/README|Default Zoom Fixer for Obsidian]]
-- [[obsidian/plugins/obsidian-default-zoom-fixer/test/vault/Welcome|Welcome]]
 - [[system/README|system/ — configs de  versionados]]
 - [[themes/README|themes/ — theme-set (paleta de cor system-wide)]]
 - [[tmux/.config/tmux/plugins/tmux-continuum/CHANGELOG|Changelog]]
