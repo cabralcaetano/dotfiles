@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=GoLiveBypass
+Comment=Discord Go Live bypass GUI
+Exec=/home/caetano/.local/bin/golivebypass
+Terminal=false
+Categories=Network;Utility;
+StartupWMClass=com.golivebypass.gui

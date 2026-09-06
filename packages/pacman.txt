@@ -79,6 +79,11 @@ networkmanager
 networkmanager-dmenu
 inotify-tools
 
+# --- GoLiveBypass / WireGuard por namespace ---
+wireguard-tools
+iproute2
+curl
+
 # --- Input method / keyboard ---
 fcitx5
 keyd

@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+APPIMAGE="$HOME/Applications/GoLiveBypass.AppImage"
+LOG_DIR="$HOME/.local/share/GoLiveBypass/logs"
+
+mkdir -p "$LOG_DIR"
+exec "$APPIMAGE" "$@" >>"$LOG_DIR/appimage-stdio.log" 2>&1
