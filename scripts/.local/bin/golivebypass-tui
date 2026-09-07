@@ -1,0 +1,328 @@
+#!/bin/sh
+# golivebypass-tui — controle em terminal do tunel WireGuard usado pelo
+# GoLiveBypass (Discord Go Live/camera fora do Brasil), sem abrir a GUI
+# Electron. Reusa a MESMA config ja gerada pela GUI:
+#   ~/.local/share/GoLiveBypass/wireguard.conf
+#   ~/.local/share/GoLiveBypass/settings.json
+#
+# Mecanismo identico ao usado pela GUI (extraido de
+# resources/extra/standalone/golivebypass-standalone.sh dentro da AppImage):
+# network namespace "discord-vpn" + interface WireGuard "wg-discord",
+# Discord relancado dentro do namespace via systemd-run.
+#
+# Uso:
+#   golivebypass-tui              menu interativo (whiptail, com fallback texto)
+#   golivebypass-tui --status     estado atual e sai
+#   golivebypass-tui --on         ativa o tunel e (re)lanca o Discord dentro dele
+#   golivebypass-tui --off        derruba o tunel e mata o Discord de dentro dele
+#
+# So versiona este script; o segredo (wireguard.conf com PrivateKey) nunca
+# entra no repo. Ver ~/Projects/dotfiles/docs/golivebypass-discord.md.
+
+set -eu
+
+NETNS_NAME="discord-vpn"
+WG_IF="wg-discord"
+INSTALL_DIR="$HOME/.local/share/GoLiveBypass"
+WG_CONF="$INSTALL_DIR/wireguard.conf"
+LOG_DIR="$INSTALL_DIR/logs"
+
+have() { command -v "$1" >/dev/null 2>&1; }
+
+# Mesmo padrao de elevacao usado em battery-conservation.sh: askpass grafico
+# (fuzzel) primeiro, pra funcionar tambem fora de um terminal interativo
+# (exec-once do Hyprland, keybind); cai para pkexec e por ultimo sudo direto
+# num terminal de verdade.
+elevate() {
+    askpass="$HOME/.local/bin/sudo-askpass-fuzzel.sh"
+    if [ "$(id -u)" -eq 0 ]; then
+        "$@"
+    elif have sudo && [ -x "$askpass" ] && have fuzzel && [ ! -t 0 ]; then
+        SUDO_ASKPASS="$askpass" sudo -A "$@"
+    elif have sudo; then
+        sudo "$@"
+    elif have pkexec; then
+        pkexec "$@"
+    else
+        printf 'Erro: precisa de sudo ou pkexec instalado.\n' >&2
+        return 127
+    fi
+}
+
+netns_active() {
+    ip netns list 2>/dev/null | grep -q "^${NETNS_NAME}[[:space:]]"
+}
+
+wg_active() {
+    netns_active && elevate ip netns exec "$NETNS_NAME" wg show "$WG_IF" >/dev/null 2>&1
+}
+
+# --- deteccao do Discord instalado -----------------------------------------
+
+pick_discord_target() {
+    preferred="${1:-}"
+    candidates=""
+    have discord && candidates="$candidates discord"
+    have vesktop && candidates="$candidates vesktop"
+    have equibop && candidates="$candidates equibop"
+    have legcord && candidates="$candidates legcord"
+    candidates="$(printf '%s' "$candidates" | sed -e 's/^ *//' -e 's/ *$//')"
+    [ -n "$candidates" ] || return 1
+
+    if [ -n "$preferred" ]; then
+        for c in $candidates; do
+            [ "$c" = "$preferred" ] && { printf '%s' "$c"; return 0; }
+        done
+        printf "Erro: '%s' nao encontrado no PATH (candidatos: %s).\\n" "$preferred" "$candidates" >&2
+        return 1
+    fi
+
+    set -- $candidates
+    if [ $# -eq 1 ]; then
+        printf '%s' "$1"
+        return 0
+    fi
+
+    if have whiptail && [ -t 0 ]; then
+        args=""
+        i=1
+        for c in "$@"; do
+            args="$args $i $c"
+            i=$((i + 1))
+        done
+        # shellcheck disable=SC2086
+        sel="$(whiptail --title "Qual cliente Discord?" --menu "Mais de um cliente encontrado" 15 60 4 $args 3>&1 1>&2 2>&3)" || return 1
+        i=1
+        for c in "$@"; do
+            [ "$i" = "$sel" ] && { printf '%s' "$c"; return 0; }
+            i=$((i + 1))
+        done
+    fi
+    printf '%s' "$1"
+}
+
+# --- status ------------------------------------------------------------------
+
+discord_status_line() {
+    pid=""
+    for name in Discord discord DiscordPTB discordptb vesktop equibop legcord; do
+        p="$(pgrep -x "$name" 2>/dev/null | head -1 || true)"
+        [ -n "$p" ] && { pid="$p"; break; }
+    done
+    if [ -z "$pid" ]; then
+        printf 'Discord: nao esta rodando\n'
+        return 0
+    fi
+    ns="$(ip netns identify "$pid" 2>/dev/null || true)"
+    if [ "$ns" = "$NETNS_NAME" ]; then
+        printf 'Discord: rodando DENTRO do tunel (pid %s)\n' "$pid"
+    else
+        printf 'Discord: rodando FORA do tunel (pid %s)\n' "$pid"
+    fi
+}
+
+status_text() {
+    if ! netns_active; then
+        printf 'Tunel: INATIVO (namespace "%s" nao existe)\n' "$NETNS_NAME"
+    elif ! wg_active; then
+        printf 'Tunel: namespace existe mas interface "%s" nao esta ativa\n' "$WG_IF"
+    else
+        hs="$(elevate ip netns exec "$NETNS_NAME" wg show "$WG_IF" latest-handshakes 2>/dev/null | awk '{print $2}' || true)"
+        if [ -n "${hs:-}" ] && [ "$hs" != "0" ]; then
+            now="$(date +%s)"
+            ago=$((now - hs))
+            printf 'Tunel: ATIVO — ultimo handshake ha %ss\n' "$ago"
+        else
+            printf 'Tunel: interface ativa mas SEM handshake ainda (peer nao respondeu)\n'
+        fi
+    fi
+    discord_status_line
+}
+
+# --- ativar / desativar -------------------------------------------------------
+
+close_discord_everywhere() {
+    pkill -x Discord 2>/dev/null || true
+    pkill -x discord 2>/dev/null || true
+    pkill -x DiscordPTB 2>/dev/null || true
+    pkill -x discordptb 2>/dev/null || true
+    pkill -x vesktop 2>/dev/null || true
+    pkill -x equibop 2>/dev/null || true
+    pkill -x legcord 2>/dev/null || true
+    rm -f "$HOME/.config/discord/Singleton"* 2>/dev/null || true
+    rm -f "$HOME/.config/discordptb/Singleton"* 2>/dev/null || true
+    rm -f "$HOME/.config/vesktop/Singleton"* 2>/dev/null || true
+    rm -f "$HOME/.config/equibop/Singleton"* 2>/dev/null || true
+    rm -f "$HOME/.config/legcord/Singleton"* 2>/dev/null || true
+    sleep 1
+}
+
+setup_wireguard_netns() {
+    have ip || { printf "Erro: comando 'ip' nao encontrado (pacote iproute2).\n" >&2; return 1; }
+    have wg || { printf "Erro: comando 'wg' nao encontrado (pacote wireguard-tools).\n" >&2; return 1; }
+    [ -s "$WG_CONF" ] || {
+        printf 'Erro: %s nao existe ou esta vazio.\n' "$WG_CONF" >&2
+        printf 'Gere-o pela GUI GoLiveBypass uma vez (aba Arquivo .conf) antes de usar o TUI.\n' >&2
+        return 1
+    }
+
+    if ! netns_active; then
+        printf '[*] Criando namespace de rede "%s"\n' "$NETNS_NAME"
+        elevate ip netns add "$NETNS_NAME"
+    fi
+
+    printf '[*] Configurando interface WireGuard "%s"\n' "$WG_IF"
+    elevate ip -n "$NETNS_NAME" link del dev "$WG_IF" 2>/dev/null || true
+    elevate ip link del dev "$WG_IF" 2>/dev/null || true
+
+    tmp_conf="$(mktemp)"
+    grep -vE '^(Address|DNS)' "$WG_CONF" >"$tmp_conf"
+
+    elevate ip link add dev "$WG_IF" type wireguard
+    elevate wg setconf "$WG_IF" "$tmp_conf"
+    rm -f "$tmp_conf"
+
+    elevate ip link set "$WG_IF" netns "$NETNS_NAME"
+
+    addr="$(grep -E '^Address' "$WG_CONF" | cut -d= -f2 | awk -F, '{print $1}' | tr -d ' ')"
+    [ -n "$addr" ] || addr="10.2.0.2/32"
+
+    elevate ip -n "$NETNS_NAME" addr add "$addr" dev "$WG_IF"
+    elevate ip -n "$NETNS_NAME" link set "$WG_IF" up
+    elevate ip -n "$NETNS_NAME" link set lo up
+    elevate ip -n "$NETNS_NAME" route add default dev "$WG_IF"
+
+    elevate mkdir -p "/etc/netns/$NETNS_NAME"
+    printf 'nameserver 10.2.0.1\nnameserver 1.1.1.1\nnameserver 8.8.8.8\n' |
+        elevate tee "/etc/netns/$NETNS_NAME/resolv.conf" >/dev/null
+
+    printf '[OK] Tunel WireGuard ativo no namespace "%s".\n' "$NETNS_NAME"
+}
+
+launch_discord_in_netns() {
+    target="$(pick_discord_target "${1:-}")" || {
+        printf 'Erro: nenhum cliente Discord encontrado (discord/vesktop/equibop/legcord no PATH).\n' >&2
+        return 1
+    }
+
+    printf '[*] Fechando instancia do Discord fora do tunel (se houver)\n'
+    close_discord_everywhere
+
+    run_uid="$(id -u)"
+    runtime_dir="${XDG_RUNTIME_DIR:-/run/user/$run_uid}"
+    mkdir -p "$LOG_DIR"
+    log="$LOG_DIR/discord-vpn-$(date +%Y%m%d-%H%M%S).log"
+
+    printf '[*] Lancando "%s" dentro do namespace "%s"\n' "$target" "$NETNS_NAME"
+    elevate systemd-run --collect --unit="discord-vpn-$(date +%s)" \
+        ip netns exec "$NETNS_NAME" sudo -u "$USER" env \
+        "HOME=$HOME" "USER=$USER" "LOGNAME=$USER" "DISPLAY=${DISPLAY:-}" \
+        "WAYLAND_DISPLAY=${WAYLAND_DISPLAY:-}" "XAUTHORITY=${XAUTHORITY:-$HOME/.Xauthority}" \
+        "XDG_RUNTIME_DIR=$runtime_dir" \
+        "DBUS_SESSION_BUS_ADDRESS=${DBUS_SESSION_BUS_ADDRESS:-unix:path=$runtime_dir/bus}" \
+        "PULSE_SERVER=${PULSE_SERVER:-unix:$runtime_dir/pulse/native}" \
+        "XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-}" \
+        "XDG_CURRENT_DESKTOP=${XDG_CURRENT_DESKTOP:-}" \
+        "XDG_SESSION_DESKTOP=${XDG_SESSION_DESKTOP:-}" \
+        "DESKTOP_SESSION=${DESKTOP_SESSION:-}" \
+        sh -c 'exec "$@"' sh "$target" >>"$log" 2>&1
+
+    printf '[OK] Discord lancado dentro do tunel. Log: %s\n' "$log"
+}
+
+activate() {
+    if netns_active && wg_active; then
+        printf 'Tunel ja esta ativo, so relancando o Discord dentro dele.\n'
+    else
+        setup_wireguard_netns
+    fi
+    launch_discord_in_netns "${1:-}"
+}
+
+deactivate() {
+    printf '[*] Fechando Discord que estiver dentro do tunel\n'
+    for pid in $(pgrep -x Discord 2>/dev/null; pgrep -x discord 2>/dev/null; pgrep -x DiscordPTB 2>/dev/null; pgrep -x discordptb 2>/dev/null; pgrep -x vesktop 2>/dev/null; pgrep -x equibop 2>/dev/null; pgrep -x legcord 2>/dev/null); do
+        ns="$(ip netns identify "$pid" 2>/dev/null || true)"
+        [ "$ns" = "$NETNS_NAME" ] && kill "$pid" 2>/dev/null || true
+    done
+    sleep 1
+
+    if netns_active; then
+        printf '[*] Removendo namespace "%s" e interface WireGuard\n' "$NETNS_NAME"
+        elevate ip netns del "$NETNS_NAME" || true
+        elevate rm -rf "/etc/netns/$NETNS_NAME" 2>/dev/null || true
+        if netns_active; then
+            printf 'Erro: nao consegui remover o namespace "%s" (falha na elevacao?).\n' "$NETNS_NAME" >&2
+            return 1
+        fi
+        printf '[OK] Tunel encerrado.\n'
+    else
+        printf 'Tunel ja estava inativo.\n'
+    fi
+}
+
+# --- menu ----------------------------------------------------------------
+
+pause() {
+    printf '\nEnter para continuar...'
+    read -r _ || true
+}
+
+run_menu_whiptail() {
+    while true; do
+        summary="$(status_text)"
+        choice="$(whiptail --title "GoLiveBypass TUI" --menu "$summary" 16 70 4 \
+            1 "Ver status detalhado" \
+            2 "Ativar (ligar tunel + Discord)" \
+            3 "Desativar (desligar tunel)" \
+            4 "Sair" 3>&1 1>&2 2>&3)" || exit 0
+        clear
+        case "$choice" in
+            1) status_text; pause ;;
+            2) activate; pause ;;
+            3) deactivate; pause ;;
+            4) exit 0 ;;
+        esac
+    done
+}
+
+run_menu_plain() {
+    while true; do
+        clear
+        printf 'GoLiveBypass TUI\n\n'
+        status_text
+        printf '\n1) Ver status\n2) Ativar\n3) Desativar\n4) Sair\n\nEscolha: '
+        read -r choice || exit 0
+        clear
+        case "$choice" in
+            1) status_text; pause ;;
+            2) activate; pause ;;
+            3) deactivate; pause ;;
+            4) exit 0 ;;
+            *) ;;
+        esac
+    done
+}
+
+# --- entrypoint ------------------------------------------------------------
+
+case "${1:-}" in
+    --status) status_text; exit 0 ;;
+    --on) activate "${2:-}"; exit 0 ;;
+    --off) deactivate; exit 0 ;;
+    -h | --help)
+        printf 'Uso: %s [--status|--on [discord|vesktop|equibop|legcord]|--off]\n' "$0"
+        exit 0
+        ;;
+    "")
+        if have whiptail && [ -t 0 ]; then
+            run_menu_whiptail
+        else
+            run_menu_plain
+        fi
+        ;;
+    *)
+        printf 'Opcao desconhecida: %s\n' "$1" >&2
+        exit 1
+        ;;
+esac

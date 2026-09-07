@@ -185,6 +185,36 @@ Caminho real:
 4. Clicar **Ativar**.
 5. Autorizar `sudo`/`pkexec` quando pedir.
 6. O app deve fechar/reabrir o Discord dentro do namespace WireGuard.
+7. Fechar a janela (X) **não encerra** o app: ele some pra bandeja e o túnel continua ativo.
+   Confirmado ao vivo em 2026-09-07 — processo `golive-gui` seguiu rodando sem nenhuma
+   janela aberta no Hyprland, com o túnel e o Discord dentro dele ainda ativos. O ícone
+   aparece no `tray` da Waybar (`group/tray-drawer`, ver
+   `~/Projects/dotfiles/waybar/.config/waybar/config.jsonc:169`). Para encerrar o túnel
+   de verdade, usar **Sair** no menu do ícone — fechar a janela de novo não desativa nada.
+8. O checkbox **"Iniciar com o sistema"** da GUI não funciona nesta máquina: no Linux ele
+   grava `~/.config/autostart/golivebypass.desktop` (confirmado lendo
+   `resources/app.asar:dist-electron/main.js`, função que monta esse `.desktop` com
+   `X-GNOME-Autostart-enabled=true`), mas este Hyprland não processa
+   `~/.config/autostart/` — decisão documentada em `dotfiles.md`: "Sem autostart via
+   `~/.config/autostart/` — os `.desktop` do GNOME foram deletados, tudo gerenciado pelo
+   Hyprland". Pra subir sozinho no boot seria preciso um `exec-once` dedicado no
+   `hyprland.lua` (não configurado; decidido não fazer por enquanto — ver
+   [Companion TUI](#companion-tui-sem-abrir-a-gui-electron) se precisar disso via CLI).
+
+### Suporte ao Vesktop
+
+A GUI trata o Vesktop como alvo de primeira classe, igual ao Discord oficial — não é um
+hack separado. Evidências:
+
+- o preflight da própria GUI detectou dois installs de Vesktop nesta máquina (linhas acima,
+  `/usr/lib/vesktop/resources` e `/usr/lib64/vesktop/resources`);
+- o `golivebypass-standalone.sh` embutido na AppImage (mesmo autor, mesma base de código)
+  trata `vesktop`/`equibop`/`legcord` como flavours equivalentes ao Discord, com
+  `pkill -f "/$flav/app.asar"` dedicado antes de relançar dentro do namespace.
+
+Ao clicar **Ativar** com mais de um cliente instalado, a GUI relança o que estiver com o
+preflight ok; se tanto Discord oficial quanto Vesktop estiverem instalados, confirmar na
+própria janela qual foi escolhido antes de entrar em call.
 
 O app detectou nesta máquina:
 
@@ -264,6 +294,73 @@ ip netns list
 ```
 
 Se o app falhar no encerramento, fechar pela UI primeiro. Evitar apagar namespace manualmente se não souber se o Discord está usando o túnel.
+
+---
+
+## Companion TUI (sem abrir a GUI Electron)
+
+**Status:** ativo desde 2026-09-07.
+**Arquivo:** `~/.local/bin/golivebypass-tui` (versionado em `scripts/.local/bin/golivebypass-tui`).
+
+Script POSIX standalone que ativa/desativa o mesmo túnel sem subir os ~210 MB
+de processos Electron da AppImage. Reusa a config já gerada pela GUI —
+`~/.local/share/GoLiveBypass/wireguard.conf` e `settings.json` — e replica
+exatamente os comandos privilegiados extraídos do
+`resources/extra/standalone/golivebypass-standalone.sh` embutido na AppImage
+(netns `discord-vpn` + interface `wg-discord` + `systemd-run` para relançar o
+Discord dentro do namespace).
+
+Por que um script próprio em vez do `golivebypass-standalone.sh` embutido: esse
+standalone sai fora do ar de propósito (`GOLIVE_GUI` não setado) enquanto o
+autor porta o novo sistema WireGuard para essa variante — rodar por cima do
+bloqueio usaria um caminho que o próprio autor não considera testado agora.
+O `golivebypass-tui` é menor (só ativar/desativar/status; sem Tor, sem
+flatpak, sem instalação de patch JS, sem auto-update) e roda inteiramente
+auditável em ~250 linhas.
+
+Uso:
+
+```bash
+golivebypass-tui                       # menu interativo (whiptail; cai para texto puro sem tty)
+golivebypass-tui --status              # estado do túnel + do Discord
+golivebypass-tui --on                  # cria netns/wg (se preciso) e relança o Discord dentro
+golivebypass-tui --on vesktop          # idem, forçando o alvo (discord|vesktop|equibop|legcord)
+golivebypass-tui --off                 # mata o cliente de dentro do túnel e remove o netns
+```
+
+Pré-requisito: a GUI já ter sido usada uma vez para gerar
+`~/.local/share/GoLiveBypass/wireguard.conf` (o TUI não faz login Proton nem
+baixa `.conf`; só consome o que já existe). Detecta `discord`/`vesktop`/
+`equibop`/`legcord` no `PATH` e usa o wrapper `~/.local/bin/discord` (força
+`--ozone-platform=x11` pelo bug conhecido do Electron 42 + Wayland/Vulkan
+nesta máquina).
+
+Listar o namespace (`ip netns list`) não pede sudo, mas ver o estado real da
+interface WireGuard (`wg show`, handshake) e qualquer `--on`/`--off` pedem
+`sudo`/`pkexec` — igual à GUI. Elevação usa o mesmo padrão do
+`battery-conservation.sh`: `sudo -A` com o askpass gráfico
+(`sudo-askpass-fuzzel.sh`) quando não há tty interativo, senão `sudo` direto.
+
+### Bug corrigido — Vesktop nunca saía do túnel
+
+**2026-09-07.** `--on vesktop` parecia funcionar mas o Go Live continuava sem
+bypass: o script tentava fechar a instância antiga do Vesktop com
+`pkill -f '/vesktop/app.asar'`, um padrão copiado do
+`golivebypass-standalone.sh` da AppImage que **nunca bate** — o processo real
+roda como `/usr/lib/vesktop/vesktop` (comm `vesktop`), sem esse substring na
+linha de comando. Resultado: a instância antiga fora do túnel nunca fechava,
+o lock de instância única do Electron fazia a "nova" instância dentro do
+namespace só repassar pro processo antigo e morrer, e o Vesktop continuava na
+rede normal.
+
+Corrigido trocando por `pkill -x vesktop` (nome exato do processo, mesmo
+padrão já usado para `Discord`/`discord`) em `close_discord_everywhere()`,
+`discord_status_line()` e `deactivate()`; `equibop`/`legcord` cobertos pelo
+mesmo fix. Verificado isoladamente: `pkill -0 -f '/vesktop/app.asar'` não
+encontra nada nesta máquina, `pkill -0 -x vesktop` encontra o processo real.
+Ativação ponta a ponta (`--on vesktop`) não pôde ser testada por um agente
+automatizado — a elevação `sudo`/`pkexec` exige prompt interativo respondido
+pelo usuário; testar rodando o comando direto num terminal.
 
 ---
 
