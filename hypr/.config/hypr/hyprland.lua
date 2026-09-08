@@ -19,7 +19,7 @@ local vscode      = "code"
 local discord     = "discord"
 local spotify     = "spotify-launcher"
 local obsidian    = "flatpak run md.obsidian.Obsidian"
-local notepad     = "gnome-text-editor"
+local obsidianQuickNote = "~/.config/hypr/scripts/obsidian-quick-note.sh"
 local waterReminder = "~/.local/bin/water-reminder"
 
 -- === TEMA (cores) — gerado por theme-set.sh, ver themes/ no root do repo ===
@@ -186,7 +186,7 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.local/bin/fuzzel-toggle.sh"))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(discord))
 hl.bind(mainMod .. " + O", hl.dsp.exec_cmd(obsidian))
-hl.bind(mainMod .. " + CTRL + N", hl.dsp.exec_cmd(notepad))
+hl.bind(mainMod .. " + CTRL + N", hl.dsp.exec_cmd(obsidianQuickNote))
 
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd(vscode))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("~/.local/bin/workspace-float.sh"))
@@ -390,6 +390,15 @@ hl.window_rule({
     match  = { class = "^(org.gnome.TextEditor)$" },
     float  = true,
     size   = {882, 575},
+    center = true,
+})
+
+-- Nota rápida do Obsidian (vault obsidian-scratch) abre flutuante, como bloco de notas
+hl.window_rule({
+    name   = "obsidian-scratch-float",
+    match  = { class = "^(obsidian)$", title = ".*obsidian-scratch.*" },
+    float  = true,
+    size   = {760, 620},
     center = true,
 })
 
