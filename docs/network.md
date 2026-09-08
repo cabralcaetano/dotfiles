@@ -2,6 +2,8 @@
 
 Configuração de rede fora do stow (NetworkManager, DNS). Este documento existe para reproduzir a config numa máquina nova e para diagnosticar problemas recorrentes.
 
+> Desde a instalação do NextDNS (ver [`nextdns/nextdns.md`](../nextdns/nextdns.md)), `/etc/resolv.conf` é gerenciado pelo `nextdns.service` (`nameserver 127.0.0.1`, proxy DoH), não mais diretamente pelos servidores pinados abaixo via `nmcli`. O par `1.1.1.1`/`8.8.8.8` configurado na conexão NetworkManager continua existindo como config subjacente (relevante se algum dia `nextdns deactivate` for usado, ou pra outras conexões/redes sem NextDNS ativo), mas não é o resolver efetivo enquanto o NextDNS estiver rodando.
+
 ---
 
 ## 1. DNS — não usar o DNS do provedor

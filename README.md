@@ -88,6 +88,8 @@ O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma v
 > | **Snapshots Btrfs** | snapper + grub-btrfs | ver [`docs/arch-migration.md §1.2`](docs/arch-migration.md) |
 > | **Windows VM / Incogniton** | libvirt/QEMU, Windows guest | ver [`docs/windows-vm-incogniton.md`](docs/windows-vm-incogniton.md) |
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
+> | **NextDNS** | Serviço systemd `nextdns` + conta na nuvem, profile `932497` | ver [`nextdns/nextdns.md`](nextdns/nextdns.md) — `yay -S nextdns-bin && sudo nextdns install -profile 932497 -report-client-info && sudo nextdns activate`, depois replicar config do profile no dashboard |
+> | **Extensões de navegador** | Zen (AMO) + Brave (Chrome Web Store) | ver [`browser-extensions/browser-extensions.md`](browser-extensions/browser-extensions.md) — instalar manualmente pelos links de cada extensão, exceto Tab Shifter (local, via `stow scripts`) |
 > | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md); não é o caminho primário atual |
 > | **Reflector (mirrorlist automático)** | `/etc/xdg/reflector/reflector.conf` | copiar `reflector/etc/xdg/reflector/reflector.conf`; depois `sudo systemctl enable --now reflector.timer` (ranqueia mirrors do Brasil por velocidade, semanalmente) |
 > | **keyd keyboard layer** | `/etc/keyd/` | copiar `system/etc/keyd/*.conf`; depois `sudo systemctl enable --now keyd && sudo keyd reload` |
@@ -143,6 +145,8 @@ sddm/           → referência system-wide manual do SDDM/SilentSDDM
 greetd/         → legado/rollback system-wide manual
 reflector/      → reflector.conf (mirrorlist Brasil, sort rate) + reflector.timer manual
 ducking/        → guia completo do audio ducking
+nextdns/        → guia completo do setup NextDNS (DoH, profile 932497, blocklists, iPhone)
+browser-extensions/ → inventário real das extensões do Zen e do Brave, com links de instalação
 themes/         → theme-set (troca de paleta system-wide, normal/catppuccin); ver themes/README.md
 claude/         → skills pessoais do Claude Code / harnesses de agente; ver docs/agent-harnesses-and-skills.md
 system/          → configs system-wide manuais em /etc: earlyoom, zram, keyd

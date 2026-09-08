@@ -21,3 +21,7 @@ wlogout
 # --- Escritório ---
 # dicionário pt-BR para o LibreOffice/hunspell (não existe nos repos oficiais)
 hunspell-pt-br
+
+# --- Rede ---
+# NextDNS: DoH resolver + filtro por dispositivo; ver nextdns/nextdns.md
+nextdns-bin
