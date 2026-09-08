@@ -298,6 +298,7 @@ hl.bind(mainMod .. " + CTRL + SHIFT + Space", hl.dsp.exec_cmd("~/.local/bin/them
 
 -- — Sistema —
 hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("hyprlock"), { locked = true })
+hl.bind(mainMod .. " + CTRL + L", hl.dsp.exec_cmd("hyprlock"), { locked = true })
 hl.bind(mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("wlogout --layout ~/.config/wlogout/layout.json --css ~/.config/wlogout/style.css"))
 hl.bind(mainMod .. " + N", hl.dsp.exec_cmd("~/.local/bin/clock-panel-toggle.sh"))
 hl.bind(mainMod .. " + SHIFT + N", hl.dsp.exec_cmd("swaync-client -d"))
