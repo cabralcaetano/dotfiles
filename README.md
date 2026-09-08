@@ -161,7 +161,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | wallpaper_5.jpg | — | exec-once com sleep 0.5s |
 | XDG portals | — | exec-once com sleep 1s |
 | GTK dark theme | — | exec-once com sleep 2s |
-| brave | super workspace 1 / slot 1 (`name:super-1-1`) | `[workspace name:super-1-1 silent]` |
+| Zen Browser | super workspace 1 / slot 1 (`name:super-1-1`) | `[workspace name:super-1-1 silent]` |
 | ghostty | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
 | obsidian (flatpak) | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
 | spotify | super workspace 1 / slot 3 (`name:super-1-3`) | `[workspace name:super-1-3 silent]` |
@@ -178,7 +178,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Atalho | Ação |
 |---|---|
 | Super+Q | Terminal (Ghostty) |
-| Super+B | Navegador (Brave) |
+| Super+B | Navegador (Zen Browser) |
 | Super+E | Gerenciador de arquivos (Nautilus) |
 | Super+R | Launcher (Fuzzel) |
 | Super+D | Discord |
@@ -271,8 +271,8 @@ Sistema local de bancos de workspaces: cada super workspace tem seus próprios s
 | Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `switch`, `menu`, aliases editáveis, `scratchpad`, `next/prev` e payload JSON da Waybar. |
 | Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+Tab`, `SUPER+Space`, seleção direta `1..5` e `SUPER+S` chamam o roteador. |
 | Barra | `waybar/.config/waybar/config.jsonc` | Ícone do super workspace ativo, nome opcional depois da janela ativa + filtro `ignore-workspaces`. |
-| Browser router | `scripts/.local/bin/browser-super-workspace.sh` | `SUPER+B` e `xdg-open` escolhem o navegador pelo super workspace ativo. |
-| Chromium SW | `scripts/.local/bin/chromium-profile.sh` | SW2+ usam Chromium isolado em `~/.config/chromium-super-workspaces`. |
+| Browser launcher | `scripts/.local/bin/browser-super-workspace.sh` | `SUPER+B` abre o Zen Browser. |
+| Chromium SW | `scripts/.local/bin/chromium-profile.sh` | Helper preservado para perfis Chromium manuais, fora do navegador padrão. |
 
 Nomes internos no Hyprland usam `name:super-<super>-<slot>` para evitar colisão com workspaces numéricos globais. Ex.: super workspace `1`, slot `4` vira `name:super-1-4`; scratchpad vira `special:super-1-magic`.
 
@@ -280,7 +280,7 @@ O script também lembra o último slot focado em cada super workspace. Se você 
 
 Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar`, mapa `>` `~` `=` `^` `*` para os 5 super workspaces. Tooltip mostra o banco ativo + qualquer outro banco com janela aberta (bancos vazios ficam de fora). Clique esquerdo abre um menu `fuzzel` com os 5 pra escolher direto ou digitar um nome para o banco ativo; clique direito cicla pro anterior. O nome salvo aparece depois de `custom/active-window`.
 
-Navegadores seguem o banco ativo: SW1 abre o Brave pessoal (`swprofile1` em `super-1-1`); SW2+ abrem Chromium com profile correspondente (`swprofileN` em `super-N-1`). Isso isola o banner de depuração do OMP/Browser Relay fora do Brave pessoal.
+Zen Browser é o navegador padrão do sistema e do `SUPER+B`. Os helpers de Brave/Chromium ficam preservados apenas para uso manual quando algum banco precisar de profile isolado.
 
 Documentação completa: [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 
@@ -431,11 +431,11 @@ Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservatio
 
 ## Audio Ducking
 
-Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no Brave e restaura o volume exato que estava antes do ducking.
+Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no Zen Browser e restaura o volume exato que estava antes do ducking.
 
-- **Serviço:** `brave-duck.service` (systemd user)
-- **Implementação atual:** script PipeWire/Pulse com polling de áudio do Brave + filtro de janela WhatsApp no Hyprland
-  - Outros sites com áudio no Brave não ativam ducking.
+- **Serviço:** `zen-duck.service` (systemd user)
+- **Implementação atual:** script PipeWire/Pulse com polling de áudio do Zen + filtro de janela WhatsApp no Hyprland
+  - Outros sites com áudio no Zen não ativam ducking.
 
 ---
 
@@ -723,7 +723,7 @@ Inventário e contrato operacional em [`docs/agent-harnesses-and-skills.md`](doc
 | Alt+Tab via cyclenext (nativo) | hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço IPC mudou de hex para decimal) |
 | workspace-float.conf no repo | Estado inicial/atual de workspaces floating é preservado via Stow |
 | Flatpaks em Wayland nativo | Resolve cursor inconsistente e melhora integração com compositor |
-| brave-duck.service como systemd user | Persiste entre reinicializações sem intervenção manual |
+| zen-duck.service como systemd user | Persiste entre reinicializações sem intervenção manual |
 | waybar-git em vez de waybar (pacman) | Fix do clique em `hyprland/workspaces` com o dispatcher Lua do Hyprland só existe no `master` (Waybar#5008/#5013), sem release estável ainda |
 
 ---

@@ -68,8 +68,8 @@ check_flatpak() {
 
 check_services() {
   log "Verificando serviços systemd…"
-  # brave-duck roda como serviço --user; battery-conservation roda system-wide.
-  local user_services=(brave-duck.service)
+  # zen-duck roda como serviço --user; battery-conservation roda system-wide.
+  local user_services=(zen-duck.service)
   local system_services=(battery-conservation.service)
   local s
 

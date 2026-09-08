@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Zen Browser
+Comment=Browse the web with Zen
+Exec=/home/caetano/.local/bin/zen %u
+Icon=/home/caetano/.local/opt/zen/browser/chrome/icons/default/default128.png
+Terminal=false
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml+xml;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/about;x-scheme-handler/unknown;
+StartupNotify=true

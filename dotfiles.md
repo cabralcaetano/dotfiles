@@ -119,7 +119,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | wallpaper_2.jpg | — | exec-once com sleep 0.5s |
 | XDG portals | — | exec-once com sleep 1s |
 | GTK dark theme | — | exec-once com sleep 2s |
-| brave-browser | 1 | exec-once `[workspace 1 silent]` |
+| Zen Browser | 1 | exec-once `[workspace 1 silent]` |
 | ghostty | 2 | exec-once `[workspace 2 silent]` |
 | obsidian (flatpak) | 2 | exec-once `[workspace 2 silent]` |
 | spotify | 3 | exec-once + `autostart.sh` move_when_ready |
@@ -157,7 +157,7 @@ Sequência do `hypridle.conf`:
 | Atalho | Ação |
 |---|---|
 | Super+Q | Terminal (Ghostty) |
-| Super+B | Navegador (Brave) |
+| Super+B | Navegador (Zen Browser) |
 | Super+E | Gerenciador de arquivos (Nautilus) |
 | Super+R | Launcher (Fuzzel) |
 | Super+D | Discord |
@@ -306,7 +306,7 @@ Fork do tmux com animações reais (github.com/jonaburg/tmux-animated) — patch
 
 **Teste:** sessão isolada com socket próprio, pra não misturar com a sessão real: `tmux-animated -L test -f ~/.config/tmux/tmux-animated.conf new-session`.
 
-**Iniciar no boot:** `tmux-continuum` tem `@continuum-boot`, mas resolve o binário via `command -v tmux` fixo — não dá pra apontar pro `tmux-animated`. Em vez disso, service systemd user dedicado: `scripts/.config/systemd/user/tmux-animated.service`, habilitado via symlink versionado em `default.target.wants/` (mesmo padrão do `brave-duck.service`). Sobe uma sessão `main` detached no socket `-L animated` com `tmux-animated.conf`, testado com `systemctl --user start` (confirmado `active (running)`, sessão criada). Anexar: `tmux-animated -L animated attach`.
+**Iniciar no boot:** `tmux-continuum` tem `@continuum-boot`, mas resolve o binário via `command -v tmux` fixo — não dá pra apontar pro `tmux-animated`. Em vez disso, service systemd user dedicado: `scripts/.config/systemd/user/tmux-animated.service`, habilitado via symlink versionado em `default.target.wants/` (mesmo padrão do `zen-duck.service`). Sobe uma sessão `main` detached no socket `-L animated` com `tmux-animated.conf`, testado com `systemctl --user start` (confirmado `active (running)`, sessão criada). Anexar: `tmux-animated -L animated attach`.
 
 ## System info — neofetch + fastfetch
 

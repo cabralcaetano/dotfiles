@@ -205,7 +205,7 @@ Apps fixos do boot entram no super workspace `1`:
 
 | App | Workspace interno |
 |---|---|
-| Brave | `name:super-1-1 silent` |
+| Zen Browser | `name:super-1-1 silent` |
 | Ghostty/tmux wiki-ia | `name:super-1-2 silent` |
 | Obsidian | `name:super-1-2 silent` |
 | Spotify | `name:super-1-3 silent` |
@@ -245,36 +245,40 @@ continuam compartilhando o mesmo processo do navegador. Quando o OMP Browser
 Relay/depuração prende um target desse processo, o aviso de debug aparece em
 todo o Brave — inclusive no profile pessoal do SW1.
 
-**Solução atual:** SW1 fica no Brave pessoal (`swprofile1`). SW2+ usam
-Chromium dedicado aos super workspaces. Isso cria um limite de processo entre
-o browser pessoal e os browsers de trabalho/automação: se o OMP depurar o
-Chromium, o banner não contamina o Brave pessoal. Tradeoff aceito: existe um
-segundo engine Chromium/Chromium-like rodando quando SW2+ estiverem abertos.
+**Solução atual:** Zen Browser é o navegador padrão do sistema, do boot e do
+`SUPER+B`. Os helpers antigos de Brave/Chromium continuam no repo para uso
+manual de perfis isolados, mas não participam do fluxo padrão.
 
-`scripts/.local/bin/brave-profile.sh [--app|--browser] <profile> <slot ex: super-1-1> [url]`:
+`scripts/.local/bin/browser-super-workspace.sh [url]` é o launcher de alto nível:
 
-- Usado para o SW1/pessoal.
-- `<profile>` é o nome visível do profile no Brave, ex. `swprofile1`. Antes
-  de chamar o Brave, o script resolve esse nome no `Local State`
-  (`~/.config/BraveSoftware/Brave-Browser/Local State`) e passa o diretório
-  interno correto para `--profile-directory` (`Default`, `Profile 1`, etc.).
-  Isso é necessário porque o Brave separa **nome visível** e **diretório do
-  profile**.
+- `SUPER+B` chama esse script via `hyprland.lua`.
+- Sem URL, abre uma nova janela do Zen.
+- Com URL, repassa o link diretamente para o Zen.
+- `xdg-open`/links `http` e `https` usam `desktop-apps/.config/mimeapps.list`
+  apontando para `zen.desktop`, não para o launcher.
 
-`scripts/.local/bin/chromium-profile.sh <profile> <slot ex: super-2-1> [url]`:
+Mapa padrão:
 
-- Usado para SW2+.
-- Usa `~/.config/chromium-super-workspaces` como `--user-data-dir` dedicado e
-  `--profile-directory=swprofile<N>` para separar cookies/sessões por banco.
-- Mantém o custo de automação/debug fora do Brave pessoal.
+| Entrada | Navegador | Slot |
+|---|---|---|
+| Boot | Zen Browser | `super-1-1` |
+| `SUPER+B` | Zen Browser | workspace atual |
+| `xdg-open`/links | Zen Browser | decisão do Zen/Hyprland |
 
+Helpers preservados:
+
+- `scripts/.local/bin/brave-profile.sh [--app|--browser] <profile> <slot> [url]`
+  abre/foca perfis do Brave e resolve o nome visível (`swprofile1`) para o
+  diretório interno do `Local State`.
+- `scripts/.local/bin/chromium-profile.sh <profile> <slot> [url]` usa
+  `~/.config/chromium-super-workspaces` como `--user-data-dir` dedicado.
 
 ### Atalhos nativos para mover abas
 
 `scripts/.local/share/browser-tab-mover/` é uma extensão local MV3 carregada
-pelos launchers de Brave/Chromium com `--load-extension`. Ela registra comandos
-do próprio navegador e move a aba ativa via `chrome.tabs.move`, sem bind do
-Hyprland e sem script por tecla.
+pelos launchers de Brave/Chromium quando usados manualmente. Ela registra
+comandos do próprio navegador e move a aba ativa via `chrome.tabs.move`, sem
+bind do Hyprland e sem script por tecla.
 
 Atalhos:
 
@@ -289,45 +293,22 @@ Atalhos:
 sincronizam os atalhos apenas quando não há processo do respectivo navegador em
 execução.
 
-`scripts/.local/bin/browser-super-workspace.sh [url]` é o roteador de alto nível:
-
-- `SUPER+B` chama esse script via `hyprland.lua`.
-- `xdg-open`/links `http` e `https` chamam esse script via
-  `desktop-apps/.config/mimeapps.list` +
-  `browser-super-workspace.desktop`.
-- O roteamento usa o super workspace ativo (`hyprctl activeworkspace -j`, com
-  fallback para `~/.cache/hypr/super-workspace`). O protocolo `xdg-open` não
-  informa qual app originou o link; se um processo em background abrir link
-  enquanto outro super workspace está focado, vale o banco focado naquele
-  instante.
-
-Mapa atual:
-
-| Super workspace | Navegador | Profile | Slot |
-|---|---|---|---|
-| `1` | Brave | `swprofile1` | `super-1-1` |
-| `2` | Chromium | `swprofile2` | `super-2-1` |
-| `3` | Chromium | `swprofile3` | `super-3-1` |
-| `N` | Chromium | `swprofile<N>` | `super-<N>-1` |
-
-Uso — abrir o browser do super workspace ativo:
+Uso — abrir o Zen:
 
 ```bash
 browser-super-workspace.sh
 ```
 
-Uso — abrir link no browser do super workspace ativo:
+Uso — abrir link no Zen:
 
 ```bash
 browser-super-workspace.sh "https://example.com"
 ```
 
-**Fora do escopo de propósito:** Spotify e Discord ficam nativos (Electron),
-não migram para abas do Brave. Cada um já paga o mesmo tipo de tax (GPU +
-zygote + network service próprios), mas `brave-duck.sh` identifica o Spotify
-pelo client PipeWire nativo (`get_spotify_id` via `wpctl status`); virando
-aba do Brave, o áudio apareceria como cliente "brave" e o ducking automático
-pararia de funcionar. Não compensa a troca.
+**Fora do escopo de propósito:** Spotify e Discord ficam nativos (Electron).
+O `zen-duck.sh` identifica o Spotify pelo client PipeWire nativo
+(`get_spotify_id` via `wpctl status`) e só abaixa o volume quando há áudio do
+Zen com janela do WhatsApp visível.
 
 ## Comandos úteis
 

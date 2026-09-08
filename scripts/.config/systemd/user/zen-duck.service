@@ -1,9 +1,9 @@
 [Unit]
-Description=Auto duck Brave audio role
+Description=Auto duck Zen Browser audio role
 After=pipewire.service wireplumber.service
 
 [Service]
-ExecStart=%h/.local/bin/brave-duck.sh
+ExecStart=%h/.local/bin/zen-duck.sh
 Restart=always
 RestartSec=3
 

@@ -79,12 +79,12 @@ resolve_hyprland_env() {
   return 1
 }
 
-has_whatsapp_brave_window() {
+has_whatsapp_zen_window() {
   resolve_hyprland_env || return 1
 
   hyprctl clients 2>/dev/null | awk '
     /^Window / {
-      if (class ~ /brave/ && title ~ /whatsapp/) found = 1
+      if (class ~ /zen/ && title ~ /whatsapp/) found = 1
       class = ""; title = ""
       next
     }
@@ -98,39 +98,39 @@ has_whatsapp_brave_window() {
       next
     }
     END {
-      if (class ~ /brave/ && title ~ /whatsapp/) found = 1
+      if (class ~ /zen/ && title ~ /whatsapp/) found = 1
       exit found ? 0 : 1
     }
   '
 }
 
-check_brave() {
-  local brave_audio
-  brave_audio=$(pactl list sink-inputs 2>/dev/null | awk '
+check_zen() {
+  local zen_audio
+  zen_audio=$(pactl list sink-inputs 2>/dev/null | awk '
     /^Entrada|^Sink Input/ {
-      if (brave && playing) count++
-      brave=0; playing=0
+      if (zen && playing) count++
+      zen=0; playing=0
     }
-    /application\.process\.binary.*"brave"/ { brave=1 }
+    /application\.process\.binary.*"zen"/ { zen=1 }
     /Cork(ed)?:.*(não|no)/ { playing=1 }
     END {
-      if (brave && playing) count++
+      if (zen && playing) count++
       print count+0
     }
   ')
 
-  [ "${brave_audio:-0}" -eq 0 ] && echo 0 && return
+  [ "${zen_audio:-0}" -eq 0 ] && echo 0 && return
 
-  if has_whatsapp_brave_window; then
-    echo "$brave_audio"
+  if has_whatsapp_zen_window; then
+    echo "$zen_audio"
   else
     echo 0
   fi
 }
 
-brave_really_stopped() {
+zen_really_stopped() {
   for i in 1 2 3; do
-    [ "$(check_brave)" -gt 0 ] && return 1
+    [ "$(check_zen)" -gt 0 ] && return 1
     sleep 0.3
   done
   return 0
@@ -138,22 +138,22 @@ brave_really_stopped() {
 
 while true; do
   SPOTIFY_ID=$(get_spotify_id)
-  BRAVE_PLAYING=$(check_brave)
+  ZEN_PLAYING=$(check_zen)
 
-  if [ "$BRAVE_PLAYING" -gt 0 ] && [ "$is_ducked" = "false" ] && [ -n "$SPOTIFY_ID" ]; then
+  if [ "$ZEN_PLAYING" -gt 0 ] && [ "$is_ducked" = "false" ] && [ -n "$SPOTIFY_ID" ]; then
     saved_spotify_volume=$(get_spotify_volume "$SPOTIFY_ID")
     if [ -n "$saved_spotify_volume" ]; then
       printf '%s\n' "$saved_spotify_volume" > "$DUCK_STATE"
-      echo "$(date +%T.%N) - Brave tocando, fade_out para preservar volume $saved_spotify_volume"
+      echo "$(date +%T.%N) - Zen tocando, fade_out para preservar volume $saved_spotify_volume"
       fade_out "$SPOTIFY_ID" "$saved_spotify_volume"
       is_ducked=true
     fi
-  elif [ "$BRAVE_PLAYING" -eq 0 ] && [ "$is_ducked" = "true" ]; then
-    if brave_really_stopped; then
+  elif [ "$ZEN_PLAYING" -eq 0 ] && [ "$is_ducked" = "true" ]; then
+    if zen_really_stopped; then
       if [ -f "$DUCK_STATE" ]; then
         saved_spotify_volume=$(cat "$DUCK_STATE")
       fi
-      echo "$(date +%T.%N) - Brave parou, fade_in para $saved_spotify_volume"
+      echo "$(date +%T.%N) - Zen parou, fade_in para $saved_spotify_volume"
       SPOTIFY_ID=$(get_spotify_id)
       if [ -n "$SPOTIFY_ID" ] && [ -n "$saved_spotify_volume" ]; then
         current_spotify_volume=$(get_spotify_volume "$SPOTIFY_ID")
