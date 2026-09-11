@@ -18,6 +18,16 @@
 /home/*/go/pkg/mod
 /home/*/.pyenv/versions
 
+# --- Storage de container (ilegível e reconstruível) ---------------------
+# Rootless podman e Waydroid mapeiam uid para dentro de user namespaces, então
+# esses diretórios são root/uid-mapped e o restic não consegue lê-los: geraram
+# 490 erros de "permission denied" no primeiro backup. Imagens e camadas vêm
+# do registry de novo; o que NÃO é reconstruível é volume nomeado do podman com
+# dado de banco — esse precisa de `podman volume export` para um caminho
+# legível, que aí entra no backup normalmente.
+/home/*/.local/share/containers/storage
+/home/*/.local/share/waydroid/data
+
 # --- Artefatos de build e dependências (reconstruíveis do lockfile) ------
 **/node_modules
 **/.venv

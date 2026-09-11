@@ -119,19 +119,32 @@ backup)
     [ -f "$EXCLUDE_FILE" ] || die "falta $EXCLUDE_FILE"
 
     log "iniciando backup para $RESTIC_REPOSITORY"
-    if restic backup "$HOME" \
+    rc=0
+    restic backup "$HOME" \
         --exclude-file="$EXCLUDE_FILE" \
         --exclude-caches \
         --one-file-system \
         --compression auto \
         --tag auto \
-        >>"$LOG" 2>&1
-    then
+        >>"$LOG" 2>&1 || rc=$?
+
+    case "$rc" in
+    0)
         touch "$STAMP"
         log "backup concluído"
-    else
-        die "restic backup falhou; veja $LOG"
-    fi
+        ;;
+    3)
+        # O snapshot FOI criado; alguns arquivos não puderam ser lidos. Vale
+        # como backup, mas não em silêncio: arquivo ilegível novo significa
+        # exclusão faltando em excludes.txt.
+        touch "$STAMP"
+        log "backup concluído com arquivos ilegíveis (rc=3); veja $LOG"
+        notify "Snapshot criado, mas alguns arquivos não puderam ser lidos." "Backup parcial"
+        ;;
+    *)
+        die "restic backup falhou (rc=$rc); veja $LOG"
+        ;;
+    esac
 
     # Retenção: 7 diários, 4 semanais, 6 mensais, 1 anual.
     restic forget --prune \
