@@ -801,6 +801,8 @@ MIT
 
 - [[docs/agent-harnesses-and-skills|Agent Harnesses & Skills]]
 - [[docs/arch-migration|Migração Fedora → Arch Linux]]
+- [[docs/auditoria-2026-09|Auditoria de sistema — 2026-09-10]]
+- [[docs/backup-restic|Backup off-site com restic]]
 - [[docs/browser-tab-shifter|Browser tab shifter]]
 - [[docs/browser-memory-profiles|Browser memory profiles]]
 - [[docs/hyprland-super-workspaces|Hyprland super workspaces]]
