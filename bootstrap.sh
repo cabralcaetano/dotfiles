@@ -10,6 +10,7 @@ cd "$DOTFILES_DIR"
 source "$DOTFILES_DIR/scripts/.local/bin/_dotfiles-lib.sh"
 
 APPLY_SYSTEM=0
+SYSTEM_ONLY=0
 
 usage() {
   cat <<'EOF'
@@ -18,11 +19,16 @@ Uso: bash bootstrap.sh [opções]
 Instala pacotes, plugins e symlinks do ambiente em $HOME. Idempotente.
 
 Opções:
-  --system   Aplica também os arquivos de /etc versionados em system/
-             (earlyoom, sysctl/zram, keyd) via sudo. Sem esta flag nada
-             fora de $HOME é tocado e os comandos pendentes são apenas
-             impressos no final.
-  --help     Mostra esta ajuda e sai.
+  --system       Roda o bootstrap inteiro e, no fim, aplica também os
+                 arquivos de /etc versionados em system/ (earlyoom,
+                 sysctl/zram, keyd, nftables) via sudo. Sem esta flag nada
+                 fora de $HOME é tocado e os comandos pendentes são apenas
+                 impressos no final.
+  --system-only  Aplica só os arquivos de /etc e sai. Não instala pacote,
+                 não mexe em stow, não toca extensão do VS Code. É o modo
+                 para propagar uma mudança em system/ numa máquina que já
+                 está configurada.
+  --help         Mostra esta ajuda e sai.
 
 Só há suporte a Arch Linux; o setup Fedora está arquivado em docs/history/.
 EOF
@@ -32,6 +38,7 @@ parse_args() {
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --system) APPLY_SYSTEM=1 ;;
+      --system-only) APPLY_SYSTEM=1; SYSTEM_ONLY=1 ;;
       --help|-h) usage; exit 0 ;;
       *) usage >&2; die "Opção desconhecida: $1" ;;
     esac
@@ -143,6 +150,15 @@ parse_args "$@"
 
 require_arch
 log "Distro detectada: arch"
+
+# --system-only: propaga system/etc numa máquina já configurada e sai, sem
+# reinstalar pacote nem re-stowar nada.
+if [[ ${SYSTEM_ONLY:-0} -eq 1 ]]; then
+  apply_system_files
+  echo
+  log "Arquivos de /etc aplicados."
+  exit 0
+fi
 
 # Se stow já existir, falha cedo antes de instalar pacotes/plugins.
 stow_preflight
