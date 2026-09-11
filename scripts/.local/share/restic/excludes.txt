@@ -1,0 +1,61 @@
+# Exclusões do backup-restic.sh. Tudo aqui é reconstruível a partir de outra
+# fonte (gerenciador de pacotes, lockfile, build, cache de app) ou é lixo.
+# O que NÃO entra nesta lista é deliberado: código, documentos, chaves, configs,
+# bancos locais e dados de aplicação são exatamente o que o backup existe para
+# salvar.
+
+# --- Caches (6,6 GB hoje) ------------------------------------------------
+/home/*/.cache
+/home/*/.local/share/Trash
+/home/*/.npm/_cacache
+/home/*/.bun/install/cache
+/home/*/.cargo/registry
+/home/*/.rustup/toolchains
+/home/*/.nuget/packages
+/home/*/.dotnet
+/home/*/.gradle/caches
+/home/*/.m2/repository
+/home/*/go/pkg/mod
+/home/*/.pyenv/versions
+
+# --- Artefatos de build e dependências (reconstruíveis do lockfile) ------
+**/node_modules
+**/.venv
+**/venv
+**/__pycache__
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/target/debug
+**/target/release
+**/.next
+**/.nuxt
+**/.turbo
+**/.parcel-cache
+**/dist
+**/build/Release
+**/*.pyc
+
+# --- Estado volumoso de apps Electron/navegador --------------------------
+# Perfis são preservados; só os caches internos saem.
+**/Cache
+**/CachedData
+**/Code Cache
+**/GPUCache
+**/ShaderCache
+**/DawnGraphiteCache
+**/DawnWebGPUCache
+**/Service Worker/CacheStorage
+
+# --- VMs e imagens (grandes e recriáveis; faça cópia manual se importar) --
+/home/*/.local/share/libvirt/images
+/home/*/VirtualBox VMs
+**/*.qcow2
+**/*.vdi
+**/*.iso
+
+# --- Ruído ---------------------------------------------------------------
+**/.DS_Store
+**/*.swp
+**/.stfolder
+/home/*/mnt

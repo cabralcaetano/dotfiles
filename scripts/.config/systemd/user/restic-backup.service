@@ -1,0 +1,12 @@
+[Unit]
+Description=Backup incremental de $HOME para disco externo (restic)
+# Sem o disco plugado o script sai 0 com um log; não é falha.
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/backup-restic.sh backup
+Nice=10
+IOSchedulingClass=idle
+# Backup completo de ~ pode passar de uma hora na primeira execução.
+TimeoutStartSec=6h

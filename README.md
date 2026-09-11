@@ -43,6 +43,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 - [Wallpapers](#wallpapers)
 - [Idle / Lock](#idle--lock)
 - [Perfil de energia](#perfil-de-energia)
+- [Backup](#backup)
 - [Audio Ducking](#audio-ducking)
 - [Cursor](#cursor)
 - [Temas](#temas)
@@ -466,6 +467,34 @@ Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservatio
 **Persistência no boot:** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — não há reset para um default. O `default=balanced` do `/etc/tuned/ppd.conf` se aplica aos clientes PPD. Para fixar o boot em Balanceado normal quando `tuned-ppd` está ativo, defina também o perfil base PPD como `balanced` (`/etc/tuned/ppd_base_profile`).
 
 **Super Economia (2026-08-21):** `super-powersave` é perfil custom deste repo (sem equivalente no pacote `tuned`), herda `powersave` e soma PCIe ASPM `powersave`, `max_perf_pct=50`, `usb autosuspend=1`, brilho em 25% (via `power-profile.sh`, restaura ao sair) e bloqueio de Bluetooth via `rfkill` — só se `bluetoothctl devices Connected` vier vazio (não derruba mouse/fone em uso; desbloqueia sozinho ao trocar de perfil). Economia e Balanceado continuam 100% stock. Os arquivos do profile ficam em `tuned/etc/tuned/` e são copiados manualmente para `/etc/tuned/`; registro da construção em [`docs/history/dotfiles-historico.md`](docs/history/dotfiles-historico.md).
+
+---
+
+## Backup
+
+Snapshot Btrfs não é backup. A raiz é um btrfs de **dois dispositivos**
+(`nvme0n1p4` + `nvme0n1p8`) com perfil `Data, single`: perder qualquer uma das
+duas partições destrói o filesystem inteiro e leva junto todos os snapshots do
+Snapper. O `restic` cobre esse caso.
+
+- **Destino:** `sftp:contabo-backup:/srv/backup/restic-archlinux` — repositório
+  no VPS, alcançado pela Tailscale. O restic cifra no cliente, então o servidor
+  não precisa de restic instalado nem vê conteúdo em claro.
+- **Cadência:** `restic-backup.timer` (user), diário, `Persistent=true`.
+- **Retenção:** 7 diários, 4 semanais, 6 mensais, 1 anual.
+- **Volume:** ~15,5 GiB de 40 GiB de `$HOME`; o resto é cache e artefato de
+  build, listado em `scripts/.local/share/restic/excludes.txt`.
+- **Segredos fora do Git:** `~/.config/restic/config` e `~/.config/restic/password`.
+  Perder a senha é perder o backup — ela precisa estar no Bitwarden.
+
+```sh
+backup-restic.sh snapshots   # pontos de restauração
+backup-restic.sh mount       # navega os snapshots em ~/mnt/restic
+backup-restic.sh check       # integridade do repositório
+```
+
+Detalhes, política e procedimento de restore em
+[`docs/backup-restic.md`](docs/backup-restic.md).
 
 ---
 

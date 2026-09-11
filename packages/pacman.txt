@@ -190,6 +190,12 @@ snapper
 grub-btrfs
 btrfs-progs
 
+# --- Backup off-site (ver docs/backup-restic.md) ---
+# Snapshot Btrfs não é backup: a raiz é um btrfs de dois dispositivos com
+# perfil `Data, single`, então perder uma partição perde tudo, snapshots
+# inclusive. restic replica $HOME cifrado para o VPS via SFTP.
+restic
+
 # --- Discos / filesystems ---
 gptfdisk
 exfatprogs

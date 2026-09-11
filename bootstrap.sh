@@ -93,6 +93,7 @@ SYSTEM_INSTALLS=(
   "system/etc/systemd/zram-generator.conf|/etc/systemd/zram-generator.conf"
   "system/etc/keyd/default.conf|/etc/keyd/default.conf"
   "system/etc/keyd/f75.conf|/etc/keyd/f75.conf"
+  "system/etc/nftables.conf|/etc/nftables.conf"
 )
 
 # Comandos que recarregam o que os arquivos acima mudaram.
@@ -103,6 +104,8 @@ SYSTEM_RELOADS=(
   "systemctl restart systemd-zram-setup@zram0.service"
   "systemctl enable --now keyd"
   "keyd reload"
+  "nft -f /etc/nftables.conf"
+  "systemctl enable nftables"
 )
 
 print_system_commands() {

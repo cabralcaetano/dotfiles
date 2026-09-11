@@ -1,0 +1,12 @@
+[Unit]
+Description=Dispara o backup restic uma vez por dia
+
+[Timer]
+OnCalendar=daily
+# Notebook desligado na hora marcada: roda no próximo boot.
+Persistent=true
+RandomizedDelaySec=30min
+Unit=restic-backup.service
+
+[Install]
+WantedBy=timers.target

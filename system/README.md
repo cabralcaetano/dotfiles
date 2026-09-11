@@ -20,6 +20,7 @@ esse mesmo bloco como pendência, em vez de aplicá-lo.
 | `etc/systemd/zram-generator.conf` | ARCH-35 | sem `zram-size` explícito o default trava em 4 GB numa máquina de 16 GB |
 | `etc/keyd/default.conf` | keyboard | CapsLock normal no tap; Caps+h/j/k/l como setas vim para teclados gerais |
 | `etc/keyd/f75.conf` | keyboard | Mesmo layer de setas + correção Alt/Super para AULA F75/Compx (`3554:fa09`, `1d57:fa60`) |
+| `etc/nftables.conf` | firewall | Firewall único da máquina. Substituiu a convivência ufw+nftables, e restringe SSH à tailnet em vez de aceitar em qualquer interface |
 
 ## Instalação
 
@@ -33,6 +34,7 @@ sudo install -Dm644 system/etc/sysctl.d/99-zram.conf       /etc/sysctl.d/99-zram
 sudo install -Dm644 system/etc/systemd/zram-generator.conf /etc/systemd/zram-generator.conf
 sudo install -Dm644 system/etc/keyd/default.conf             /etc/keyd/default.conf
 sudo install -Dm644 system/etc/keyd/f75.conf                 /etc/keyd/f75.conf
+sudo install -Dm644 system/etc/nftables.conf                 /etc/nftables.conf
 
 sudo sysctl --system
 sudo systemctl restart earlyoom
@@ -40,6 +42,8 @@ sudo systemctl daemon-reload
 sudo systemctl restart systemd-zram-setup@zram0.service
 sudo systemctl enable --now keyd
 sudo keyd reload
+sudo nft -f /etc/nftables.conf
+sudo systemctl enable nftables
 ```
 
 ## Verificação
