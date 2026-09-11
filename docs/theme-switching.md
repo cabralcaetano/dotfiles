@@ -38,8 +38,10 @@ standalone — sem Walker/Elephant/CLI de outra distro.
   launcher de reabrir.
 - **Quickshell/SwayNC também entram no tema**: `quick_*` no `colors.toml` controla
   fundo, opacidade, radius e escala. As dimensões do clock-panel ficam fixas em
-  `650x400` com `quick_clock_scale = 0.85`, evitando drift visual entre trocas de
-  tema e mantendo o painel compacto.
+  `650x400` com `quick_clock_scale = 1.0`, evitando drift visual entre trocas de
+  tema. Em 2026-09-10 um commit não relacionado (`872bb5f`, "Fix Quickshell AI
+  usage panel") reverteu esse valor para `0.85` por acidente, encolhendo o
+  painel; restaurado em 2026-09-11.
 - **Blur por layer no Hyprland**: `quickshell`, `swaync-control-center` e
   `launcher` têm `hl.layer_rule({ blur = true, ignore_alpha = 0.10 })`, para
   borrar só atrás das superfícies semi-transparentes e não a tela inteira.

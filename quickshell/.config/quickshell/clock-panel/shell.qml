@@ -352,8 +352,8 @@ ShellRoot {
                 transform: Scale {
                     origin.x: panel.width / 2
                     origin.y: 0
-                    xScale: 0.85
-                    yScale: 0.85
+                    xScale:  1.0
+                    yScale:  1.0
                 }
                 anchors.topMargin: 0
                 radius:  0

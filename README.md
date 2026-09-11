@@ -550,8 +550,8 @@ Atalhos:
 | Super+Shift+W | Cicla wallpapers do diretório ativo |
 
 `normal` preserva os painéis Quickshell cinza/arredondados; `matte-black` aplica
-painéis pretos/quadrados mantendo o clock-panel compacto
-(`650x400` escalado para `0.85`). Hyprland aplica blur nas layers `quickshell`,
+painéis pretos/quadrados, ambos com o clock-panel em tamanho cheio
+(`650x400`, `quick_clock_scale = 1.0`). Hyprland aplica blur nas layers `quickshell`,
 `swaync-control-center` e `launcher` com `ignore_alpha` para não borrar a tela
 inteira.
 
