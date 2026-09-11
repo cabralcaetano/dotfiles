@@ -16,10 +16,36 @@ bindkey "^[[1;5C" forward-word
 bindkey "^[h" backward-word
 bindkey "^[l" forward-word
 
+# === Completions ===
+# compinit com cache diário: -C pula o scan de segurança quando o dump está
+# fresco, o que é o custo dominante do compinit em cada shell novo.
+# Precisa vir ANTES dos plugins (syntax-highlighting/autosuggestions) e do
+# fzf, que dependem do sistema de widgets e do compdef já carregados.
+autoload -Uz compinit
+_zcompdump="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${ZSH_VERSION}"
+mkdir -p "${_zcompdump:h}"
+if [[ -n "$_zcompdump"(#qN.mh-24) ]]; then
+  compinit -C -d "$_zcompdump"
+else
+  compinit -d "$_zcompdump"
+fi
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompcache"
+
 # === Pyenv ===
 export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-command -v pyenv &>/dev/null && eval "$(pyenv init - zsh)"
+[[ -d $PYENV_ROOT/bin ]] && path=("$PYENV_ROOT/bin" $path)
+[[ -d $PYENV_ROOT/shims ]] && path=("$PYENV_ROOT/shims" $path)
+# `pyenv init - zsh` custa ~40ms por shell só pra registrar os shims que já
+# estão no PATH acima (mais completions e a função `pyenv`). Adiamos tudo
+# isso pra primeira chamada real de `pyenv`: o wrapper se auto-substitui.
+pyenv() {
+  unfunction pyenv
+  eval "$(command pyenv init - zsh)"
+  pyenv "$@"
+}
 
 # === Starship Prompt ===
 command -v starship &>/dev/null && eval "$(starship init zsh)"
@@ -106,17 +132,44 @@ SAVEHIST=10000
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
 setopt SHARE_HISTORY
-export PATH="$HOME/.local/bin:$PATH"
-export PATH="$HOME/.npm-global/bin:$PATH"
+
+# === PATH ===
+# typeset -U mantém path/PATH sem duplicatas: sem isso cada shell aninhado
+# (tmux dentro de tmux, subshell, `exec zsh`) reempilha as mesmas entradas.
+# O PATH base (~/.bun/bin) mora no ~/.zshenv, que também vale pra shells
+# não-interativos — por isso não é repetido aqui.
+typeset -U path PATH
+path=("$HOME/.opencode/bin" "$HOME/.npm-global/bin" "$HOME/.local/bin" $path)
+[[ -d "$HOME/.spicetify" ]] && path+=("$HOME/.spicetify")
 
 copy() {
     "$@" 2>&1 | wl-copy
 }
 
-[[ -d "$HOME/.spicetify" ]] && export PATH="$PATH:$HOME/.spicetify"
 export QMD_FORCE_CPU=1
-export PATH="$HOME/.bun/bin:$PATH"
 
-# opencode
-export PATH="$HOME/.opencode/bin:$PATH"
-export OMP_ZSHRC_PROBE=hit
+# === Qt / HiDPI ===
+# Apps Qt fora do Hyprland (ferramentas da impressora HP, por exemplo)
+# ignoram o scale do compositor e saem minúsculos no eDP-1; o fator fixo
+# resolve, e o auto-scale precisa ficar desligado pra não brigar com ele.
+export QT_SCALE_FACTOR=1.3
+export QT_AUTO_SCREEN_SCALE_FACTOR=0
+
+# === Waydroid ===
+# wdopen: sobe o container (se preciso) + sessão e abre a UI cheia.
+# wdclose: encerra só a sessão. wdstop: sessão + container.
+wdopen() {
+  systemctl is-active --quiet waydroid-container || sudo systemctl start waydroid-container
+  waydroid session start >/dev/null 2>&1 &
+  sleep 2
+  waydroid show-full-ui
+}
+
+wdclose() {
+  waydroid session stop
+}
+
+wdstop() {
+  waydroid session stop
+  sudo systemctl stop waydroid-container
+}

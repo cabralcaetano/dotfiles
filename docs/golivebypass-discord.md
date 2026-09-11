@@ -195,7 +195,7 @@ Caminho real:
    grava `~/.config/autostart/golivebypass.desktop` (confirmado lendo
    `resources/app.asar:dist-electron/main.js`, função que monta esse `.desktop` com
    `X-GNOME-Autostart-enabled=true`), mas este Hyprland não processa
-   `~/.config/autostart/` — decisão documentada em `dotfiles.md`: "Sem autostart via
+   `~/.config/autostart/` — decisão registrada em [`history/dotfiles-historico.md`](history/dotfiles-historico.md): "Sem autostart via
    `~/.config/autostart/` — os `.desktop` do GNOME foram deletados, tudo gerenciado pelo
    Hyprland". Pra subir sozinho no boot seria preciso um `exec-once` dedicado no
    `hyprland.lua` (não configurado; decidido não fazer por enquanto — ver

@@ -1,8 +1,10 @@
 # System Setup (Fedora) — ARQUIVADO
 
-> **Histórico.** A máquina migrou de Fedora para Arch Linux em 2026-07-09. Este documento não se aplica mais ao sistema atual — mantido só como referência do setup antigo. Para o equivalente em Arch (snapper + grub-btrfs no layout `@`/`@home`), ver [`arch-migration.md` §1.2](arch-migration.md).
+> **Histórico.** A máquina migrou de Fedora para Arch Linux em 2026-07-09. Este documento não se aplica mais ao sistema atual — mantido só como referência do setup antigo, arquivado em `docs/history/`. Para o equivalente em Arch (snapper + grub-btrfs no layout `@`/`@home`), ver [`arch-migration.md` §1.2](../arch-migration.md).
 
-Estes ajustes vivem em `/etc`, no bootloader e no `fstab` — são **system-wide**, exigem root e **não** são gerenciados pelo `stow` nem pelo `bootstrap.sh`. Este documento existe para reproduzi-los numa máquina nova.
+> **Sem suporte no fluxo atual.** O `bootstrap.sh` não tem mais ramo Fedora — instala só `packages/pacman.txt` + `packages/aur.txt`. O manifesto `dnf` saiu de `packages/` e ficou arquivado em [`legacy/fedora/dnf.txt`](../../legacy/fedora/dnf.txt). Nada aqui é executado por automação do repo; os comandos abaixo são registro de como o setup Fedora foi feito na época.
+
+Estes ajustes viviam em `/etc`, no bootloader e no `fstab` — eram **system-wide**, exigiam root e nunca foram gerenciados pelo `stow` nem pelo `bootstrap.sh`.
 
 Aplicado em: Fedora 44 · Btrfs · GRUB 2.12 (UEFI) · dnf5.
 

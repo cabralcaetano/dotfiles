@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# Front-end de usuário para o modo de conservação da bateria.
+# O helper root (/usr/local/sbin/battery-conservation-root) não é um arquivo
+# solto do sistema: a fonte de verdade é
+# scripts/.local/share/battery-conservation/battery-conservation-root, instalada
+# por install-battery-conservation-root.sh (junto com a unit e o sudoers.d).
 set -uo pipefail
 
 CHARGE_TYPES_PATH="/sys/class/power_supply/BAT0/charge_types"

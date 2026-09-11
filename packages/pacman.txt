@@ -1,7 +1,35 @@
-# Pacotes pacman — curados (não é o dump completo do sistema)
+# Pacotes pacman — manifesto COMPLETO dos pacotes oficiais instalados explicitamente.
+# Objetivo: reconstruir a máquina do zero a partir deste arquivo (não é mais uma
+# lista curada parcial). Tudo que `pacman -Qqen` devolve está aqui, agrupado por
+# categoria; as poucas exceções conscientes estão comentadas no lugar delas.
 # Instalar (oficiais): sudo pacman -S --needed $(grep -v '^#' packages/pacman.txt | grep -v '^$')
+# Conferir drift:
+#   comm -23 <(pacman -Qqen | sort) \
+#            <(sed '/^[[:space:]]*#/d;/^[[:space:]]*$/d' packages/pacman.txt | sort -u)
 # Pacotes AUR ficam em packages/aur.txt — precisam de um AUR helper (yay).
-# Atualizado: 2026-08-15 · Arch Linux
+# Atualizado: 2026-09-10 · Arch Linux
+
+# --- Sistema base ---
+base
+base-devel
+linux
+linux-firmware
+linux-headers
+intel-ucode
+mkinitcpio
+sudo
+dkms
+# firmware do Sound Open Firmware — sem ele o alto-falante interno não aparece
+sof-firmware
+# zram-generator: swap comprimida em RAM · earlyoom: mata o processo antes do
+# OOM killer do kernel travar a sessão inteira
+zram-generator
+earlyoom
+man-db
+man-pages
+nano
+# fonte do console TTY (legível na tela HiDPI antes do compositor subir)
+terminus-font
 
 # --- Compositor / Wayland ---
 hyprland
@@ -15,17 +43,20 @@ swaync
 fuzzel
 awww
 # swww não existe no Arch — awww é o fork com CLI compatível
+# wev: debug de eventos de teclado/mouse Wayland (usado ao ajustar keyd/binds)
+wev
 
 # --- GNU Stow (gerencia os symlinks deste repo) ---
 stow
 
 # --- Display manager ---
-greetd
-greetd-tuigreet
+# greetd/greetd-tuigreet foram removidos: o DM ativo é o sddm
+# (display-manager.service → sddm.service).
 sddm
 qt6-virtualkeyboard
 qt6-multimedia
 qt6-imageformats
+qt6-svg
 qt6ct
 
 # --- Terminais ---
@@ -51,7 +82,12 @@ fd
 tmux
 vim
 neovim
-bun
+unzip
+
+# --- Monitoramento ---
+htop
+iftop
+nethogs
 
 # --- Áudio ---
 pipewire
@@ -62,6 +98,8 @@ wireplumber
 playerctl
 pavucontrol
 gst-plugin-pipewire
+easyeffects
+libpulse
 
 # --- Bluetooth ---
 bluez
@@ -84,6 +122,13 @@ wireguard-tools
 iproute2
 curl
 
+# --- Rede ---
+tailscale
+ufw
+wpa_supplicant
+magic-wormhole
+inetutils
+
 # --- Input method / keyboard ---
 fcitx5
 keyd
@@ -95,7 +140,14 @@ fcitx5-configtool
 capitaine-cursors
 breeze-cursors
 adw-gtk-theme
+materia-gtk-theme
+kvantum
 ttf-jetbrains-mono-nerd
+
+# --- Gráficos Intel (Raptor Lake-P / UHD) ---
+vulkan-intel
+intel-media-driver
+libva-utils
 
 # --- Perfil de energia ---
 tuned
@@ -105,17 +157,42 @@ tuned-ppd
 nautilus
 
 # --- Apps GNOME usados fora do GNOME ---
-evolution
+# evolution saiu: não está mais instalado (as contas do GNOME Online Accounts
+# continuam servindo gnome-calendar)
 gnome-calendar
 gnome-calculator
 gnome-control-center
 gnome-online-accounts
 gnome-online-accounts-gtk
+gnome-disk-utility
+gnome-text-editor
+evince
+
+# --- Apps ---
+bitwarden
+discord
+spotify-launcher
+imv
+ncspot
+tauon-music-box
+obs-studio
+obs-studio-plugin-browser
+# câmera virtual do OBS (precisa de dkms + linux-headers, acima)
+v4l2loopback-dkms
+
+# --- Navegadores ---
+# o Zen é instalado fora do pacman, em ~/.local/opt/zen (ver README.md)
+firefox
+chromium
 
 # --- Snapshots Btrfs (ver docs/arch-migration.md §1.2) ---
 snapper
 grub-btrfs
 btrfs-progs
+
+# --- Discos / filesystems ---
+gptfdisk
+exfatprogs
 
 # --- Pacman mirrors ---
 reflector
@@ -126,6 +203,25 @@ github-cli
 
 # --- Python ---
 pyenv
+python-pip
+python-yaml
+uv
+
+# --- Node / JavaScript ---
+nodejs
+npm
+bun
+
+# --- .NET ---
+dotnet-sdk-10.0
+aspnet-runtime-10.0
+
+# --- Banco de dados ---
+postgresql
+
+# --- OCR ---
+tesseract
+tesseract-data-por
 
 # --- Fontes (fallback completo p/ navegador — ver docs/arch-migration.md §10) ---
 noto-fonts
@@ -152,12 +248,18 @@ virt-manager
 virt-viewer
 libvirt
 edk2-ovmf
-swtpm
 dnsmasq
 iptables
 openbsd-netcat
 spice-gtk
 libisoburn
+libguestfs
+# swtpm (TPM 2.0 emulado, requisito do Windows 11) não está instalado hoje;
+# reinstalar antes de recriar a VM: sudo pacman -S --needed swtpm
+
+# --- Android / Waydroid ---
+waydroid
+# waydroid-script-git (imagens GApps/libhoudini) está em packages/aur.txt
 
 # --- Escritório ---
 libreoffice-fresh
@@ -175,7 +277,6 @@ system-config-printer
 # --- Diversos ---
 fastfetch
 flatpak
-firefox
 efibootmgr
 grub
 os-prober

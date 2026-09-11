@@ -108,7 +108,15 @@ check_module_drift() {
   log "Verificando módulos fora de STOW_PKGS…"
   [[ -d "$DOTFILES_DIR" ]] || return
   local declared=" ${STOW_PKGS[*]} "
-  local known_manual=" desktop-apps sddm greetd xkb legacy docs packages ducking reflector udev obsidian system "
+  # Diretórios da raiz que nunca são aplicados por Stow, agrupados pelo motivo:
+  #   docs packages legacy ducking browser-extensions nextdns → só documentação
+  #     e manifestos; não há nada pra linkar em $HOME.
+  #   sddm reflector system tuned udev → espelham /etc ou /usr e são instalados
+  #     com `install`/root (udev guarda regra deprecada, não instalada).
+  #   desktop-apps icons themes → conteúdo aplicado por script (theme-switch,
+  #     update-desktop-database) em vez de symlink direto do Stow.
+  #   obsidian → perfil portátil copiado por vault, sem caminho fixo em $HOME.
+  local known_manual=" docs packages legacy ducking browser-extensions nextdns sddm reflector system tuned udev desktop-apps icons themes obsidian "
   local drift=()
   local entry name
   for entry in "$DOTFILES_DIR"/*; do

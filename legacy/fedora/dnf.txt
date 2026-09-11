@@ -1,6 +1,11 @@
+# ARQUIVO HISTÓRICO — Fedora 44 + Hyprland, antes da migração para o Arch.
+# Mantido só como referência dos nomes de pacote no lado Fedora; o bootstrap.sh
+# não suporta mais dnf e nada neste repo lê este arquivo.
+# Manifesto vivo: packages/pacman.txt + packages/aur.txt (Arch).
+#
 # Pacotes dnf — curados (não é o dump completo do sistema)
-# Instalar: sudo dnf install $(grep -v '^#' packages/dnf.txt)
-# Atualizado: 2026-06-05 · Fedora 44
+# Instalar: sudo dnf install $(grep -v '^#' legacy/fedora/dnf.txt)
+# Atualizado: 2026-06-05 · Fedora 44 · arquivado em 2026-09-10
 
 # --- Compositor / Wayland ---
 hyprland

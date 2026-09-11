@@ -1,11 +1,15 @@
 # system/ — configs de `/etc` versionados
 
 Espelha caminhos reais abaixo de `/etc`. **Não é um pacote Stow** — Stow só opera
-dentro de `$HOME`. Estes arquivos são instalados manualmente com `install`, mesmo
-padrão já usado por `reflector/`.
+dentro de `$HOME`. Estes arquivos são instalados com `install`, mesmo padrão já
+usado por `reflector/`.
 
 Por isso `system` fica fora de `STOW_PKGS` em `scripts/.local/bin/_dotfiles-lib.sh`,
 declarado lá como exceção conhecida para o `dotfiles-doctor.sh` não acusar drift.
+
+O caminho automatizado é `bash bootstrap.sh --system`, que executa exatamente os
+comandos da seção Instalação abaixo. Sem a flag, o bootstrap termina imprimindo
+esse mesmo bloco como pendência, em vez de aplicá-lo.
 
 ## Conteúdo
 
@@ -18,6 +22,8 @@ declarado lá como exceção conhecida para o `dotfiles-doctor.sh` não acusar d
 | `etc/keyd/f75.conf` | keyboard | Mesmo layer de setas + correção Alt/Super para AULA F75/Compx (`3554:fa09`, `1d57:fa60`) |
 
 ## Instalação
+
+Equivalente manual de `bash bootstrap.sh --system`:
 
 ```sh
 cd ~/Projects/dotfiles

@@ -6,14 +6,17 @@
 -- =================================================
 
 -- === MONITOR =====================================
-hl.monitor({ output = "", mode = "1920x1200@60", position = "0x0", scale = 1.25 })
+-- Fallback genérico primeiro (a última regra que casa vence): qualquer saída
+-- nova — HDMI, dock, projetor — entra no modo preferido dela.
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
+-- Painel interno fixo no modo nativo.
+hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "0x0", scale = 1.25 })
 
 -- === VARIÁVEIS ====================================
 local terminal    = "ghostty"
 local fileManager = "nautilus"
 local menu        = "fuzzel"
-local browser     = "~/.local/bin/browser-super-workspace.sh"
-local browserAutostart = "~/.local/bin/zen --new-window"
+local browser     = "~/.local/bin/zen --new-window"
 local mainMod     = "SUPER"
 local vscode      = "code"
 local discord     = "discord"
@@ -36,13 +39,13 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme \"adw-gtk3-dark\"")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme \"prefer-dark\"")
-    hl.exec_cmd("/usr/libexec/xdg-desktop-portal-hyprland")
-    hl.exec_cmd("/usr/libexec/xdg-desktop-portal-gtk")
-    hl.exec_cmd("sleep 1 && /usr/libexec/xdg-desktop-portal")
+    -- Portais XDG não são iniciados aqui: os backends são units D-Bus
+    -- (Type=dbus) e sobem sob demanda. Lançar à mão concorre com o
+    -- xdg-desktop-portal.service e quebra a ativação.
     hl.exec_cmd(waterReminder)
 
     -- aplicativos com workspace fixo, no super workspace 1 (padrão do boot)
-    hl.dispatch(hl.dsp.exec_cmd(browserAutostart, { workspace = "name:super-1-1 silent" }))
+    hl.dispatch(hl.dsp.exec_cmd(browser, { workspace = "name:super-1-1 silent" }))
     hl.dispatch(hl.dsp.exec_cmd(terminal .. " -e zsh -lc \"tmux new-session -A -s wiki-ia -c ~/Projects/wiki-ia\"", { workspace = "name:super-1-2 silent" }))
     hl.dispatch(hl.dsp.exec_cmd(obsidian, { workspace = "name:super-1-2 silent" }))
     hl.dispatch(hl.dsp.exec_cmd(spotify, { workspace = "name:super-1-3 silent" }))

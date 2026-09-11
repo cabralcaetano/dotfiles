@@ -29,14 +29,14 @@ Esses não trocaram de nome — simplesmente não estavam instalados no Arch, en
 | Pacote | Pra que serve | Sintoma sem ele |
 |---|---|---|
 | `pavucontrol` | mixer de áudio gráfico | ícone de volume na Waybar não abria nada |
-| `pyenv` | gerenciador de versões Python | `.zshrc` dava `command not found: pyenv` no login do shell (linha do `eval "$(pyenv init - zsh)"`) |
+| `pyenv` | gerenciador de versões Python | `.zshrc` dava `command not found: pyenv` no login do shell (linha do `eval "$(pyenv init - zsh)"`) — registro de 2026-07; essa linha não existe mais nessa forma: hoje o `pyenv` é carregado lazy, o `init` só roda na primeira chamada real |
 | `fcitx5-im` (grupo: `fcitx5`, `fcitx5-gtk`, `fcitx5-qt`, `fcitx5-configtool`) | input method — usado só pro compose key (`compose:rctrl` no `kb_options`) | Ctrl direito + tecla não compunha mais acentos/`ç` em nenhum app, principalmente GTK4 (Ghostty) |
 | `bun` | runtime JS usado pra buildar plugins Obsidian (ex: `default-zoom-fixer`) | não tinha como buildar plugins Obsidian escritos em TS |
 | `fd` | busca de arquivos usada pelo Telescope/LazyVim | Telescope caía pro `find` como fallback (mais lento) |
 
 ## 1.2 Snapshots Btrfs — snapper + grub-btrfs (já configurado, layout diferente do Fedora)
 
-Ao contrário do que o item 3 antigo deste doc dizia, isso **já foi feito** durante a instalação do Arch — não ficou pendente. Layout mais simples que o do Fedora (`docs/system-setup.md`), porque o Arch não aninha `.snapshots` dentro do subvolume raiz.
+Ao contrário do que o item 3 antigo deste doc dizia, isso **já foi feito** durante a instalação do Arch — não ficou pendente. Layout mais simples que o do Fedora ([`history/system-setup-fedora.md`](history/system-setup-fedora.md)), porque o Arch não aninha `.snapshots` dentro do subvolume raiz.
 
 **Layout Btrfs** (`nvme0n1p8`):
 

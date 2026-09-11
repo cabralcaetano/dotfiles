@@ -1,26 +1,35 @@
-# Dotfiles
+# Dotfiles — registro histórico
 
-**Status:** histórico / operacional — não é o source of truth atual
-**Stack atual:** Arch Linux, Hyprland, Waybar, Quickshell, Ghostty, Zsh, Starship, Fuzzel, SwayNC, Hyprlock, Hypridle, awww, PipeWire
-**Repo:** https://github.com/cabralcaetano/dotfiles
-**Deploy atual:** `~/Projects/dotfiles` via GNU Stow
+> ⚠️ **Documento histórico. Não executar nada daqui.** Este arquivo guarda
+> contexto, decisões e incidentes antigos do repo, em ordem de como foram
+> acontecendo. Boa parte descreve estados que não existem mais (Fedora, repo
+> dentro do vault `wiki-ia`, `swww`, `greetd`). Procedimentos executáveis
+> foram removidos de propósito.
+>
+> **Fonte da verdade atual: [`README.md`](../../README.md)** — instalação,
+> estrutura do repo, atalhos e manifestos vivem lá. Em qualquer conflito,
+> vale o `README.md`.
 
-> Source of truth atual: `README.md`. Este arquivo preserva contexto histórico, decisões e incidentes antigos; se houver conflito entre os dois, preferir o `README.md`.
+**Arquivado em:** 2026-09-10 (movido de `dotfiles.md`, na raiz do repo, para `docs/history/`).
+**Repo:** https://github.com/cabralcaetano/dotfiles — clone ativo em `~/Projects/dotfiles`, aplicado com GNU Stow.
 
 ## Descrição
 
 Configurações pessoais do ambiente Linux. O repo é a fonte da verdade — GNU Stow cria symlinks do repo para o sistema, então qualquer edição no repo reflete imediatamente nos arquivos do sistema. Para propagar mudanças do GitHub para o sistema é necessário `git pull` manual.
 
-## Fluxo de instalação em máquina nova
+## Como o deploy era feito (histórico)
 
-```bash
-git clone https://github.com/cabralcaetano/wiki-ia ~/wiki-ia
-cd ~/wiki-ia/personal/projects/dotfiles
-sudo dnf install stow swww
-stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship gtk-3 gtk-4 desktop-apps
-```
-
-> O repo fica em `~/wiki-ia/personal/projects/dotfiles/` — não clonar separado em `~/dotfiles`.
+- **Até meados de 2026:** o repo morava dentro do vault, em
+  `~/wiki-ia/personal/projects/dotfiles/`, e o setup de máquina nova era
+  clonar o `wiki-ia`, instalar `stow` e `swww` pelo **dnf** (a máquina rodava
+  Fedora) e stowar à mão um punhado de pacotes (`hypr`, `waybar`, `swaync`,
+  `fuzzel`, `scripts`, `ghostty`, `kitty`, `zsh`, `starship`, `gtk-3`,
+  `gtk-4`, `desktop-apps`).
+- **Hoje:** nada disso vale. O repo é standalone em `~/Projects/dotfiles`, a
+  distro é Arch, o wallpaper é `awww` e a instalação inteira é o
+  `bootstrap.sh` — ver [`README.md`](../../README.md). O setup Fedora antigo
+  está em [`system-setup-fedora.md`](system-setup-fedora.md) e o manifesto
+  `dnf` em `legacy/fedora/dnf.txt`.
 
 ## Stack
 
@@ -36,7 +45,7 @@ stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship
 | Kitty | Terminal backup |
 | tmux | copy-mode — seleção/cópia de texto via teclado |
 | Zsh + Starship | Shell + prompt |
-| swww | Wallpaper com transições animadas |
+| swww | Wallpaper com transições animadas (na época; no Arch foi substituído pelo fork `awww`) |
 | cliphist | Histórico de clipboard |
 | rofimoji | Emoji picker via Fuzzel |
 | PipeWire | Audio ducking automático |
@@ -53,11 +62,12 @@ stow --target=$HOME hypr waybar swaync fuzzel scripts ghostty kitty zsh starship
 | keyd | Remap system-wide: `CapsLock+h/j/k/l` como setas e correção Alt/Super do AULA F75 |
 | Spicetify | Customização do cliente Spotify |
 
-## Estrutura do repo
+## Estrutura do repo (retrato da época)
 
 ```
 hypr/           → hyprland.lua, hypridle.conf, hyprlock.conf, autostart.sh,
-                  hyprpaper.conf (referência — sistema usa swww),
+                  hyprpaper.conf (referência da época — o sistema usava swww,
+                  hoje awww; hyprpaper.conf foi pra legacy/hyprpaper/),
                   workspace-float.lua (estado atual dos workspaces com float por
                   padrão, gerado por workspace-float.sh, ver seção Decisões)
                   (hyprland.lua migrado de hyprland.conf em 2026-08-07 — hyprlang
@@ -88,7 +98,7 @@ udev/deprecated → configs antigas (não instalar)
 
 ## Obsidian (Home page)
 
-Perfil portátil do Obsidian mantido em `personal/projects/dotfiles/obsidian` para reaplicação do setup em outra máquina/reprodução:
+Perfil portátil do Obsidian mantido no pacote `obsidian/` do repo (na época o caminho era `personal/projects/dotfiles/obsidian`, dentro do vault) para reaplicação do setup em outra máquina/reprodução:
 
 - `obsidian/plugins/homepage/data.json` mantém `Main Homepage` apontado para a nota `Home`, com `openOnStartup: true`, `openMode: "Replace all open notes"` e `refreshDataview: true`.
 - `obsidian/appearance.json` adiciona `home-dashboard` em `enabledCssSnippets` (junto com `github-dark-chart`).
@@ -108,9 +118,9 @@ Objetivo: manter visual mais limpo, com foco em navegação por categoria e stat
 
 ---
 
-## Autostart (boot)
+## Autostart (boot) — estado de meados de 2026
 
-Ordem de inicialização definida no `hyprland.lua`:
+Ordem de inicialização definida no `hyprland.lua` naquele momento (workspaces ainda numéricos, antes dos super workspaces; `swww-daemon` antes da troca para `awww`):
 
 | App | Workspace | Método |
 |---|---|---|
@@ -379,22 +389,9 @@ Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservatio
 - `[sysfs] .../nvme_core/parameters/default_ps_max_latency_us=200000` — teto de latência mais permissivo pro APST do NVMe, permite estados de energia mais profundos do SSD (ganho marginal, mas sem risco).
 - Brilho: `power-profile.sh` (fora do tuned) salva o brilho atual em `/tmp/.power-profile-brightness-before-super-economia` e desce pra 25% ao entrar em Super Economia; restaura o valor salvo ao sair.
 
-`powersave` (Economia) e `balanced` (Balanceado normal) continuam 100% stock. Validado offline com o `Loader` real do tuned antes de aplicar (merge do `include=powersave` mantém todas as seções stock + as novas). `${i:PROFILE_DIR}/script.sh` do `powersave` incluído resolve pro diretório dele mesmo — a expansão acontece na carga do arquivo de origem, antes do merge do `include` — só o `script.sh` novo (Bluetooth) precisa ser copiado. Instalação manual (fora do Stow, mesmo padrão do `greetd`; substitui a versão anterior sem `[usb]`/`[cpu]`/Bluetooth):
-```bash
-sudo rm -rf /etc/tuned/profiles/powersave /etc/tuned/profiles/balanced-battery /etc/tuned/profiles/super-powersave
-sudo cp ~/Projects/dotfiles/tuned/etc/tuned/ppd.conf /etc/tuned/ppd.conf
-sudo mkdir -p /etc/tuned/profiles/super-powersave
-sudo cp ~/Projects/dotfiles/tuned/etc/tuned/profiles/super-powersave/tuned.conf /etc/tuned/profiles/super-powersave/tuned.conf
-sudo cp ~/Projects/dotfiles/tuned/etc/tuned/profiles/super-powersave/script.sh /etc/tuned/profiles/super-powersave/script.sh
-sudo chmod +x /etc/tuned/profiles/super-powersave/script.sh
-sudo tuned-adm profile super-powersave
-cat /sys/module/pcie_aspm/parameters/policy /sys/devices/system/cpu/intel_pstate/max_perf_pct
-rfkill list bluetooth   # bloqueado só se nada tava conectado ao entrar
-sudo tuned-adm profile powersave
-cat /sys/module/pcie_aspm/parameters/policy /sys/devices/system/cpu/intel_pstate/max_perf_pct
-rfkill list bluetooth   # espera: Soft blocked: no (sempre desbloqueia ao sair)
-busctl set-property net.hadess.PowerProfiles /net/hadess/PowerProfiles net.hadess.PowerProfiles ActiveProfile s balanced
-```
+`powersave` (Economia) e `balanced` (Balanceado normal) continuam 100% stock. Validado offline com o `Loader` real do tuned antes de aplicar (merge do `include=powersave` mantém todas as seções stock + as novas). `${i:PROFILE_DIR}/script.sh` do `powersave` incluído resolve pro diretório dele mesmo — a expansão acontece na carga do arquivo de origem, antes do merge do `include` — só o `script.sh` novo (Bluetooth) precisa ser copiado.
+
+A aplicação foi manual, fora do Stow (mesmo padrão usado na época para o `greetd`): os profiles antigos em `/etc/tuned/profiles/` (`powersave`, `balanced-battery`, `super-powersave`) foram apagados, o `ppd.conf` e o par `tuned.conf` + `script.sh` do `super-powersave` foram copiados de `tuned/etc/tuned/` do repo para `/etc/tuned/`, com o script marcado como executável. A verificação consistiu em entrar no perfil, ler `/sys/module/pcie_aspm/parameters/policy` e `max_perf_pct` do `intel_pstate`, conferir `rfkill list bluetooth` (bloqueado só se nada estava conectado), sair para `powersave` e confirmar que o Bluetooth volta desbloqueado.
 `/etc/tuned/profiles/<nome>` tem prioridade sobre `/usr/lib/tuned/profiles/<nome>` pro mesmo nome — sobrevive a updates do pacote `tuned`. Como `super-powersave` não existe no `/usr/lib`, não há substituição a fazer, só criação.
 
 **Tooltip com tempo restante (2026-08-21):** o tooltip da Waybar (`battery-conservation.sh waybar`) mostra `energy_now`/`power_now` de `/sys/class/power_supply/BAT0` convertidos em horas:minutos (`Perfil · Preservação/100% · Xh YYmin restantes`) só quando `status=Discharging`. Carregando ou cheia, o sufixo some — a estimativa de tempo não faz sentido plugado na tomada.
@@ -405,11 +402,7 @@ busctl set-property net.hadess.PowerProfiles /net/hadess/PowerProfiles net.hades
 
 `libva` + `intel-media-driver` (driver `iHD_drv_video.so`, em `/usr/lib/dri/`) já estão instalados e prontos pro iGPU Intel, mas o Brave decodifica vídeo por **software** por padrão no Linux — confirmado: `--type=gpu-process` do Brave rodando não carregava nenhum flag de VA-API, e `enabled_labs_experiments` no `Local State` vinha vazio. Decode por software de 1080p sobe a CPU uns 15-20W sustentados; por hardware (Quick Sync) fica em 2-4W — maior alavanca de bateria pra uso real (vídeo/chamada) do que qualquer tuning de perfil, e sem trade-off em nenhum modo (Performance incluso: libera CPU, menos calor).
 
-**Ligar (manual — motivo abaixo):**
-1. `brave://flags/#enable-vaapi-video-decoder` → **Enabled**
-2. `brave://flags/#enable-vaapi-video-encoder` → **Enabled** (ajuda em chamada de vídeo)
-3. Botão **Relaunch** que aparece no rodapé da própria página de flags (preserva as abas abertas).
-4. Verificar: abrir um vídeo do YouTube, checar `brave://media-internals` → decoder deve aparecer como `Vda`/hardware, não `ffmpeg`.
+**O que foi feito (manual, motivo abaixo):** ligados os flags `brave://flags/#enable-vaapi-video-decoder` e `brave://flags/#enable-vaapi-video-encoder` (o segundo ajuda em chamada de vídeo), com o botão **Relaunch** do rodapé da página de flags (preserva as abas abertas). Conferido em `brave://media-internals` com um vídeo do YouTube aberto: o decoder passou a aparecer como `Vda`/hardware em vez de `ffmpeg`.
 
 **Por que manual e não automatizado:** tentei via `browser` tool com `app.relay: true` (dirige o Brave real do usuário) — timeout. Checadas as 7 extensões instaladas no perfil (Bitwarden, Obsidian Web Clipper, Claude, React DevTools, Quick Tabs, Udemy Dark Theme, Video Download Helper): **a extensão OMP Browser Relay não está instalada**, então não há como o `browser` tool se conectar a essa instância. Alternativa seria editar `~/.config/BraveSoftware/Brave-Browser/Default/Local State` direto — descartado: o Brave estava rodando com abas abertas no momento, e esse arquivo é reescrito periodicamente pelo próprio processo vivo; editar por fora arrisca corromper o arquivo ou perder a mudança na próxima gravação automática, sem ganho sobre o toggle manual (que já usa o mecanismo de relançamento seguro do próprio Chromium). Se a extensão OMP Browser Relay for instalada no futuro, a automação via `browser` tool volta a ser viável e segura.
 
@@ -417,11 +410,11 @@ busctl set-property net.hadess.PowerProfiles /net/hadess/PowerProfiles net.hades
 
 Toggle via `Super+I` entre teclado do notebook (BR ABNT2) e teclado mecânico externo (ANSI US). Ambos usam layout padrão, sem customizações XKB. Era `Super+K` — liberado p/ foco de janela via `Super+H/J/K/L` (ver "Keybindings" acima).
 
-## Display manager — greetd + tuigreet
+## Display manager — greetd + tuigreet (03/07/2026 → 03/07/2026, substituído por SDDM)
 
-Substituiu o GDM (03/07/2026) — GDM era pesado e o usuário não gostava da experiência. `greetd` + `tuigreet` é o padrão minimalista da comunidade Hyprland: TUI puro, sem dependências GNOME, roda direto na VT.
+Substituiu o GDM (03/07/2026) — GDM era pesado e o usuário não gostava da experiência. `greetd` + `tuigreet` é o padrão minimalista da comunidade Hyprland: TUI puro, sem dependências GNOME, roda direto na VT. Durou poucas semanas: o display manager em produção hoje é o **SDDM + SilentSDDM** (ver seções abaixo), e o pacote `greetd/` foi removido do repo em 2026-09-10 junto com os pacotes correspondentes do manifesto.
 
-Config em `greetd/etc/greetd/config.toml` (fora do `$HOME`, não gerenciado pelo Stow — copiar manualmente para `/etc/greetd/config.toml`):
+A config vivia em `greetd/etc/greetd/config.toml` (fora do `$HOME`, nunca gerenciada pelo Stow — era copiada à mão para `/etc/greetd/config.toml`):
 
 ```toml
 [terminal]
@@ -436,7 +429,7 @@ user = "greetd"
 - `--sessions /usr/share/wayland-sessions` — lista Hyprland, Hyprland-UWSM, GNOME e GNOME Classic (**F3** abre o menu de sessões, **F2** o de comando, **F12** o de power — defaults do tuigreet)
 - `--theme` — **só aceita nomes de cor ANSI, não hex** (`#RRGGBB` é ignorado silenciosamente — foi por isso que o tema não aparecia na primeira versão da config). Paleta monocromática inspirada no `hyprlock.conf`: `border`/`title`/`prompt`/`action`/`button` = `gray` (equivalente mais próximo do cinza `#a0a0a0` do hyprlock), `container` = `black` (equivalente do `#1d1d20`), `text`/`input`/`time`/`greet` = `white`
 
-Rollback: `sudo systemctl enable gdm.service --now && sudo systemctl disable greetd.service --now`
+O rollback previsto era voltar o GDM como `display-manager.service` e desabilitar o `greetd` — foi exatamente o que precisou ser feito no incidente abaixo.
 
 ### Incidente — boot travado na primeira tentativa de troca (03/07/2026)
 
@@ -450,18 +443,9 @@ Rollback: `sudo systemctl enable gdm.service --now && sudo systemctl disable gre
 - Não há evidência de crash-loop do `tuigreet`/`greetd` em si nos logs (nenhuma entrada de erro repetida da unit `greetd`).
 - Conta `root` sem senha (`!` no `/etc/shadow`) é padrão do Fedora Workstation (usa sudo, não login root direto) — não é a causa, só atrapalhou o acesso ao modo rescue/emergency durante o diagnóstico.
 
-**Resolvido (03/07/2026):** segunda tentativa funcionou trocando os dois `--now` separados por `isolate`, que registra os serviços antes de trocar de target, evitando a janela vazia. Ordem importa: `gdm.service` e `greetd.service` compartilham o alias `Alias=display-manager.service` no `[Install]` — `enable` não sobrescreve um alias já existente, então é preciso **desabilitar o GDM antes** de habilitar o greetd (senão dá `Failed to enable unit: File '/etc/systemd/system/display-manager.service' already exists`):
+**Resolvido (03/07/2026):** a segunda tentativa funcionou trocando os dois `--now` separados por `isolate`, que registra os serviços antes de trocar de target, evitando a janela vazia. Ordem importa: `gdm.service` e `greetd.service` compartilham o alias `Alias=display-manager.service` no `[Install]` — `enable` não sobrescreve um alias já existente, então foi preciso **desabilitar o GDM antes** de habilitar o greetd (senão dá `Failed to enable unit: File '/etc/systemd/system/display-manager.service' already exists`). A sequência que deu certo: `disable` do GDM, `enable` do greetd (sem `--now`, portanto só valendo no próximo boot) e então `isolate` de `multi-user.target` seguido de `graphical.target` — são esses dois últimos passos que efetivam a troca sem derrubar a sessão numa lacuna sem display manager.
 
-```bash
-sudo systemctl disable gdm.service
-sudo systemctl enable greetd.service
-sudo systemctl isolate multi-user.target
-sudo systemctl isolate graphical.target
-```
-
-`disable`/`enable` sozinhos (sem `--now`) só mexem no que inicia no próximo boot — não derrubam a sessão atual. A troca de fato só acontece nos dois `isolate` finais.
-
-**Status atual:** greetd + tuigreet em produção, funcionando. Tema aplicado, F3 troca entre sessões (Hyprland, Hyprland-UWSM, GNOME, GNOME Classic), `--remember-session` lembra a escolha.
+**Status na época:** greetd + tuigreet em produção, funcionando. Tema aplicado, F3 trocava entre sessões (Hyprland, Hyprland-UWSM, GNOME, GNOME Classic), `--remember-session` lembrava a escolha. Superado pelo SDDM ainda em 03/07/2026 (seções seguintes).
 
 ### Explorando troca para SDDM (em andamento, 03/07/2026)
 
@@ -479,15 +463,7 @@ sudo systemctl isolate graphical.target
 
 ### SilentSDDM — tema escolhido e instalado (03/07/2026)
 
-**Instalação** (manual, fora do dnf — repo clonado e copiado para `/usr/share/sddm/themes/silent/`, não gerenciado por pacote):
-
-```bash
-sudo dnf install -y qt6-qtsvg qt6-qtvirtualkeyboard qt6-qtmultimedia qt6-qtimageformats git
-git clone -b main --depth=1 https://github.com/uiriansan/SilentSDDM
-sudo mkdir -p /usr/share/sddm/themes/silent
-sudo cp -rf SilentSDDM/. /usr/share/sddm/themes/silent/
-sudo cp -r /usr/share/sddm/themes/silent/fonts/{redhat,redhat-vf} /usr/share/fonts/
-```
+**Instalação da época** (manual, fora do gerenciador de pacotes — repo clonado e copiado para `/usr/share/sddm/themes/silent/`, sem pacote gerenciando): instaladas as dependências Qt6 do tema (`qt6-qtsvg`, `qt6-qtvirtualkeyboard`, `qt6-qtmultimedia`, `qt6-qtimageformats`) — na época ainda pelo `dnf`, no Fedora — clonado o branch `main` do [SilentSDDM](https://github.com/uiriansan/SilentSDDM), copiado o conteúdo inteiro para `/usr/share/sddm/themes/silent/` e as fontes `redhat`/`redhat-vf` do tema para `/usr/share/fonts/`.
 
 **Config** (`sddm/etc/sddm.conf.d/wiki-ia.conf`, atualizada — substitui a versão com tema `breeze`):
 - `Theme.Current = silent`
@@ -636,7 +612,7 @@ Para testar sem abrir um compartilhamento de tela real: `hyprland-share-picker` 
 
 Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no Brave — comportamento igual ao iPhone. Implementado via script PipeWire + serviço `systemd --user`. O ducking só dispara quando o Brave tem áudio ativo **e** há uma janela com "whatsapp" no título visível no Hyprland (outros sites com áudio no Brave não ativam). Ao sair do ducking, restaura o volume exato capturado antes do fade, não `100%`.
 
-Ver guia completo: [[ducking]]
+Ver guia completo: [`ducking/ducking.md`](../../ducking/ducking.md) — e note que hoje o ducking é do **Zen**, não do Brave (`zen-duck.service`).
 
 ## Window Rules
 
@@ -680,21 +656,21 @@ Ver guia completo: [[ducking]]
 
 **Direita:** CPU, RAM, rede, bluetooth, volume, perfil de energia, conservação da bateria, tray, hotspot invisível minúsculo no extremo direito para SwayNC
 
-## Decisões
+## Decisões (da época — várias já superadas)
 
-- **swww em vez de hyprpaper** — suporte a transições animadas (fade 1.5s/60fps)
-- **GNU Stow a partir de `~/wiki-ia/...`** — repo dentro do wiki-ia para centralizar tudo em um único lugar versionado
+- **swww em vez de hyprpaper** — suporte a transições animadas (fade 1.5s/60fps). **Superado:** no Arch o `swww` virou o fork `awww`, com a mesma CLI.
+- **GNU Stow a partir de `~/wiki-ia/...`** — repo dentro do wiki-ia para centralizar tudo em um único lugar versionado. **Superado:** o repo virou standalone em `~/Projects/dotfiles`, justamente para não depender do vault na hora de aplicar o Stow.
 - **move_when_ready para Spotify/Discord** — `[workspace X silent]` não funciona com apps que têm updater/launcher separado
 - **Sem windowrulev2 de workspace** — workspace rules no `exec-once` são apenas para o boot; depois o usuário tem controle total
 - **Sem autostart via `~/.config/autostart/`** — os `.desktop` do GNOME foram deletados, tudo gerenciado pelo Hyprland
 - **Alt+Tab via cyclenext em vez de hyprshitch/hyprswitch** — hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço de janela mudou de hex para decimal na IPC); cyclenext é nativo e confiável
 - **workspace-float.lua versionado no repo** — gerado por `workspace-float.sh`, contém as regras `hl.window_rule({ match = { workspace = "N" }, float = true })` dos workspaces com float por padrão; em máquina nova o stow o instala automaticamente
 
-## Notas abertas
+## Notas abertas na época
 
 - **Menu WiFi sem atalho** — `wifi-menu.sh` continua no repo mas perdeu o bind `Super+W` (29/07/2026, substituído pelo toggle de codec Bluetooth). Rebindar em outra tecla se fizer falta.
 - ~~`gesture = 3, horizontal, workspace` no hyprland.conf — sintaxe aparentemente não padrão mas funcionando; investigar se há forma correta~~ — resolvido na migração para Lua (2026-08-07): syntax oficial confirmada na wiki, `hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })` é a forma correta e documentada (substitui `gestures.workspace_swipe*`, removidos no novo sistema de gestures).
 - Starship sem `format` definido — usa default verboso (a discutir em sessão futura)
-- `hyprpaper.conf` no repo referencia `default_2.jpg` que não existe — arquivo criado como referência, sistema usa `swww`; ajustar path ou remover se não for usar hyprpaper
+- ~~`hyprpaper.conf` no repo referencia `default_2.jpg` que não existe~~ — resolvido tirando o arquivo do pacote ativo: hyprpaper ficou em `legacy/hyprpaper/` e o wallpaper é do `awww`.
 - hyprshell `filter_by: [current_workspace]` atualizado mas ainda inativo (incompatibilidade Hyprland 0.55)
-- **Falta o comando `hostname`** — `tmux-resurrect` imprime `hostname: comando não encontrado` (stderr, inofensivo) a cada save, porque `resurrect_dir()` roda `$(hostname)` incondicionalmente. Instalar `inetutils` (`sudo pacman -S inetutils`) resolve, se incomodar.
+- **Falta o comando `hostname`** — `tmux-resurrect` imprime `hostname: comando não encontrado` (stderr, inofensivo) a cada save, porque `resurrect_dir()` roda `$(hostname)` incondicionalmente. O pacote `inetutils` fornece o comando, se o ruído incomodar.

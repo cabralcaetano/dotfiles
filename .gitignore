@@ -23,3 +23,19 @@ tmux/.config/tmux/plugins/
 # Plugins de terceiros do Obsidian: builds minificados, reinstaláveis pela
 # loja (community-plugins.json já registra quais habilitar). Não vendorizar.
 obsidian/plugins/*
+
+# Rede de proteção contra segredos — nenhuma credencial deve ser versionada
+# aqui. Os padrões abaixo existem para um `git add -A` distraído não subir
+# chave, token ou sessão por acidente.
+*.env
+.env
+.env.*
+*.pem
+*.key
+*_rsa
+*_ed25519
+*token*
+*secret*
+*credential*
+*cookies*
+*session*

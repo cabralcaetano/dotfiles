@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# bootstrap.sh — instalação idempotente/tolerante do ambiente (Arch Linux atual · Fedora legado · Hyprland)
-# Uso: cd ~/Projects/dotfiles && bash bootstrap.sh
+# bootstrap.sh — instalação idempotente/tolerante do ambiente (Arch Linux · Hyprland)
+# Uso: cd ~/Projects/dotfiles && bash bootstrap.sh [--system]
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -9,11 +9,41 @@ cd "$DOTFILES_DIR"
 # shellcheck disable=SC1091
 source "$DOTFILES_DIR/scripts/.local/bin/_dotfiles-lib.sh"
 
+APPLY_SYSTEM=0
+
+usage() {
+  cat <<'EOF'
+Uso: bash bootstrap.sh [opções]
+
+Instala pacotes, plugins e symlinks do ambiente em $HOME. Idempotente.
+
+Opções:
+  --system   Aplica também os arquivos de /etc versionados em system/
+             (earlyoom, sysctl/zram, keyd) via sudo. Sem esta flag nada
+             fora de $HOME é tocado e os comandos pendentes são apenas
+             impressos no final.
+  --help     Mostra esta ajuda e sai.
+
+Só há suporte a Arch Linux; o setup Fedora está arquivado em docs/history/.
+EOF
+}
+
+parse_args() {
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --system) APPLY_SYSTEM=1 ;;
+      --help|-h) usage; exit 0 ;;
+      *) usage >&2; die "Opção desconhecida: $1" ;;
+    esac
+    shift
+  done
+}
+
 manifest_args() {
   grep -Ev '^[[:space:]]*(#|$)' "$1"
 }
 
-detect_distro() {
+require_arch() {
   local id="" id_like=""
 
   if [[ -r /etc/os-release ]]; then
@@ -24,9 +54,8 @@ detect_distro() {
   fi
 
   case " $id $id_like " in
-    *" arch "*)   printf 'arch\n' ;;
-    *" fedora "*) printf 'fedora\n' ;;
-    *)            printf 'unknown\n' ;;
+    *" arch "*) return 0 ;;
+    *) die "Distro '${id:-desconhecida}' não suportada: suporte apenas a Arch; veja docs/history/ para o setup Fedora arquivado." ;;
   esac
 }
 
@@ -41,46 +70,82 @@ stow_preflight() {
 }
 
 install_system_packages() {
-  local distro=$1
+  command -v pacman >/dev/null || die "Arch detectado, mas pacman não foi encontrado."
+  log "Instalando pacotes pacman…"
+  # shellcheck disable=SC2046
+  sudo pacman -S --needed --noconfirm $(manifest_args packages/pacman.txt)
 
-  case "$distro" in
-    arch)
-      command -v pacman >/dev/null || die "Distro detectada como Arch, mas pacman não foi encontrado."
-      log "Instalando pacotes pacman…"
-      # shellcheck disable=SC2046
-      sudo pacman -S --needed --noconfirm $(manifest_args packages/pacman.txt)
-
-      if command -v yay >/dev/null; then
-        warn "Instalando pacotes AUR com revisão interativa do yay."
-        # shellcheck disable=SC2046
-        yay -S --needed $(manifest_args packages/aur.txt)
-      else
-        warn "yay não encontrado — pulando pacotes AUR (packages/aur.txt)."
-        warn "Instale um AUR helper primeiro: https://github.com/Jguer/yay"
-      fi
-      ;;
-    fedora)
-      command -v dnf >/dev/null || die "Distro detectada como Fedora, mas dnf não foi encontrado."
-      warn "Fedora é caminho legado deste repo; Arch é o alvo atual."
-      log "Instalando pacotes dnf…"
-      # shellcheck disable=SC2046
-      sudo dnf install -y $(manifest_args packages/dnf.txt)
-      ;;
-    *)
-      warn "Distro desconhecida em /etc/os-release — pulando pacotes do sistema."
-      warn "Instale manualmente um dos manifestos em packages/ antes de seguir."
-      ;;
-  esac
+  if command -v yay >/dev/null; then
+    warn "Instalando pacotes AUR com revisão interativa do yay."
+    # shellcheck disable=SC2046
+    yay -S --needed $(manifest_args packages/aur.txt)
+  else
+    warn "yay não encontrado — pulando pacotes AUR (packages/aur.txt)."
+    warn "Instale um AUR helper primeiro: https://github.com/Jguer/yay"
+  fi
 }
 
-distro="$(detect_distro)"
-log "Distro detectada: $distro"
+# Arquivos de /etc versionados em system/ (ver system/README.md). Stow só opera
+# dentro de $HOME, então estes vão com `install -Dm644` + sudo.
+SYSTEM_INSTALLS=(
+  "system/etc/default/earlyoom|/etc/default/earlyoom"
+  "system/etc/sysctl.d/99-zram.conf|/etc/sysctl.d/99-zram.conf"
+  "system/etc/systemd/zram-generator.conf|/etc/systemd/zram-generator.conf"
+  "system/etc/keyd/default.conf|/etc/keyd/default.conf"
+  "system/etc/keyd/f75.conf|/etc/keyd/f75.conf"
+)
+
+# Comandos que recarregam o que os arquivos acima mudaram.
+SYSTEM_RELOADS=(
+  "sysctl --system"
+  "systemctl restart earlyoom"
+  "systemctl daemon-reload"
+  "systemctl restart systemd-zram-setup@zram0.service"
+  "systemctl enable --now keyd"
+  "keyd reload"
+)
+
+print_system_commands() {
+  local pair src dest cmd
+  for pair in "${SYSTEM_INSTALLS[@]}"; do
+    src="${pair%%|*}"; dest="${pair##*|}"
+    printf '  sudo install -Dm644 %-42s %s\n' "$src" "$dest"
+  done
+  printf '\n'
+  for cmd in "${SYSTEM_RELOADS[@]}"; do
+    printf '  sudo %s\n' "$cmd"
+  done
+}
+
+apply_system_files() {
+  command -v sudo >/dev/null || die "--system exige sudo, que não foi encontrado."
+
+  local pair src dest cmd
+  log "Aplicando arquivos de /etc (system/)…"
+  for pair in "${SYSTEM_INSTALLS[@]}"; do
+    src="${pair%%|*}"; dest="${pair##*|}"
+    [[ -f "$src" ]] || die "Arquivo ausente no repo: $src"
+    sudo install -Dm644 "$src" "$dest"
+    ok "$dest"
+  done
+
+  for cmd in "${SYSTEM_RELOADS[@]}"; do
+    log "sudo $cmd"
+    # shellcheck disable=SC2086
+    sudo $cmd || warn "Falhou (siga manualmente): sudo $cmd"
+  done
+}
+
+parse_args "$@"
+
+require_arch
+log "Distro detectada: arch"
 
 # Se stow já existir, falha cedo antes de instalar pacotes/plugins.
 stow_preflight
 
 # --- 1. Pacotes do sistema ---
-install_system_packages "$distro"
+install_system_packages
 
 # Se stow foi instalado na etapa anterior, valide de novo antes de tocar plugins/links.
 stow_preflight
@@ -128,16 +193,6 @@ else
   warn "git não encontrado — pulando plugins Zsh e TPM."
 fi
 
-# --- 3.1 TPM (tmux plugin manager) ---
-log "Instalando TPM em ~/.tmux/plugins/tpm…"
-tpm_dest="$HOME/.tmux/plugins/tpm"
-if [[ -d "$tpm_dest/.git" ]]; then
-  git -C "$tpm_dest" pull --ff-only >/dev/null 2>&1 || warn "Falha ao atualizar TPM"
-else
-  git clone --depth 1 https://github.com/tmux-plugins/tpm "$tpm_dest"
-fi
-warn "Plugins do tmux (tmux-power) só instalam na primeira vez que o tmux ler o tmux.conf — se não aparecerem, rode prefix + I dentro de uma sessão tmux."
-
 # --- 4. Symlinks via stow ---
 if command -v stow >/dev/null; then
   log "Aplicando symlinks com stow…"
@@ -154,8 +209,8 @@ if command -v code >/dev/null; then
     xargs -L1 code --install-extension >/dev/null 2>&1 || warn "Algumas extensões falharam."
 fi
 
-# --- 6. Snapshots Btrfs (Arch — snapper + grub-btrfs, ver docs/arch-migration.md §1.2) ---
-if [[ "$distro" == "arch" ]] && command -v snapper >/dev/null; then
+# --- 6. Snapshots Btrfs (snapper + grub-btrfs, ver docs/arch-migration.md §1.2) ---
+if command -v snapper >/dev/null; then
   if ! sudo snapper list-configs 2>/dev/null | grep -q '^root'; then
     warn "snapper instalado mas sem config \"root\" — não configurado automaticamente."
     warn "Ver docs/arch-migration.md §1.2 pros comandos de setup."
@@ -167,4 +222,14 @@ if [[ "${SHELL:-}" != *zsh ]]; then
   warn "Shell atual não é zsh. Para trocar: chsh -s \"\$(command -v zsh)\""
 fi
 
+# --- 8. Arquivos de /etc (opt-in via --system) ---
+if [[ $APPLY_SYSTEM -eq 1 ]]; then
+  apply_system_files
+else
+  echo
+  warn "Ajustes de /etc não aplicados (rode com --system ou execute à mão, em $DOTFILES_DIR):"
+  print_system_commands
+fi
+
+echo
 log "Bootstrap concluído. Reinicie a sessão Hyprland para aplicar tudo."

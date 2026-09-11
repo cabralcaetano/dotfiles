@@ -4,7 +4,7 @@ Configurações pessoais do ambiente Linux. Arch Linux · Hyprland · Wayland.
 
 O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para o `$HOME`; configs system-wide ficam documentadas como aplicação manual.
 
-> Migrado de Fedora para Arch em 2026-07-09. Setup Fedora mantido como referência histórica em [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md); diffs da migração em [`docs/arch-migration.md`](docs/arch-migration.md).
+> Migrado de Fedora para Arch em 2026-07-09. Setup Fedora mantido como referência histórica em [`docs/history/system-setup-fedora.md`](docs/history/system-setup-fedora.md); diffs da migração em [`docs/arch-migration.md`](docs/arch-migration.md).
 
 ---
 
@@ -27,6 +27,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 | Wallpaper | awww (fork compatível com swww, transições animadas) |
 | Áudio | PipeWire + WirePlumber |
 | Cursor | capitaine-cursors |
+| Display manager | SDDM + tema SilentSDDM (config system-wide manual em `sddm/`) |
 
 ---
 
@@ -66,15 +67,38 @@ cd ~/Projects/dotfiles
 
 # Instalação idempotente (pacotes + flatpaks + plugins zsh/tmux + stow + extensões)
 bash bootstrap.sh
+
+# Mesma coisa, aplicando também os ajustes de /etc (pede sudo)
+bash bootstrap.sh --system
 ```
 
 O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma vez, mas ainda executa instaladores novamente quando eles próprios já são idempotentes. Ele:
 
-1. Detecta a distro via `/etc/os-release` e instala `packages/pacman.txt` + `packages/aur.txt` (Arch) ou `packages/dnf.txt` (Fedora legado)
-2. Garante o remote `flathub` e instala apps de `packages/flatpak.txt`
-3. Clona/atualiza plugins Zsh em `~/.zsh` e TPM em `~/.tmux/plugins/tpm`
-4. Valida e aplica symlinks com `stow --restow`
-5. Instala extensões de `packages/vscode-extensions.txt`
+1. Exige Arch (`require_arch`) — em qualquer outra distro o script aborta com ponteiro para [`docs/history/system-setup-fedora.md`](docs/history/system-setup-fedora.md); o ramo Fedora saiu do bootstrap
+2. Instala `packages/pacman.txt` + `packages/aur.txt`
+3. Garante o remote `flathub` e instala apps de `packages/flatpak.txt`
+4. Clona/atualiza plugins Zsh em `~/.zsh` e TPM em `~/.tmux/plugins/tpm`
+5. Valida e aplica symlinks com `stow --restow`
+6. Instala extensões de `packages/vscode-extensions.txt`
+7. Com `--system`, aplica os arquivos de `system/etc/` em `/etc` via `sudo install` e recarrega os serviços (earlyoom, sysctl/zram, keyd)
+
+**`--system` é opt-in.** Sem a flag nada fora do `$HOME` é tocado: o bootstrap só imprime, no fim, os comandos pendentes para aplicar à mão —
+
+```bash
+sudo install -Dm644 system/etc/default/earlyoom            /etc/default/earlyoom
+sudo install -Dm644 system/etc/sysctl.d/99-zram.conf       /etc/sysctl.d/99-zram.conf
+sudo install -Dm644 system/etc/systemd/zram-generator.conf /etc/systemd/zram-generator.conf
+sudo install -Dm644 system/etc/keyd/default.conf           /etc/keyd/default.conf
+sudo install -Dm644 system/etc/keyd/f75.conf               /etc/keyd/f75.conf
+sudo sysctl --system
+sudo systemctl restart earlyoom
+sudo systemctl daemon-reload
+sudo systemctl restart systemd-zram-setup@zram0.service
+sudo systemctl enable --now keyd
+sudo keyd reload
+```
+
+O que cada arquivo resolve e como verificar: [`system/README.md`](system/README.md).
 
 > **Pós-bootstrap manual:** itens fora do `$HOME`, assets pessoais ou apps extraídos manualmente não entram no Stow automático:
 >
@@ -82,7 +106,7 @@ O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma v
 > |---|---|---|
 > | **Nerd Fonts** | sistema/usuário | Arch instala `ttf-jetbrains-mono-nerd`; se o pacote falhar, instalar manualmente antes de avaliar a aparência |
 > | **Wallpapers reais** | `~/.config/wallpapers/` | copiar os arquivos pessoais; `wallpaper.sh` usa `wallpaper_5.jpg` como fallback |
-> | **SDDM Silent theme** | `/etc/sddm.conf.d/`, `/usr/share/sddm/` | aplicar manualmente; ver `dotfiles.md`/`sddm/` |
+> | **SDDM Silent theme** | `/etc/sddm.conf.d/`, `/usr/share/sddm/` | aplicar manualmente; ver `sddm/` e o registro em [`docs/history/dotfiles-historico.md`](docs/history/dotfiles-historico.md) |
 > | **Battery conservation helper** | `/usr/local/sbin`, `/etc/systemd/system`, `/etc/sudoers.d` | `~/.local/bin/install-battery-conservation-root.sh` |
 > | **Antigravity desktop entries** | `~/.local/share/applications`, `~/.config/mimeapps.list` | `stow --target="$HOME" desktop-apps` após extrair os apps em `~/.local/opt` |
 > | **Snapshots Btrfs** | snapper + grub-btrfs | ver [`docs/arch-migration.md §1.2`](docs/arch-migration.md) |
@@ -90,19 +114,28 @@ O `bootstrap.sh` é **idempotente por tolerância** — pode rodar mais de uma v
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
 > | **NextDNS** | Serviço systemd `nextdns` + conta na nuvem, profile `932497` | ver [`nextdns/nextdns.md`](nextdns/nextdns.md) — `yay -S nextdns-bin && sudo nextdns install -profile 932497 -report-client-info && sudo nextdns activate`, depois replicar config do profile no dashboard |
 > | **Extensões de navegador** | Zen (AMO) + Brave (Chrome Web Store) | ver [`browser-extensions/browser-extensions.md`](browser-extensions/browser-extensions.md) — instalar manualmente pelos links de cada extensão, exceto Tab Shifter (local, via `stow scripts`) |
-> | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/system-setup-fedora.md`](docs/system-setup-fedora.md); não é o caminho primário atual |
+> | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/history/system-setup-fedora.md`](docs/history/system-setup-fedora.md) e o manifesto arquivado `legacy/fedora/dnf.txt`; fora do fluxo atual |
 > | **Reflector (mirrorlist automático)** | `/etc/xdg/reflector/reflector.conf` | copiar `reflector/etc/xdg/reflector/reflector.conf`; depois `sudo systemctl enable --now reflector.timer` (ranqueia mirrors do Brasil por velocidade, semanalmente) |
-> | **keyd keyboard layer** | `/etc/keyd/` | copiar `system/etc/keyd/*.conf`; depois `sudo systemctl enable --now keyd && sudo keyd reload` |
+> | **keyd / earlyoom / zram** | `/etc/keyd/`, `/etc/default/earlyoom`, `/etc/sysctl.d/`, `/etc/systemd/` | `bash bootstrap.sh --system` aplica tudo; à mão, ver [`system/README.md`](system/README.md) |
 > | **Impressora (HP DeskJet 2774)** | CUPS + hplip, Wi-Fi da impressora | ver [`docs/printer-hp-deskjet-2774.md`](docs/printer-hp-deskjet-2774.md) — assistente gráfico da HP é instável, usar `scripts/.local/bin/hp-wifi-connect.py` |
 
 ### Manifestos de pacote
 
-As listas em `packages/` são a fonte da verdade reproduzível (as tabelas deste README são derivadas): `pacman.txt`, `aur.txt`, `dnf.txt` (legado), `flatpak.txt`, `vscode-extensions.txt`. Para regerar após instalar/remover algo:
+As listas em `packages/` são a fonte da verdade reproduzível (as tabelas deste README são derivadas): `pacman.txt`, `aur.txt`, `flatpak.txt`, `vscode-extensions.txt`. O manifesto Fedora foi arquivado em `legacy/fedora/dnf.txt` e não é mais lido por nada.
+
+`pacman.txt` e `aur.txt` são **dump completo dos pacotes explicitamente instalados** — não uma lista curada. Isso é intencional: lista curada reinstala uma máquina incompleta (faltavam até `base`, `linux`, `sudo` e o próprio `yay`). Para regerar após instalar/remover algo:
 
 ```bash
-pacman -Qqe                                  | sort > packages/pacman.txt   # revisar antes de commitar — é o dump completo, não só o curado
+pacman -Qqen | sort                      > packages/pacman.txt   # oficiais explícitos
+pacman -Qqem | sort                      > packages/aur.txt      # foreign/AUR
 flatpak list --app --columns=application | sort > packages/flatpak.txt
-code --list-extensions | sort                > packages/vscode-extensions.txt
+code --list-extensions | sort            > packages/vscode-extensions.txt
+```
+
+Para conferir o drift antes de regerar (lista o que está instalado e não está no manifesto, ignorando comentários e linhas em branco):
+
+```bash
+comm -23 <(pacman -Qqen|sort) <(sed '/^[[:space:]]*#/d;/^[[:space:]]*$/d' packages/pacman.txt|sort -u)
 ```
 
 ---
@@ -111,7 +144,7 @@ code --list-extensions | sort                > packages/vscode-extensions.txt
 
 ```
 bootstrap.sh    → instalação idempotente (pacotes, flatpaks, plugins zsh/tmux, stow)
-packages/       → manifestos reproduzíveis: pacman.txt, aur.txt, dnf.txt,
+packages/       → manifestos reproduzíveis: pacman.txt, aur.txt,
                   flatpak.txt, vscode-extensions.txt
 hypr/           → hyprland.lua, hypridle.conf, hyprlock.conf,
                   autostart.sh, workspace-float.lua, super-workspaces.txt
@@ -128,7 +161,8 @@ ghostty/        → config
 tmux/           → tmux.conf, plugins TPM/tmux-power; scrollback por mouse via copy-mode -e
 kitty/          → kitty.conf
 btop/           → btop.conf (`theme_background = false` para transparência do terminal)
-zsh/            → .zshrc
+zsh/            → .zshrc + .zshenv (PATH base, ex.: `~/.bun/bin` — lido também
+                  por shell não-interativo)
 starship/       → starship.toml
 scripts/        → volume.sh, brightness.sh, kb-toggle.sh, power-profile.sh,
                   wifi-menu.sh, wallpaper.sh, wallpaper-toggle.sh,
@@ -142,7 +176,6 @@ desktop-apps/   → stow manual: mimeapps.list + .desktop/ícones de apps extra�
 obsidian/       → configs de vault/plugin; não entra no bootstrap automático; ver docs/obsidian-plugins.md
 wlogout/        → layout, style.css
 sddm/           → referência system-wide manual do SDDM/SilentSDDM
-greetd/         → legado/rollback system-wide manual
 reflector/      → reflector.conf (mirrorlist Brasil, sort rate) + reflector.timer manual
 ducking/        → guia completo do audio ducking
 nextdns/        → guia completo do setup NextDNS (DoH, profile 932497, blocklists, iPhone)
@@ -275,8 +308,7 @@ Sistema local de bancos de workspaces: cada super workspace tem seus próprios s
 | Roteador | `scripts/.local/bin/super-workspace.sh` | Resolve `focus`, `move`, `switch`, `menu`, aliases editáveis, `scratchpad`, `next/prev` e payload JSON da Waybar. |
 | Binds | `hypr/.config/hypr/hyprland.lua` | `SUPER+1..0`, `SUPER+Tab`, `SUPER+Space`, seleção direta `1..5` e `SUPER+S` chamam o roteador. |
 | Barra | `waybar/.config/waybar/config.jsonc` | Ícone do super workspace ativo, nome opcional depois da janela ativa + filtro `ignore-workspaces`. |
-| Browser launcher | `scripts/.local/bin/browser-super-workspace.sh` | `SUPER+B` abre o Zen Browser. |
-| Chromium SW | `scripts/.local/bin/chromium-profile.sh` | Helper preservado para perfis Chromium manuais, fora do navegador padrão. |
+| Browser | `hypr/.config/hypr/hyprland.lua` | `SUPER+B` chama `~/.local/bin/zen` direto — sem launcher intermediário. |
 
 Nomes internos no Hyprland usam `name:super-<super>-<slot>` para evitar colisão com workspaces numéricos globais. Ex.: super workspace `1`, slot `4` vira `name:super-1-4`; scratchpad vira `special:super-1-magic`.
 
@@ -284,7 +316,7 @@ O script também lembra o último slot focado em cada super workspace. Se você 
 
 Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar`, mapa `>` `~` `=` `^` `*` para os 5 super workspaces. Tooltip mostra o banco ativo + qualquer outro banco com janela aberta (bancos vazios ficam de fora). Clique esquerdo abre um menu `fuzzel` com os 5 pra escolher direto ou digitar um nome para o banco ativo; clique direito cicla pro anterior. O nome salvo aparece depois de `custom/active-window`.
 
-Zen Browser é o navegador padrão do sistema e do `SUPER+B`. Os helpers de Brave/Chromium ficam preservados apenas para uso manual quando algum banco precisar de profile isolado.
+Zen Browser é o navegador padrão XDG, do boot e do `SUPER+B`. O Brave continua instalado e em uso, lançado pelo `.desktop` próprio dele — mas fora dos super workspaces: os helpers de profile por banco (`brave-profile.sh`, `chromium-profile.sh`, `brave-super-workspace.sh`, `browser-super-workspace.sh`) foram removidos em 2026-09-10. Post-mortem em [`docs/browser-memory-profiles.md`](docs/browser-memory-profiles.md).
 
 Documentação completa: [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 
@@ -315,7 +347,7 @@ Plugins carregados manualmente de `~/.zsh/`:
 
 | Ferramenta | Integração |
 |---|---|
-| pyenv | `pyenv init - zsh` no PATH |
+| pyenv | lazy: `PYENV_ROOT/bin` e `shims` entram no PATH estaticamente e `eval "$(pyenv init - zsh)"` só roda na primeira chamada real de `pyenv` (economia de ~40ms por shell) |
 | starship | prompt |
 | zoxide | `z <dir>` para navegar por histórico |
 | fzf | Ctrl+R (histórico), Ctrl+T (arquivos); preview via `bat`; busca via `rg` |
@@ -324,6 +356,10 @@ Plugins carregados manualmente de `~/.zsh/`:
 **Histórico**
 
 - 10.000 entradas, `HIST_IGNORE_ALL_DUPS`, `SHARE_HISTORY` (compartilhado entre sessões)
+
+**Completion**
+
+`compinit` ativo (antes não existia nenhum) com cache diário em `~/.cache/zsh/zcompdump-$ZSH_VERSION` — o dump só é regenerado uma vez por dia. Efeito medido: `_comps` de 0 → 1713 completions e startup de 206.9ms → 82.9ms, somado ao `pyenv` lazy.
 
 **Seleção e cópia de texto no prompt**
 
@@ -429,7 +465,7 @@ Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservatio
 
 **Persistência no boot:** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — não há reset para um default. O `default=balanced` do `/etc/tuned/ppd.conf` se aplica aos clientes PPD. Para fixar o boot em Balanceado normal quando `tuned-ppd` está ativo, defina também o perfil base PPD como `balanced` (`/etc/tuned/ppd_base_profile`).
 
-**Super Economia (2026-08-21):** `super-powersave` é perfil custom deste repo (sem equivalente no pacote `tuned`), herda `powersave` e soma PCIe ASPM `powersave`, `max_perf_pct=50`, `usb autosuspend=1`, brilho em 25% (via `power-profile.sh`, restaura ao sair) e bloqueio de Bluetooth via `rfkill` — só se `bluetoothctl devices Connected` vier vazio (não derruba mouse/fone em uso; desbloqueia sozinho ao trocar de perfil). Economia e Balanceado continuam 100% stock. Detalhes e comando de instalação manual em `dotfiles.md`.
+**Super Economia (2026-08-21):** `super-powersave` é perfil custom deste repo (sem equivalente no pacote `tuned`), herda `powersave` e soma PCIe ASPM `powersave`, `max_perf_pct=50`, `usb autosuspend=1`, brilho em 25% (via `power-profile.sh`, restaura ao sair) e bloqueio de Bluetooth via `rfkill` — só se `bluetoothctl devices Connected` vier vazio (não derruba mouse/fone em uso; desbloqueia sozinho ao trocar de perfil). Economia e Balanceado continuam 100% stock. Os arquivos do profile ficam em `tuned/etc/tuned/` e são copiados manualmente para `/etc/tuned/`; registro da construção em [`docs/history/dotfiles-historico.md`](docs/history/dotfiles-historico.md).
 
 ---
 
@@ -550,6 +586,7 @@ Documentação completa: [`docs/keyboard-keyd.md`](docs/keyboard-keyd.md).
 | `alttab.sh` | Alt+Tab via cyclenext+bringactivetotop, preserva cursor no float mode |
 | `super-workspace.sh` | Roteia bancos de workspaces: foco/move por slot, scratchpad por super workspace, menu `fuzzel`/ciclo `next/prev` e JSON da Waybar |
 | `waybar-active-window.sh` | Texto da janela ativa na Waybar com tooltip de CPU/RAM somando a árvore de processos do PID focado; atualiza instantaneamente por eventos do Hyprland e refresca métricas a cada 2s |
+| `memhog-watch.sh` | Vigia consumo de RAM por árvore de processos e notifica os maiores ofensores; disparado pelo timer systemd user `memhog-watch.timer` |
 
 ---
 
@@ -589,7 +626,7 @@ Documentação completa: [`docs/browser-tab-shifter.md`](docs/browser-tab-shifte
 
 ## Ferramentas instaladas
 
-**CLI essenciais (manifestos Arch/pacman; Fedora mantido como legado)**
+**CLI essenciais (manifestos `packages/pacman.txt` + `packages/aur.txt`)**
 
 | Ferramenta | Versão | Função |
 |---|---|---|
@@ -620,38 +657,33 @@ Documentação completa: [`docs/browser-tab-shifter.md`](docs/browser-tab-shifte
 
 ## Apps (Flatpak)
 
+Tabela derivada de `packages/flatpak.txt` (dump de `flatpak list --app`, 2026-09-10):
+
 | App | ID |
 |---|---|
-| Zen Browser | app.zen_browser.zen |
 | Obsidian | md.obsidian.Obsidian |
-| GitHub Desktop | io.github.shiftey.Desktop |
-| Bruno (API client) | com.usebruno.Bruno |
-| ProtonVPN | com.protonvpn.www |
 | Google Chrome | com.google.Chrome |
-| Steam | com.valvesoftware.Steam |
+| RustDesk | com.rustdesk.RustDesk |
 | Stremio | com.stremio.Stremio |
 | qBittorrent | org.qbittorrent.qBittorrent |
-| VLC | org.videolan.vlc |
 | mpv | io.mpv.Mpv |
-| ncspot | io.github.hrkfdn.ncspot |
-| Overskride (Bluetooth) | io.github.kaii_lb.Overskride |
-| Flatseal | com.github.tchx84.Flatseal |
-| TextSnatcher | com.github.rajsolai.textsnatcher |
-| PCSX2 | net.pcsx2.PCSX2 |
-| RetroArch | org.libretro.RetroArch |
-| Déjà Dup | org.gnome.DejaDup |
+| GNOME Extensions | org.gnome.Extensions |
 | IRPF 2022–2025 | br.gov.fazenda.receita.irpf202X |
+
+Saíram do Flatpak: Zen (agora em `~/.local/opt/zen`), `ncspot` (pacote oficial) e Overskride (AUR `overskride-bin`); GitHub Desktop, Bruno, ProtonVPN, Steam, VLC, Flatseal, TextSnatcher, PCSX2, RetroArch e Déjà Dup foram desinstalados — o cabeçalho de `packages/flatpak.txt` mantém o registro.
 
 ---
 
-## Apps instalados manualmente (fora de dnf/flatpak)
+## Apps instalados manualmente (fora de pacman/AUR/flatpak)
 
-Apps distribuídos como `.tar.gz` (sem pacote nativo), extraídos manualmente em `~/.local/opt/<nome>/`. Os `.desktop`, ícones e associações de URI scheme desses apps ficam no pacote stow `desktop-apps/`.
+Apps distribuídos como `.tar.gz`/binário solto (sem pacote nativo em uso), extraídos manualmente em `~/.local/opt/<nome>/` ou colocados em `~/.local/bin`. Os `.desktop`, ícones e associações de URI scheme desses apps ficam no pacote stow `desktop-apps/`.
 
 | App | Caminho do binário | URI scheme |
 |---|---|---|
 | Antigravity 2.0 (desktop) | `~/.local/opt/Antigravity-x64/antigravity` | `antigravity://` |
 | Antigravity IDE | `~/.local/opt/Antigravity IDE/antigravity-ide` | `antigravity-ide://` |
+| Zen Browser | `~/.local/opt/zen/zen` (symlink `~/.local/bin/zen`) | `http`/`https` via `zen.desktop` — navegador padrão XDG |
+| ai-usagebar | `~/.local/bin/ai-usagebar` | — (consumido por `clock-panel-status.sh`) |
 
 Passos para reinstalar em máquina nova (o binário em si **não** é versionado no repo, só o `.desktop`/ícone/mimeapps):
 
@@ -712,7 +744,7 @@ Inventário e contrato operacional em [`docs/agent-harnesses-and-skills.md`](doc
 |---|---|
 | Claude Code | Skills versionadas em `claude/.claude/skills/` |
 | Oh My Pi (`omp`) | Harness principal neste ambiente; configs ativas em `~/.omp/agent/` |
-| OpenCode (`opencode`) | PATH versionado no `zsh/.zshrc` (`~/.opencode/bin`) |
+| OpenCode (`opencode`) | PATH versionado no pacote stow `zsh` (`~/.opencode/bin`, em `.zshrc`/`.zshenv`) |
 | `teachflow-board` | Nome técnico legado; agora opera só tasks/cards do Horizon CRM e sincroniza Kanban + `.md` locais |
 
 ---
@@ -743,14 +775,14 @@ MIT
 - [[docs/browser-tab-shifter|Browser tab shifter]]
 - [[docs/browser-memory-profiles|Browser memory profiles]]
 - [[docs/hyprland-super-workspaces|Hyprland super workspaces]]
-- [[dotfiles|Dotfiles legacy context]]
+- [[docs/history/dotfiles-historico|Dotfiles — registro histórico]]
 - [[ducking/ducking|Audio ducking]]
 - [[docs/gtk-qt-theming|GTK/Qt Theming — Hyprland sem DE completo]]
 - [[docs/headset-easyeffects|EasyEffects — QCY H3 Pro]]
 - [[docs/keyboard-keyd|Teclado — keyd, Caps navigation e AULA F75]]
 - [[docs/network|Network — DNS e troubleshooting]]
 - [[docs/printer-hp-deskjet-2774|Impressora — HP DeskJet Ink Advantage 2774]]
-- [[docs/system-setup-fedora|System Setup (Fedora) — ARQUIVADO]]
+- [[docs/history/system-setup-fedora|System Setup (Fedora) — ARQUIVADO]]
 - [[docs/theme-switching|Theme switching — troca de paleta system-wide]]
 - [[docs/windows-vm-incogniton|Windows VM — Incogniton / multilogin]]
 - [[nvim/.config/nvim/README|💤 LazyVim]]

@@ -16,8 +16,10 @@ x-scheme-handler/antigravity-ide=antigravity-ide.desktop
 x-scheme-handler/antigravity=antigravity.desktop
 x-scheme-handler/discord=vesktop.desktop
 application/pdf=org.gnome.Evince.desktop
+text/markdown=org.gnome.TextEditor.desktop
 
 [Added Associations]
 image/jpeg=imv.desktop;
 image/png=imv.desktop;
 image/svg+xml=imv.desktop;
+text/markdown=org.gnome.TextEditor.desktop;

@@ -1,103 +1,92 @@
-# RAM alto por múltiplos engines de navegador — solução proposta (perfis do Brave)
+# Perfis de navegador por super workspace — post-mortem (encerrado 2026-09-10)
 
-**Status:** proposta testada ao vivo, **não aplicada** e **não commitada**. O
-script já existe, prototipado e verificado numa sessão com Claude/OMP, em
-`~/Projects/dotfiles/scripts/.local/bin/brave-profile.sh` (working tree do
-repo real, fora deste submodule) — só não foi commitado nem usado ainda para
-substituir a sessão atual do Contab OS.
+**Status:** encerrado. A ideia foi prototipada, medida e depois abandonada; os
+helpers que a implementavam foram removidos do repo em 2026-09-10. Este
+documento é registro histórico — não há nada aqui para executar.
 
-## Contexto do problema
+**O que vale hoje:** Zen Browser é o navegador padrão XDG e do `SUPER+B`
+(`hyprland.lua` chama `~/.local/bin/zen` direto). O Brave **continua
+instalado e em uso**, lançado pelo `.desktop` próprio dele
+(`brave-browser.desktop`, pacote `brave-bin`). O que morreu foi só o modelo de
+rotear navegador/profile por super workspace.
 
-Setup de "super workspaces" (ver [[hyprland-super-workspaces]]):
+## Contexto do problema (2026-08)
+
+Setup de super workspaces (ver [`hyprland-super-workspaces.md`](hyprland-super-workspaces.md)):
 
 - Super workspace 1: Brave (WhatsApp/trabalho), Spotify nativo, Discord nativo.
 - Super workspace 2: Contab OS (software de contabilidade em desenvolvimento),
-  rodando localhost, aberto num `chromium` **separado** do Brave.
-- Super workspace 3 (planejado): outro navegador só para pesquisa de um
-  segundo software em desenvolvimento.
+  rodando em localhost, aberto num `chromium` **separado** do Brave.
+- Super workspace 3 (planejado na época): outro navegador só para pesquisa de
+  um segundo software em desenvolvimento.
 
-Cada engine de navegador diferente rodando ao mesmo tempo (Brave + Chromium)
-sobe seu próprio processo principal, GPU process, network service e par de
-zygotes — overhead de infraestrutura duplicado antes de qualquer aba de
-conteúdo real.
+Cada engine de navegador rodando ao mesmo tempo (Brave + Chromium) sobe seu
+próprio processo principal, GPU process, network service e par de zygotes —
+overhead de infraestrutura duplicado antes de qualquer aba de conteúdo real.
 
 ## Evidência medida (nesta máquina, sessão real)
 
-- `chromium` solo (sem `--app=`, só pra hospedar 1 aba de `localhost` do
-  Contab OS): **~2.6GB de RSS** somando toda a família de processos
-  (principal + GPU 266MB + network service 96MB + zygotes ~140MB + crashpad +
-  renderer de UI `top-chrome-webui` 169MB + abas).
-- Brave (tudo: WhatsApp, abas de trabalho): ~4.1–4.3GB, mas sob **um único**
-  processo principal (`pid` fixo) — todas as janelas/abas dele já
-  compartilham GPU/network/zygote entre si.
-- `earlyoom` já está configurado com `--prefer` incluindo
-  `brave|electron|Discord|node|bun|chrome|chromium|spotify` — ou seja, o
-  sistema já mitiga picos de OOM matando esses processos primeiro, mas isso é
-  sintoma, não causa.
+- `chromium` solo (sem `--app=`, só hospedando 1 aba de `localhost` do
+  Contab OS): **~2,6 GB de RSS** somando toda a família de processos
+  (principal + GPU 266 MB + network service 96 MB + zygotes ~140 MB + crashpad +
+  renderer de UI `top-chrome-webui` 169 MB + abas).
+- Brave (tudo: WhatsApp, abas de trabalho): ~4,1–4,3 GB, mas sob **um único**
+  processo principal — todas as janelas/abas dele já compartilham
+  GPU/network/zygote entre si.
+- `earlyoom` já estava configurado com `--prefer` incluindo
+  `brave|electron|Discord|node|bun|chrome|chromium|spotify`, mitigando picos de
+  OOM matando esses processos primeiro — sintoma, não causa.
 
-## Mecanismo testado
+## O que o protótipo provou (e o que quebrou)
 
-Abrir um `--profile-directory=<Nome>` **dentro do mesmo `--user-data-dir`**
-de um Brave que já está rodando **não** sobe processo principal, GPU nem
-network service novos — confirmado via `ps` antes/depois em teste ao vivo
-(lançado, verificado, fechado). Só sobe um `renderer` para a janela, o mesmo
-custo de abrir mais uma aba/janela normal. O profile fica isolado
-(cookies/sessão/histórico próprios), o engine pesado é compartilhado.
+Abrir um `--profile-directory=<Nome>` **dentro do mesmo `--user-data-dir`** de
+um Brave já rodando **não** sobe processo principal, GPU nem network service
+novos — confirmado via `ps` antes/depois em teste ao vivo. Só sobe um
+`renderer` para a janela, o mesmo custo de abrir mais uma aba/janela normal. O
+profile fica isolado (cookies/sessão/histórico próprios) e o engine pesado é
+compartilhado. A classe de janela resultante no Hyprland era
+`brave-<host>__-<Profile>` (ex.: `brave-localhost__-ContabOS`).
 
-Classe de janela resultante no Hyprland: `brave-<host>__-<Profile>` (ex.:
-`brave-localhost__-ContabOS`).
+Gotcha descoberto: com o Brave já rodando (instância única), o processo
+spawnado só sinaliza a instância existente e sai — a janela real pertence ao
+PID do Brave antigo. Isso quebrava o `workspace = "..."` passado direto no
+`exec_cmd` do Hyprland (a regra ficava atrelada ao PID do processo temporário,
+já morto). O contorno usado nos helpers era esperar a janela aparecer pela
+classe (poll) e movê-la manualmente para o slot, sem roubar o foco.
 
-**Gotcha descoberto:** como o Brave já está rodando (instância única), o
-processo que a gente spawna só sinaliza a instância existente e sai — a
-janela real pertence ao PID do Brave já rodando. Isso quebra o
-`workspace = "..."` passado direto no `exec_cmd` do Hyprland (a regra fica
-atrelada ao PID do processo temporário, que já morreu). Solução: esperar a
-janela aparecer pela classe (poll) e mover ela manualmente
-(`hl.dsp.window.move`) pro slot certo, sem roubar o foco atual.
+## Por que foi abandonado
 
-## Script já escrito (não commitado)
+1. **Depuração contaminada:** profiles diferentes dentro do mesmo Brave
+   compartilham o processo do navegador. Quando o OMP Browser Relay prendia um
+   target desse processo, o aviso de debug aparecia em todo o Brave — inclusive
+   no profile pessoal.
+2. **Zen assumiu o papel de navegador padrão** (boot, `SUPER+B`, `xdg-open`),
+   e o Zen não participa desse modelo de profiles Chromium.
+3. **Os wrappers viraram mentira:** `brave-super-workspace.sh` e
+   `browser-super-workspace.sh` mantinham nome/ícone de Brave mas executavam o
+   Zen. Dois `.desktop` correspondentes propagavam o engano no launcher.
+4. Nenhum super workspace acabou usando profile isolado no dia a dia — o custo
+   de manter quatro scripts para isso não se pagou.
 
-`~/Projects/dotfiles/scripts/.local/bin/brave-profile.sh <profile> <slot ex: super-2-1> [url]`:
+## O que foi removido em 2026-09-10
 
-- Sem janela existente desse profile: dispara `brave --profile-directory=<profile> [--app=<url>]`,
-  espera aparecer (até 10s) e move pro slot indicado, sem trocar o foco atual.
-- Com `[url]`: app-mode (`--app=`, sem chrome de abas/bookmarks — mais leve
-  para janela de propósito único).
-- Já existe janela desse profile: só foca ela (dedupe — testado, não duplica
-  em segunda chamada).
+- `scripts/.local/bin/brave-profile.sh`
+- `scripts/.local/bin/chromium-profile.sh`
+- `scripts/.local/bin/brave-super-workspace.sh`
+- `scripts/.local/bin/browser-super-workspace.sh`
+- `desktop-apps/.local/share/applications/brave-super-workspace.desktop`
+- `desktop-apps/.local/share/applications/browser-super-workspace.desktop`
 
-Aplicação prevista quando decidir aplicar (troca o `chromium` solo do
-Contab OS por um profile do Brave):
+Sobrevivem, sem relação com esse modelo: a extensão local
+`scripts/.local/share/browser-tab-mover/` (usada no Brave) e
+`scripts/.local/bin/browser-tab-mover-sync-shortcuts.sh` — ver
+[`browser-tab-shifter.md`](browser-tab-shifter.md).
 
-```bash
-brave-profile.sh ContabOS super-2-1 "http://localhost:PORTA"
-```
+## Decisão preservada: Spotify e Discord ficam nativos
 
-Navegador de pesquisa do super workspace 3 (múltiplas abas, sem app-mode):
-
-```bash
-brave-profile.sh Research super-3-1
-```
-
-Também precisa de uma entrada em `docs/hyprland-super-workspaces.md` (seção
-"Perfis de navegador on-demand (RAM)") — já redigida no repo real
-(`~/Projects/dotfiles`), também não commitada ainda.
-
-## Decisão consciente: Spotify e Discord ficam nativos
-
-Cada um também paga o mesmo tipo de tax (GPU + zygote + network service
-próprios, como qualquer app Electron/Chromium), mas migrar pra abas do Brave
-**não compensa**: `ducking/ducking.md` e `scripts/.local/bin/brave-duck.sh`
-identificam o Spotify pelo client nativo no PipeWire (`get_spotify_id` via
-`wpctl status`). Virando aba do Brave, o áudio apareceria como cliente
-"brave" e o ducking automático (abaixar volume do Spotify quando o Brave
-toca áudio) pararia de funcionar. Mantém os dois nativos.
-
-## Próximo passo (quando decidir aplicar)
-
-1. Revisar o diff em `~/Projects/dotfiles` (`scripts/.local/bin/brave-profile.sh`
-   novo + seção nova em `docs/hyprland-super-workspaces.md`).
-2. Rodar `brave-profile.sh ContabOS super-2-1 "http://localhost:PORTA"` com a
-   porta real do Contab OS.
-3. Fechar manualmente a janela antiga do `chromium` solo.
-4. Só então, se quiser, commitar no repo real.
+Cada um paga o mesmo tipo de tax (GPU + zygote + network service próprios, como
+qualquer app Electron/Chromium), mas virar aba de navegador **não compensa**:
+`ducking/ducking.md` e o serviço de ducking identificam o Spotify pelo client
+nativo no PipeWire (`get_spotify_id` via `wpctl status`). Como aba, o áudio
+apareceria como cliente do navegador e o ducking automático pararia de
+funcionar. Os dois seguem nativos.

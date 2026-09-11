@@ -33,8 +33,10 @@ iptables
 openbsd-netcat
 spice-gtk
 libisoburn     # fornece xorrisofs, usado para criar ISOs de transferência
-swtpm          # opcional para Windows 11 com TPM emulado
+swtpm          # opcional para Windows 11 com TPM emulado — hoje NÃO instalado
 ```
+
+> `swtpm` saiu do manifesto `packages/pacman.txt` (não está instalado nesta máquina); lá ele ficou registrado como comentário com a linha de reinstalação, caso a VM precise de TPM emulado de novo.
 
 Serviço libvirt:
 

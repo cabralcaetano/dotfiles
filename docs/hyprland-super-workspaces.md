@@ -236,49 +236,34 @@ Isso preserva o layout antigo (`1` browser, `2` terminal/Obsidian, `3` Spotify, 
    ~/.local/bin/super-workspace.sh sync-waybar
    ```
 
-## Perfis de navegador on-demand (RAM)
+## Navegador — roteamento por super workspace foi revertido (2026-09-10)
 
-**Status:** implementado e verificado (2026-08-25).
+**Status:** abandonado. Entre 2026-08-25 e 2026-09-10 existiram helpers que
+abriam navegador/profile por super workspace (`brave-profile.sh`,
+`chromium-profile.sh`, `brave-super-workspace.sh`,
+`browser-super-workspace.sh` e dois `.desktop`). Eles foram removidos: os
+wrappers já executavam o Zen apesar do nome/ícone de Brave, e nenhum banco
+usava profile isolado no dia a dia. Post-mortem com as medições de RAM que
+motivaram a ideia em [`browser-memory-profiles.md`](browser-memory-profiles.md).
 
-**Problema:** profiles diferentes dentro do mesmo Brave economizam RAM, mas
-continuam compartilhando o mesmo processo do navegador. Quando o OMP Browser
-Relay/depuração prende um target desse processo, o aviso de debug aparece em
-todo o Brave — inclusive no profile pessoal do SW1.
-
-**Solução atual:** Zen Browser é o navegador padrão do sistema, do boot e do
-`SUPER+B`. Os helpers antigos de Brave/Chromium continuam no repo para uso
-manual de perfis isolados, mas não participam do fluxo padrão.
-
-`scripts/.local/bin/browser-super-workspace.sh [url]` é o launcher de alto nível:
-
-- `SUPER+B` chama esse script via `hyprland.lua`.
-- Sem URL, abre uma nova janela do Zen.
-- Com URL, repassa o link diretamente para o Zen.
-- `xdg-open`/links `http` e `https` usam `desktop-apps/.config/mimeapps.list`
-  apontando para `zen.desktop`, não para o launcher.
-
-Mapa padrão:
+Como ficou:
 
 | Entrada | Navegador | Slot |
 |---|---|---|
 | Boot | Zen Browser | `super-1-1` |
-| `SUPER+B` | Zen Browser | workspace atual |
-| `xdg-open`/links | Zen Browser | decisão do Zen/Hyprland |
+| `SUPER+B` | Zen Browser (`~/.local/bin/zen`, chamado direto pelo `hyprland.lua`) | workspace atual |
+| `xdg-open`/links `http(s)` | Zen Browser (`desktop-apps/.config/mimeapps.list` → `zen.desktop`) | decisão do Zen/Hyprland |
 
-Helpers preservados:
-
-- `scripts/.local/bin/brave-profile.sh [--app|--browser] <profile> <slot> [url]`
-  abre/foca perfis do Brave e resolve o nome visível (`swprofile1`) para o
-  diretório interno do `Local State`.
-- `scripts/.local/bin/chromium-profile.sh <profile> <slot> [url]` usa
-  `~/.config/chromium-super-workspaces` como `--user-data-dir` dedicado.
+O Brave **continua instalado e em uso**, lançado pelo `.desktop` próprio dele
+(`brave-browser.desktop`) — só não participa mais de nenhum roteamento por
+super workspace nem tem launcher versionado neste repo.
 
 ### Atalhos nativos para mover abas
 
 `scripts/.local/share/browser-tab-mover/` é uma extensão local MV3 carregada
-pelos launchers de Brave/Chromium quando usados manualmente. Ela registra
-comandos do próprio navegador e move a aba ativa via `chrome.tabs.move`, sem
-bind do Hyprland e sem script por tecla.
+manualmente no Brave (unpacked, pelo caminho do repo). Ela registra comandos do
+próprio navegador e move a aba ativa via `chrome.tabs.move`, sem bind do
+Hyprland e sem script por tecla.
 
 Atalhos:
 
@@ -288,22 +273,11 @@ Atalhos:
 - `ALT+SHIFT+0`: move a aba ativa para a posição 10.
 
 `scripts/.local/bin/browser-tab-mover-sync-shortcuts.sh` grava esses comandos em
-`Preferences` antes de um cold start do navegador. Brave/Chromium reescrevem
-`Preferences` ao fechar; por isso `brave-profile.sh` e `chromium-profile.sh`
-sincronizam os atalhos apenas quando não há processo do respectivo navegador em
-execução.
-
-Uso — abrir o Zen:
-
-```bash
-browser-super-workspace.sh
-```
-
-Uso — abrir link no Zen:
-
-```bash
-browser-super-workspace.sh "https://example.com"
-```
+`Preferences`. O Brave reescreve `Preferences` ao fechar, então o script só tem
+efeito quando rodado com o navegador fechado, antes de um cold start — antes
+era chamado pelos helpers de profile; hoje é invocação manual. O equivalente no
+Zen é a extensão `Tab Shifter`, ver
+[`browser-tab-shifter.md`](browser-tab-shifter.md).
 
 **Fora do escopo de propósito:** Spotify e Discord ficam nativos (Electron).
 O `zen-duck.sh` identifica o Spotify pelo client PipeWire nativo

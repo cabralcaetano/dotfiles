@@ -58,7 +58,9 @@ usage_bar_line() {
 usagebar_text() {
   local vendor="$1"
   local format="$2"
-  local bin="/home/caetano/.local/bin/ai-usagebar"
+  # ai-usagebar é instalação manual (não vem do bootstrap/pacotes); ausente,
+  # o painel simplesmente omite a linha de uso de IA.
+  local bin="$HOME/.local/bin/ai-usagebar"
 
   if [[ ! -x "$bin" ]]; then
     return 1
