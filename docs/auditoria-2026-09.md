@@ -337,7 +337,7 @@ blobs idênticos por SHA.
 
 ## 14. Paths com identidade do dono
 
-- `clock-panel-status.sh:61` → `"$HOME/.local/bin/ai-usagebar"`
+- `clock-panel-status.sh` usava `"$HOME/.local/bin/ai-usagebar"`; substituído por `omp usage --json` no card `sistema`.
 - `9router.service` → `%h/.npm-global/bin` no `Environment=PATH` e `ExecStart`
 - `install-battery-conservation-root.sh` gravava literalmente `caetano ALL=(root)`
   no sudoers. Agora deriva o usuário de `$1` ou `$SUDO_USER`, recusa root e nome

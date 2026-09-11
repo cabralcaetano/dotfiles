@@ -37,9 +37,9 @@ standalone — sem Walker/Elephant/CLI de outra distro.
   chama `fuzzel-toggle.sh` para ignorar processos zumbis que antes impediam o
   launcher de reabrir.
 - **Quickshell/SwayNC também entram no tema**: `quick_*` no `colors.toml` controla
-  fundo, opacidade e radius. As dimensões do clock-panel ficam fixas no tamanho
-  padrão (`650x400`, `quick_clock_scale = 1.0`) para evitar drift visual entre
-  trocas de tema.
+  fundo, opacidade, radius e escala. As dimensões do clock-panel ficam fixas em
+  `650x400` com `quick_clock_scale = 0.85`, evitando drift visual entre trocas de
+  tema e mantendo o painel compacto.
 - **Blur por layer no Hyprland**: `quickshell`, `swaync-control-center` e
   `launcher` têm `hl.layer_rule({ blur = true, ignore_alpha = 0.10 })`, para
   borrar só atrás das superfícies semi-transparentes e não a tela inteira.

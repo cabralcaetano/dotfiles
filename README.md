@@ -550,8 +550,8 @@ Atalhos:
 | Super+Shift+W | Cicla wallpapers do diretório ativo |
 
 `normal` preserva os painéis Quickshell cinza/arredondados; `matte-black` aplica
-painéis pretos/quadrados mantendo o clock-panel no tamanho padrão
-(`quick_clock_scale = 1.0`). Hyprland aplica blur nas layers `quickshell`,
+painéis pretos/quadrados mantendo o clock-panel compacto
+(`650x400` escalado para `0.85`). Hyprland aplica blur nas layers `quickshell`,
 `swaync-control-center` e `launcher` com `ignore_alpha` para não borrar a tela
 inteira.
 
@@ -712,7 +712,7 @@ Apps distribuídos como `.tar.gz`/binário solto (sem pacote nativo em uso), ext
 | Antigravity 2.0 (desktop) | `~/.local/opt/Antigravity-x64/antigravity` | `antigravity://` |
 | Antigravity IDE | `~/.local/opt/Antigravity IDE/antigravity-ide` | `antigravity-ide://` |
 | Zen Browser | `~/.local/opt/zen/zen` (symlink `~/.local/bin/zen`) | `http`/`https` via `zen.desktop` — navegador padrão XDG |
-| ai-usagebar | `~/.local/bin/ai-usagebar` | — (consumido por `clock-panel-status.sh`) |
+| ai-usagebar | `~/.local/bin/ai-usagebar` | — (legado; `clock-panel-status.sh` usa `omp usage --json`) |
 
 Passos para reinstalar em máquina nova (o binário em si **não** é versionado no repo, só o `.desktop`/ícone/mimeapps):
 

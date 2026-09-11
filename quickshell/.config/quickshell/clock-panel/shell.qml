@@ -352,8 +352,8 @@ ShellRoot {
                 transform: Scale {
                     origin.x: panel.width / 2
                     origin.y: 0
-                    xScale:  1.0
-                    yScale:  1.0
+                    xScale: 0.85
+                    yScale: 0.85
                 }
                 anchors.topMargin: 0
                 radius:  0
@@ -848,11 +848,12 @@ ShellRoot {
                     height: 16
                     spacing: 1
                     property var fields: modelData.split("|")
+                    property bool isError: (systemRow.fields[1] || "").indexOf("!") >= 0 || (systemRow.fields[3] || "") === "erro"
 
                     Text {
                         id: labelText
                         width: 40
-                        color: "#ffffff"
+                        color: systemRow.isError ? "#e06c75" : "#ffffff"
                         font.family: "JetBrainsMono Nerd Font"
                         font.pixelSize: 13
                         text: (systemRow.fields[0] || "") + " " + (systemRow.fields[1] || "")
@@ -861,7 +862,7 @@ ShellRoot {
                     Text {
                         id: barText
                         width: systemRow.width - labelText.width - pctText.width - systemRow.spacing * 2
-                        color: "#ffffff"
+                        color: systemRow.isError ? "#e06c75" : "#ffffff"
                         font.family: "JetBrainsMono Nerd Font"
                         font.pixelSize: 13
                         clip: true
@@ -871,7 +872,7 @@ ShellRoot {
                     Text {
                         id: pctText
                         width: 34
-                        color: "#ffffff"
+                        color: systemRow.isError ? "#e06c75" : "#ffffff"
                         font.family: "JetBrainsMono Nerd Font"
                         font.pixelSize: 13
                         horizontalAlignment: Text.AlignRight

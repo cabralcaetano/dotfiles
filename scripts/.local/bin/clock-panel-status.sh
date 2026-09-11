@@ -26,52 +26,117 @@ bar() {
   }'
 }
 
-strip_tags() {
-  python3 -c 'import re,sys; print(re.sub(r"<[^>]+>", "", sys.stdin.read()).strip())'
-}
-
-compact_reset() {
-  local value="$1"
-  value="${value// /}"
-  value="${value#0h}"
-  [[ -n "$value" ]] || value="now"
-  printf '%s' "$value"
-}
-
 usage_bar_line() {
   local icon="$1"
   local label="$2"
   local used_pct="$3"
+  local state="${4:-ok}"
+
+  if [[ "$state" != "ok" ]]; then
+    printf '%s|%s!|%s|%s\n' "$icon" "$label" "$(bar "?")" "erro"
+    return
+  fi
 
   if [[ ! "$used_pct" =~ ^[0-9]+$ ]]; then
     printf '%s|%s|%s|%s\n' "$icon" "$label" "$(bar "?")" "n/d"
     return
   fi
 
-  local free_pct=$((100 - used_pct))
-  if (( free_pct < 0 )); then free_pct=0; fi
-  if (( free_pct > 100 )); then free_pct=100; fi
+  if (( used_pct < 0 )); then used_pct=0; fi
+  if (( used_pct > 100 )); then used_pct=100; fi
 
-  printf '%s|%s|%s|%s%%\n' "$icon" "$label" "$(bar "$used_pct")" "$free_pct"
+  printf '%s|%s|%s|%s%%\n' "$icon" "$label" "$(bar "$used_pct")" "$used_pct"
 }
 
-usagebar_text() {
-  local vendor="$1"
-  local format="$2"
-  # ai-usagebar é instalação manual (não vem do bootstrap/pacotes); ausente,
-  # o painel simplesmente omite a linha de uso de IA.
-  local bin="$HOME/.local/bin/ai-usagebar"
+format_reset_ms() {
+  local resets_ms="$1"
+  local now_s resets_s delta days hours minutes
 
-  if [[ ! -x "$bin" ]]; then
-    return 1
+  if [[ ! "$resets_ms" =~ ^[0-9]+$ ]] || (( resets_ms <= 0 )); then
+    printf '%s' '--'
+    return
   fi
 
-  "$bin" --vendor "$vendor" --format "$format" --json 2>/dev/null | jq -r '.text' | strip_tags
+  now_s="$(date +%s)"
+  resets_s=$((resets_ms / 1000))
+  delta=$((resets_s - now_s))
+
+  if (( delta <= 0 )); then
+    printf '%s' 'now'
+  elif (( delta >= 86400 )); then
+    days=$((delta / 86400))
+    hours=$(((delta % 86400) / 3600))
+    printf '%dd%dh' "$days" "$hours"
+  elif (( delta >= 3600 )); then
+    hours=$((delta / 3600))
+    minutes=$(((delta % 3600) / 60))
+    if (( minutes > 0 )); then
+      printf '%dh%dm' "$hours" "$minutes"
+    else
+      printf '%dh' "$hours"
+    fi
+  else
+    minutes=$(((delta + 59) / 60))
+    printf '%dm' "$minutes"
+  fi
 }
 
-read_ai_usage() {
-  local cache="${XDG_RUNTIME_DIR:-/tmp}/clock-panel-ai-usage.cache"
-  local now mtime tmp anthropic openai a_session_pct a_session_reset a_weekly_pct a_weekly_reset o_session_pct o_session_reset o_weekly_pct o_weekly_reset o_reset_label o_reset_value
+read_usage_limit() {
+  local usage_json="$1"
+  local provider="$2"
+  local window="$3"
+  local tier="${4:-}"
+
+  jq -r --arg provider "$provider" --arg window "$window" --arg tier "$tier" '
+    [
+      .reports[]?
+      | select(.provider == $provider)
+      | .limits[]?
+      | select(.window.id == $window)
+      | select(
+          if $tier == "" then
+            ((.scope.tier // "chat") == "chat")
+          else
+            ((.scope.tier // "") == $tier)
+          end
+        )
+    ][0] as $limit
+    | if $limit == null then
+        "||error"
+      else
+        [
+          (($limit.amount.used // 0) | round | tostring),
+          (($limit.window.resetsAt // 0) | tostring),
+          ($limit.status // "ok")
+        ] | @tsv
+      end
+  ' <<< "$usage_json"
+}
+
+usage_state() {
+  case "$1" in
+    ok|exhausted) printf '%s' 'ok' ;;
+    *) printf '%s' 'error' ;;
+  esac
+}
+
+reset_or_error() {
+  local state="$1"
+  local resets_ms="$2"
+
+  if [[ "$state" != "ok" ]]; then
+    printf 'erro'
+    return
+  fi
+
+  format_reset_ms "$resets_ms"
+}
+
+read_omp_usage() {
+  local cache="${XDG_RUNTIME_DIR:-/tmp}/clock-panel-omp-usage.cache"
+  local now mtime tmp usage_json
+  local a_session_pct a_session_reset a_session_status a_weekly_pct a_weekly_reset a_weekly_status
+  local o_weekly_pct o_weekly_reset o_weekly_status a_session_state a_weekly_state o_weekly_state
 
   now="$(date +%s)"
   if [[ -r "$cache" ]]; then
@@ -82,26 +147,33 @@ read_ai_usage() {
     fi
   fi
 
-  anthropic="$(usagebar_text anthropic '{session_pct}|{session_reset}|{weekly_pct}|{weekly_reset}' || true)"
-  openai="$(usagebar_text openai '{oai_session_pct}|{oai_session_reset}|{oai_weekly_pct}|{oai_weekly_reset}' || true)"
-
-  IFS='|' read -r a_session_pct a_session_reset a_weekly_pct a_weekly_reset <<< "$anthropic"
-  IFS='|' read -r o_session_pct o_session_reset o_weekly_pct o_weekly_reset <<< "$openai"
-
   tmp="$(mktemp)"
+
+  if ! command -v omp >/dev/null 2>&1 || ! usage_json="$(omp usage --json 2>/dev/null)" || ! jq -e '.reports | type == "array"' >/dev/null 2>&1 <<< "$usage_json"; then
+    {
+      usage_bar_line "󰚩" "C5" "" "error"
+      usage_bar_line "󰚩" "C7" "" "error"
+      usage_bar_line "" "O7" "" "error"
+      printf '↻|C5 erro|C7 erro|O7 erro\n'
+    } > "$tmp"
+    mv "$tmp" "$cache"
+    cat "$cache"
+    return
+  fi
+
+  IFS=$'\t' read -r a_session_pct a_session_reset a_session_status < <(read_usage_limit "$usage_json" "anthropic" "5h")
+  IFS=$'\t' read -r a_weekly_pct a_weekly_reset a_weekly_status < <(read_usage_limit "$usage_json" "anthropic" "7d")
+  IFS=$'\t' read -r o_weekly_pct o_weekly_reset o_weekly_status < <(read_usage_limit "$usage_json" "openai-codex" "7d")
+
+  a_session_state="$(usage_state "$a_session_status")"
+  a_weekly_state="$(usage_state "$a_weekly_status")"
+  o_weekly_state="$(usage_state "$o_weekly_status")"
+
   {
-    usage_bar_line "󰚩" "C5" "$a_session_pct"
-    usage_bar_line "󰚩" "C7" "$a_weekly_pct"
-    if [[ -n "$o_session_pct" ]]; then
-      usage_bar_line "" "O5" "$o_session_pct"
-      o_reset_label="O5"
-      o_reset_value="$o_session_reset"
-    else
-      usage_bar_line "" "O7" "$o_weekly_pct"
-      o_reset_label="O7"
-      o_reset_value="$o_weekly_reset"
-    fi
-    printf '↻|C5 %s|C7 %s|%s %s\n' "$(compact_reset "$a_session_reset")" "$(compact_reset "$a_weekly_reset")" "$o_reset_label" "$(compact_reset "$o_reset_value")"
+    usage_bar_line "󰚩" "C5" "$a_session_pct" "$a_session_state"
+    usage_bar_line "󰚩" "C7" "$a_weekly_pct" "$a_weekly_state"
+    usage_bar_line "" "O7" "$o_weekly_pct" "$o_weekly_state"
+    printf '↻|C5 %s|C7 %s|O7 %s\n' "$(reset_or_error "$a_session_state" "$a_session_reset")" "$(reset_or_error "$a_weekly_state" "$a_weekly_reset")" "$(reset_or_error "$o_weekly_state" "$o_weekly_reset")"
   } > "$tmp"
   mv "$tmp" "$cache"
   cat "$cache"
@@ -122,7 +194,7 @@ fi
 mem_pct="$(awk '/MemTotal:/ { total=$2 } /MemAvailable:/ { avail=$2 } END { if (total > 0) printf "%.0f", (total - avail) / total * 100; else printf "?" }' /proc/meminfo)"
 
 
-mapfile -t ai_usage < <(read_ai_usage)
+mapfile -t ai_usage < <(read_omp_usage)
 
 printf '%s\n%s\n%s\n%s|%s|%s|%s%%\n%s|%s|%s|%s%%\n%s\n' \
   "${ai_usage[0]:-󰚩|C5|░░░░░░░░░░░░░░░░░░░░░░░░░░░░|n/d}" \
