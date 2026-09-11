@@ -1,6 +1,6 @@
 [Unit]
-Description=Backup incremental de $HOME para disco externo (restic)
-# Sem o disco plugado o script sai 0 com um log; não é falha.
+Description=Backup incremental de $HOME para o VPS (restic via SFTP)
+# Servidor fora do ar: o script sai 0 com um log; não é falha de unit.
 After=network-online.target
 
 [Service]
