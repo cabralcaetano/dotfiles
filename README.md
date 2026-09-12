@@ -512,16 +512,30 @@ Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no
 
 Tema: **capitaine-cursors** (`sudo pacman -S capitaine-cursors`).
 
-Configurado em 5 lugares para consistência total (GTK 3, GTK 4, Hyprland env, `~/.icons/default/index.theme`, Flatpak override):
+Configurado em GTK 3/4, Hyprland, systemd/DBus user e fallback de `default` para cobrir apps nativos, XWayland e Flatpak/Electron.
+
+Pontos versionados no repo:
+
+- `hypr/.config/hypr/hyprland.lua` exporta `XCURSOR_THEME=capitaine-cursors` e `XCURSOR_SIZE=24`.
+- No start da sessão, `hyprland.lua` importa essas variáveis para DBus/systemd user e roda `hyprctl setcursor capitaine-cursors 24`. Isso é necessário para apps XWayland, como o Obsidian Flatpak quando o sandbox não abre Wayland.
+
+Overrides locais necessários quando um Flatpak ignora o cursor do compositor:
 
 ```bash
-# Flatpak (Obsidian e outros apps Electron)
 flatpak override --user \
-  --socket=wayland --nosocket=x11 \
-  --env=ELECTRON_OZONE_PLATFORM_HINT=wayland \
   --env=XCURSOR_THEME=capitaine-cursors \
   --env=XCURSOR_SIZE=24 \
+  --env=XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons \
   <app-id>
+```
+
+Fallback opcional para apps que consultam o tema `default`:
+
+```ini
+# ~/.local/share/icons/default/index.theme
+# ~/.icons/default/index.theme
+[Icon Theme]
+Inherits=capitaine-cursors
 ```
 
 ---

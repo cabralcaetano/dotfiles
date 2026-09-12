@@ -41,6 +41,22 @@ Vale para qualquer app Qt6 sem tema próprio, não só o picker. Kvantum ficou d
 
 **Verificação:** `gdbus` abriu um `org.freedesktop.portal.FileChooser.SaveFile` real via `xdg-desktop-portal-gtk`; screenshot com `grim` confirmou o file chooser escuro.
 
+## Resolvido 2026-09-12 — cursor do Obsidian Flatpak mudava de tema
+
+**Sintoma:** dentro do Obsidian o cursor trocava para outro tema, apesar de GTK 3/4 e `gsettings` apontarem para `capitaine-cursors`.
+
+**Causa:** o Obsidian vem do Flatpak `md.obsidian.Obsidian` e a janela real estava em `xwayland: true` no Hyprland. O sandbox recebia `XCURSOR_THEME`/`XCURSOR_SIZE`, mas XWayland ainda podia cair no tema `default` do host (`/usr/share/icons/default/index.theme` herdando `Adwaita`) quando o compositor não reaplicava o cursor da sessão.
+
+**Fix:** `hyprland.lua` agora:
+
+- importa `XCURSOR_THEME` e `XCURSOR_SIZE` para DBus/systemd user no start da sessão;
+- executa `hyprctl setcursor capitaine-cursors 24` no start da sessão;
+- mantém o override Flatpak do Obsidian com `XCURSOR_THEME=capitaine-cursors`, `XCURSOR_SIZE=24` e `XCURSOR_PATH=/run/host/user-share/icons:/run/host/share/icons`.
+
+Na máquina atual também existem fallbacks locais em `~/.local/share/icons/default/index.theme` e `~/.icons/default/index.theme` herdando `capitaine-cursors`.
+
+**Verificação:** `luac -p hypr/.config/hypr/hyprland.lua`, `hyprctl reload`, `hyprctl setcursor capitaine-cursors 24`, `flatpak override --user --show md.obsidian.Obsidian` e confirmação visual no Obsidian.
+
 ## Problema em aberto — accent color cinza não aplica em libadwaita
 
 **Sintoma:** `gsettings set org.gnome.desktop.interface accent-color 'slate'` aplica no namespace GNOME, mas Nautilus/Overskride/Pavucontrol continuam com accent **azul**.

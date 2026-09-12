@@ -35,10 +35,11 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("hypridle")
     hl.exec_cmd("sleep 0.5 && awww img ~/.config/wallpapers/wallpaper_5.jpg --transition-type fade --transition-duration 1.5 --transition-fps 60")
     hl.exec_cmd("wl-paste --watch cliphist store")
-    hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE")
-    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE")
+    hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE XCURSOR_THEME XCURSOR_SIZE")
+    hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE XCURSOR_THEME XCURSOR_SIZE")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface gtk-theme \"adw-gtk3-dark\"")
     hl.exec_cmd("gsettings set org.gnome.desktop.interface color-scheme \"prefer-dark\"")
+    hl.exec_cmd("hyprctl setcursor capitaine-cursors 24")
     -- Portais XDG não são iniciados aqui: os backends são units D-Bus
     -- (Type=dbus) e sobem sob demanda. Lançar à mão concorre com o
     -- xdg-desktop-portal.service e quebra a ativação.
