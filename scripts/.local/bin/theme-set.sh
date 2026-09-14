@@ -211,6 +211,11 @@ if [[ -z $WALLPAPER && -f "$HOME/.config/wallpapers/wallpaper_3.png" ]]; then
 fi
 if [[ -n $WALLPAPER ]]; then
     awww img "$WALLPAPER" --transition-type fade --transition-duration 1.5 --transition-fps 60
+
+    # Persiste a escolha para wallpaper-restore.sh reaplicar no próximo boot.
+    STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/wallpaper-picker"
+    mkdir -p "$STATE_DIR"
+    printf '%s\n' "$WALLPAPER" >"$STATE_DIR/current-wallpaper"
 fi
 
 # === Reload em cascata ==============================================

@@ -24,6 +24,7 @@ local spotify     = "spotify-launcher"
 local obsidian    = "flatpak run md.obsidian.Obsidian"
 local obsidianQuickNote = "~/.config/hypr/scripts/obsidian-quick-note.sh"
 local waterReminder = "~/.local/bin/water-reminder"
+local wallpaperRestore = "~/.local/bin/wallpaper-restore.sh"
 
 -- === TEMA (cores) — gerado por theme-set.sh, ver themes/ no root do repo ===
 local theme_colors = dofile(os.getenv("HOME") .. "/.config/hypr/colors.lua")
@@ -33,7 +34,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("fcitx5 --replace -d")
     hl.exec_cmd("waybar & qs -c clock-panel --daemonize & awww-daemon & swaync")
     hl.exec_cmd("hypridle")
-    hl.exec_cmd("sleep 0.5 && awww img ~/.config/wallpapers/wallpaper_5.jpg --transition-type fade --transition-duration 1.5 --transition-fps 60")
+    hl.exec_cmd("sleep 0.5 && " .. wallpaperRestore)
     hl.exec_cmd("wl-paste --watch cliphist store")
     hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE XCURSOR_THEME XCURSOR_SIZE")
     hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP HYPRLAND_INSTANCE_SIGNATURE XCURSOR_THEME XCURSOR_SIZE")

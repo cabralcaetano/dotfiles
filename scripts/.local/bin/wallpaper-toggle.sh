@@ -17,3 +17,8 @@ for i in "${!WALLPAPERS[@]}"; do
 done
 
 awww img "$NEXT" --transition-type fade --transition-duration 1.5 --transition-fps 60
+
+# Persiste a escolha para wallpaper-restore.sh reaplicar no próximo boot.
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/wallpaper-picker"
+mkdir -p "$STATE_DIR"
+printf '%s\n' "$NEXT" >"$STATE_DIR/current-wallpaper"
