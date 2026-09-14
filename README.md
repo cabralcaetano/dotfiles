@@ -453,18 +453,19 @@ Sequência do `hypridle.conf`:
 
 ## Perfil de energia
 
-`tuned-adm` via `tuned-ppd` alterna entre quatro modos:
+`tuned-adm` via `tuned-ppd` alterna entre cinco modos:
 
 | Perfil | Modo tuned | Ícone Waybar |
 |---|---|---|
-| Balanceado | balanced | oculto |
+| Balanceado | balanced-battery | oculto |
+| Balanceado+ | balanced | oculto |
 | Performance | latency-performance | `󱐋` |
 | Economia | powersave | `󰌪` |
 | Super Economia | super-powersave | `󰳗` |
 
-Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, ver [Waybar](#waybar)) cicla pro próximo perfil. No painel SwayNC (aberto clicando no sino da Waybar), o botão `󰓅` abre um menu `fuzzel` pra escolher o perfil direto, sem ciclar. Ciclo da Waybar: Super Economia → Economia → Balanceado → Performance → Super Economia.
+Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, ver [Waybar](#waybar)) cicla pro próximo perfil. No painel SwayNC (aberto clicando no sino da Waybar), o botão `󰓅` abre um menu `fuzzel` pra escolher o perfil direto, sem ciclar. Ciclo da Waybar: Super Economia → Economia → Balanceado → Balanceado+ → Performance → Super Economia.
 
-**Persistência no boot:** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — não há reset para um default. O `default=balanced` do `/etc/tuned/ppd.conf` se aplica aos clientes PPD. Para fixar o boot em Balanceado normal quando `tuned-ppd` está ativo, defina também o perfil base PPD como `balanced` (`/etc/tuned/ppd_base_profile`).
+**Persistência no boot (2026-09-14):** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — mas o `tuned-ppd` (D-Bus-ativado por qualquer cliente PPD, mesmo com o serviço `disabled` no systemd) reaplica por cima o perfil resolvido a partir de `/etc/tuned/ppd_base_profile` toda vez que sobe, inclusive no boot. Sem alinhar os dois, o boot podia cair silenciosamente em Economia (`ppd_base_profile=power-saver` de uma sessão anterior sobrescrevendo o `balanced-battery` do `active_profile`). Fix: `/etc/tuned/ppd.conf` mapeia `balanced` (tier PPD) para `balanced-battery` (não para `balanced` puro — esse só fica acessível como Balanceado+, fora do tier PPD de 3 níveis) nas seções `[profiles]` e `[battery]`, e `/etc/tuned/ppd_base_profile` fica fixo em `balanced`. Config canônica em `tuned/etc/tuned/ppd.conf` do repo; aplicação em `/etc/tuned/` é manual (mesmo padrão do `super-powersave`, fora do Stow).
 
 **Super Economia (2026-08-21):** `super-powersave` é perfil custom deste repo (sem equivalente no pacote `tuned`), herda `powersave` e soma PCIe ASPM `powersave`, `max_perf_pct=50`, `usb autosuspend=1`, brilho em 25% (via `power-profile.sh`, restaura ao sair) e bloqueio de Bluetooth via `rfkill` — só se `bluetoothctl devices Connected` vier vazio (não derruba mouse/fone em uso; desbloqueia sozinho ao trocar de perfil). Economia e Balanceado continuam 100% stock. Os arquivos do profile ficam em `tuned/etc/tuned/` e são copiados manualmente para `/etc/tuned/`; registro da construção em [`docs/history/dotfiles-historico.md`](docs/history/dotfiles-historico.md).
 
