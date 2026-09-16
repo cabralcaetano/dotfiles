@@ -225,6 +225,8 @@ tooltip * {
 
 #pulseaudio {
   font-size: 16px;
+  min-width: 20px;
+  margin: 0 -2px;
 }
 
 /* === POWER ====================================== */
