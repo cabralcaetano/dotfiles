@@ -256,6 +256,17 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Super+Shift+S | Move janela para scratchpad do super workspace ativo |
 | Super+Scroll | Navega globalmente entre workspaces (`e+1`/`e-1`) |
 
+**Teclado / Compose**
+
+| Atalho | Ação |
+|---|---|
+| CapsLock (tap) | CapsLock normal |
+| CapsLock + H/J/K/L | Setas esquerda/baixo/cima/direita via `keyd` |
+| CapsLock + ; | `ç` via sequência Compose |
+| CapsLock + ' | dead tilde (`~`) aguardando próxima letra, ex.: `a` → `ã` |
+| RightCtrl / Menu | Compose key do Hyprland |
+| RightShift (tap) | Compose key via `keyd`; segurado continua Shift |
+
 **Sistema**
 
 | Atalho | Ação |

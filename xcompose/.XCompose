@@ -4,3 +4,6 @@
 # Multi_key + apostrophe + e => é.
 # Keep the full en_US table so Compose works on the US keyboard layout.
 include "/usr/share/X11/locale/en_US.UTF-8/Compose"
+
+<Multi_key> <semicolon> : "ç" ccedilla
+<Multi_key> <colon> : "Ç" Ccedilla

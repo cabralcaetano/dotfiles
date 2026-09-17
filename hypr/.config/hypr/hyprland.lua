@@ -64,6 +64,7 @@ hl.env("_JAVA_AWT_WM_NONREPARENTING", "1")
 hl.env("AWT_TOOLKIT", "MToolkit")
 hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 hl.env("XMODIFIERS", "@im=fcitx")
+hl.env("XCOMPOSEFILE", os.getenv("HOME") .. "/.XCompose")
 
 -- === APARÊNCIA / INPUT / XWAYLAND / MISC =========
 hl.config({
