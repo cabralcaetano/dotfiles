@@ -183,8 +183,7 @@
   "tray": {
     "icon-size": 16,
     "spacing": 5,
-    "show-passive-items": true,
-    "ignore-pattern": "nm-applet"
+    "show-passive-items": true
   },
 
   // === REDE ====================================

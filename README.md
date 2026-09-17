@@ -195,6 +195,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | App | Workspace | Método |
 |---|---|---|
 | waybar, quickshell clock-panel, awww-daemon, swaync | — | exec-once imediato |
+| nm-applet | — | exec-once condicional (`pgrep -x nm-applet` evita duplicar em reload) |
 | hypridle | — | exec-once imediato |
 | wallpaper_5.jpg | — | exec-once com sleep 0.5s |
 | XDG portals | — | exec-once com sleep 1s |
@@ -665,6 +666,8 @@ Documentação completa: [`docs/browser-tab-shifter.md`](docs/browser-tab-shifte
 **Centro:** relógio (clique abre painel Quickshell com player, calendário, tempo e status; tooltip mantém calendário nativo)
 
 **Direita:** CPU · RAM · rede · bluetooth · volume · indicador de perfil de energia (só aparece fora do Balanceado) · bateria/conservação · tray · hotspot invisível minúsculo no extremo direito para SwayNC
+
+**Tray — nm-applet (2026-09-17):** `nm-applet --indicator` autostarta condicionalmente no `hyprland.lua` (ver Autostart acima) para dar ícone de rede clicável no tray; o filtro `"ignore-pattern": "nm-applet"` do módulo `tray` no Waybar foi removido, senão o ícone recém-adicionado ficava escondido.
 
 **Workspaces — clique/scroll (2026-08-10):** `hyprland/workspaces` no Waybar 0.15.0 estável não troca de workspace no clique com o dispatcher Lua do Hyprland (`hyprland.lua`) — o módulo manda `dispatch workspace N` no formato antigo, que essa build do Hyprland rejeita ([Waybar#5008](https://github.com/Alexays/Waybar/issues/5008)). Scroll funciona porque cai num caminho diferente. Fix está no `master` do Waybar (PR #5013), ainda não lançado em release estável → pacote trocado de `waybar` (pacman) para `waybar-git` (AUR). Config ajustado:
 - `disable-scroll: false` — scroll também troca workspace.
