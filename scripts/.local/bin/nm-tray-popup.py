@@ -30,6 +30,42 @@ from gi.repository import DbusmenuGtk3, Gdk, GLib, Gtk  # noqa: E402
 
 GLib.set_prgname("nm-tray-popup")
 
+# Paleta já usada no Ghostty/Waybar/Hyprlock (ver tmux.conf): fundo #1d1d20,
+# texto #deddda, borda/separador #3a3a3e (tmux_power_g2), destaque #a0a0a0.
+# CssProvider fica só na tela deste processo — não afeta o tema GTK3 global
+# nem o ícone/menu nativo do nm-applet renderizado pelo próprio Waybar.
+_POPUP_CSS = b"""
+menu {
+    background-color: #1d1d20;
+    color: #deddda;
+    border: 1px solid #3a3a3e;
+    border-radius: 8px;
+    padding: 4px;
+}
+menu menuitem {
+    color: #deddda;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+menu menuitem:hover {
+    background-color: #a0a0a0;
+    color: #1d1d20;
+}
+menu separator {
+    background-color: #3a3a3e;
+    min-height: 1px;
+    margin: 4px 0;
+}
+"""
+
+
+def apply_theme():
+    provider = Gtk.CssProvider()
+    provider.load_from_data(_POPUP_CSS)
+    Gtk.StyleContext.add_provider_for_screen(
+        Gdk.Screen.get_default(), provider, Gtk.STYLE_PROVIDER_PRIORITY_USER
+    )
+
 
 def find_nm_applet_menu():
     bus = dbus.SessionBus()
@@ -47,6 +83,7 @@ def find_nm_applet_menu():
 
 
 def main():
+    apply_theme()
     bus_name, menu_path = find_nm_applet_menu()
     menu = DbusmenuGtk3.Menu.new(bus_name, menu_path)
 
