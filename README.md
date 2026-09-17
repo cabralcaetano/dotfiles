@@ -264,8 +264,8 @@ Ordem de inicialização definida no `hyprland.lua`:
 | CapsLock + H/J/K/L | Setas esquerda/baixo/cima/direita via `keyd` |
 | CapsLock + ; | `ç` via sequência Compose |
 | CapsLock + ' | dead tilde (`~`) aguardando próxima letra, ex.: `a` → `ã` |
-| RightCtrl / Menu | Compose key do Hyprland |
-| RightShift (tap) | Compose key via `keyd`; segurado continua Shift |
+| CapsLock + [ | dead acute (`'`) aguardando próxima letra, ex.: `a` → `á` |
+| Menu | Compose key do Hyprland |
 
 **Sistema**
 
@@ -590,11 +590,11 @@ referência técnica de schema/templates em [`themes/README.md`](themes/README.m
 
 Toggle `Super+I` alterna entre ABNT2 (notebook) e ANSI US (teclado mecânico externo) — era `Super+K`, liberado p/ foco de janela via `Super+H/J/K/L` (ver "Janelas" acima).
 
-O setup ativo usa layouts padrão (`br,us`) com `kb_options = compose:rctrl,compose:menu`. O antigo layout customizado `us-br` foi preservado em `legacy/xkb/`, mas está fora do fluxo ativo e não deve ser instalado por padrão.
+O setup ativo usa layouts padrão (`br,us`) com `kb_options = compose:menu`. O antigo layout customizado `us-br` foi preservado em `legacy/xkb/`, mas está fora do fluxo ativo e não deve ser instalado por padrão.
 
 Fcitx5 fica com a troca de grupo `Super+Space`/`Super+Shift+Space` desativada em `fcitx5/.config/fcitx5/config`, porque o Hyprland é dono de `Super+Space` para o layer anatômico de super workspace. A troca explícita de teclado continua em `Super+I`.
 
-`keyd` é o mecanismo ativo para navegação por home row e Compose: tap em `CapsLock` mantém CapsLock real e LED; segurar `CapsLock+h/j/k/l` emite `Left/Down/Up/Right`; `Right Ctrl` emite Compose; tap em `Right Shift` também emite Compose, mas segurar `Right Shift` continua como Shift. Como `LANG=pt_BR.UTF-8` escolhe uma tabela Compose sem sequências US comuns (`Multi_key + apostrophe + e`), `xcompose/.XCompose` inclui a tabela `en_US.UTF-8` para o layout US principal. A config do `keyd` fica versionada em `system/etc/keyd/default.conf` e precisa ser instalada em `/etc/keyd/default.conf`.
+`keyd` é o mecanismo ativo para navegação por home row e macros Compose no layer de CapsLock: tap em `CapsLock` mantém CapsLock real e LED; segurar `CapsLock+h/j/k/l` emite `Left/Down/Up/Right`; `CapsLock+;` emite `ç`; `CapsLock+'` inicia dead tilde para `ã`; `CapsLock+[` inicia dead acute para `á`. Como `LANG=pt_BR.UTF-8` escolhe uma tabela Compose sem sequências US comuns (`Multi_key + apostrophe + e`), `xcompose/.XCompose` inclui a tabela `en_US.UTF-8` para o layout US principal. A config do `keyd` fica versionada em `system/etc/keyd/default.conf` e precisa ser instalada em `/etc/keyd/default.conf`.
 
 O teclado mecânico AULA F75/Compx tem bug de firmware/receptor: Alt físico e Super físico chegam trocados. Antes isso era compensado no Hyprland com `altwin:swap_alt_win` por device; com `keyd` ativo, o Hyprland recebe `keyd-virtual-keyboard`, então a correção confiável fica em `system/etc/keyd/f75.conf` (`leftalt = layer(meta)`, `leftmeta = layer(alt)`). A regra `altwin:swap_alt_win` permanece no Hyprland como fallback se `keyd` for desativado.
 
