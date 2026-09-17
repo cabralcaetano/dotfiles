@@ -425,6 +425,20 @@ hl.window_rule({
     center = true,
 })
 
+-- nm-tray-popup: janela host de 1x1 usada só pra ancorar o popup GTK do
+-- menu do nm-applet (xdg_popup no Wayland exige uma xdg_surface pai
+-- mapeada; sem isso o GtkMenu não aparece). Fica perto do canto superior
+-- direito, onde fica o ícone de wifi na Waybar. pin: true pra funcionar
+-- a partir de qualquer workspace.
+hl.window_rule({
+    name  = "nm-tray-popup-host",
+    match = { class = "^(nm-tray-popup)$" },
+    float = true,
+    size  = {1, 1},
+    move  = {1500, 2},
+    pin   = true,
+})
+
 -- Waydroid/YouCine: força janela fullscreen e faz o Android renderizar no
 -- tamanho lógico do monitor (1920x1200 / scale 1.25 = 1536x960).
 hl.window_rule({

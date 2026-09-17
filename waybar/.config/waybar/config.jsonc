@@ -192,7 +192,8 @@
   "format-ethernet": "󰈀",
   "format-disconnected": "󰤭",
   "format-icons": ["󰤯", "󰤢", "󰤥", "󰤨"],
-  "on-click": "$HOME/.local/bin/wifi-menu.sh",
+  "on-click": "python3 $HOME/.local/bin/nm-tray-popup.py",
+  "on-click-right": "$HOME/.local/bin/wifi-menu.sh",
   "tooltip-format-wifi": "{essid} {signalStrength}%"
   },
 
