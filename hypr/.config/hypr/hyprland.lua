@@ -425,6 +425,14 @@ hl.window_rule({
     center = true,
 })
 
+-- Diálogos do NetworkManager abrem flutuantes no workspace atual.
+hl.window_rule({
+    name   = "networkmanager-dialogs-float",
+    match  = { class = "^(nm-applet|nm-connection-editor)$" },
+    float  = true,
+    center = true,
+})
+
 -- nm-tray-popup: janela host de 1x1 usada só pra ancorar o popup GTK do
 -- menu do nm-applet (xdg_popup no Wayland exige uma xdg_surface pai
 -- mapeada; sem isso o GtkMenu não aparece). Fica perto do canto superior

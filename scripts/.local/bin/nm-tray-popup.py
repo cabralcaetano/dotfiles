@@ -97,7 +97,13 @@ def main():
 
     def do_popup():
         menu.attach_to_widget(host, None)
-        menu.connect("hide", lambda _w: Gtk.main_quit())
+
+        def quit_after_activation(_menu):
+            # DbusmenuGtk envia a ativação do item de forma assíncrona. Encerrar
+            # o loop no próprio sinal "hide" mata o processo antes do Event(clicked).
+            GLib.timeout_add(250, Gtk.main_quit)
+
+        menu.connect("hide", quit_after_activation)
         menu.show_all()
         menu.popup_at_widget(host, Gdk.Gravity.SOUTH_WEST, Gdk.Gravity.NORTH_WEST, None)
         return False
