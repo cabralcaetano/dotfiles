@@ -372,12 +372,12 @@ Usa `tuned-adm` via `tuned-ppd` para alternar entre quatro modos:
 
 | Perfil | Modo tuned | Uso |
 |---|---|---|
-| Super Economia | super-powersave | emergência/viagem longa; CPU capada em 50%, USB autosuspend, BT desliga se ocioso, brilho 25%, PCIe ASPM |
+| Super Economia | super-powersave | emergência/viagem longa; CPU capada em 50%, USB autosuspend, BT desliga se ocioso, brilho 20%, PCIe ASPM |
 | Economia | powersave | bateria/viagem curta; reduz responsividade, stock sem ASPM extra |
 | Balanceado | balanced | padrão diário normal do tuned/Arch: responsivo, turbo livre, stock |
 | Performance | latency-performance | VM/build/carga pesada |
 
-Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, cicla pro próximo); o botão `󰓅` no painel SwayNC (aberto clicando no sino da Waybar, `swaync-client -t`) abre um menu `fuzzel` pra escolher direto. Ciclo: Super Economia → Economia → Balanceado → Performance → Super Economia. Indicador aparece na Waybar apenas quando fora do Balanceado padrão.
+Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, cicla pro próximo); o botão `󰓅` no painel SwayNC (aberto clicando no sino da Waybar, `swaync-client -t`) abre um Ghostty flutuante com `fzf` para escolher direto. A seta `=>` é o cursor real e acompanha ↑/↓. Ciclo: Super Economia → Economia → Balanceado → Performance → Super Economia. Indicador aparece na Waybar apenas quando fora do Balanceado padrão.
 
 **Persistência no boot:** `tuned` em modo `manual` grava o último perfil em `/etc/tuned/active_profile` e restaura no boot (sem reset para default). O `default=balanced` de `/etc/tuned/ppd.conf` vale para clientes PPD. Com `tuned-ppd` ativo, o perfil base PPD também precisa ficar `balanced` (`/etc/tuned/ppd_base_profile`), senão eventos de bateria/AC podem reaplicar outro modo.
 
@@ -387,7 +387,7 @@ Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservatio
 - `[script]` próprio (`super-powersave/script.sh`), além do herdado de `powersave` — bloqueia Bluetooth via `rfkill` **só se `bluetoothctl devices Connected` vier vazio** (não derruba mouse/fone em uso). Dois `[script]` no mesmo profile são concatenados pelo merger do tuned (caso especial em `profiles/merger.py`), os dois rodam; `stop()` sempre desbloqueia ao sair do perfil (rollback automático do tuned; `rfkill unblock` é idempotente mesmo se `start()` não tinha bloqueado).
 - `[sysfs] /sys/module/pcie_aspm/parameters/policy=powersave` — PCIe ASPM força L0s/L1 em todo link suportado (NVMe, WiFi). `tuned` **não tem plugin nativo `pcie_aspm`** (confirmado em `/usr/lib/python3.14/site-packages/tuned/plugins/`) — uma primeira versão usava `[pcie_aspm] policy=powersave`, seção inexistente, ignorada em silêncio; corrigido pro plugin genérico `[sysfs]`.
 - `[sysfs] .../nvme_core/parameters/default_ps_max_latency_us=200000` — teto de latência mais permissivo pro APST do NVMe, permite estados de energia mais profundos do SSD (ganho marginal, mas sem risco).
-- Brilho: `power-profile.sh` (fora do tuned) salva o brilho atual em `/tmp/.power-profile-brightness-before-super-economia` e desce pra 25% ao entrar em Super Economia; restaura o valor salvo ao sair.
+- Brilho: `power-profile.sh` (fora do tuned) salva o brilho atual em `/tmp/.power-profile-brightness-before-super-economia` e desce pra 20% ao entrar em Super Economia; restaura o valor salvo ao sair.
 
 `powersave` (Economia) e `balanced` (Balanceado normal) continuam 100% stock. Validado offline com o `Loader` real do tuned antes de aplicar (merge do `include=powersave` mantém todas as seções stock + as novas). `${i:PROFILE_DIR}/script.sh` do `powersave` incluído resolve pro diretório dele mesmo — a expansão acontece na carga do arquivo de origem, antes do merge do `include` — só o `script.sh` novo (Bluetooth) precisa ser copiado.
 
@@ -396,7 +396,7 @@ A aplicação foi manual, fora do Stow (mesmo padrão usado na época para o `gr
 
 **Tooltip com tempo restante (2026-08-21):** o tooltip da Waybar (`battery-conservation.sh waybar`) mostra `energy_now`/`power_now` de `/sys/class/power_supply/BAT0` convertidos em horas:minutos (`Perfil · Preservação/100% · Xh YYmin restantes`) só quando `status=Discharging`. Carregando ou cheia, o sufixo some — a estimativa de tempo não faz sentido plugado na tomada.
 
-**Menu de escolha direta no painel SwayNC (2026-08-21):** o botão `` no painel SwayNC (`buttons-grid` do `swaync/config.json`) chamava `power-profile.sh` sem argumento — ciclava pro próximo perfil, igual ao clique na Waybar. Agora chama `power-profile.sh menu`, que abre um `fuzzel --dmenu` listando os 5 perfis (ícone + nome) e aplica direto o escolhido via a função `switch_to()` (mesma lógica de brilho/notify do ciclo, extraída pra evitar duplicação). Esc ou fechar sem escolher não faz nada. O clique na Waybar (`custom/battery-conservation`) continua ciclando — só o botão do painel abre o menu, por ser navegação de mouse onde escolha direta faz mais sentido que ciclar. **Correção junto:** a doc antiga dizia que `Super+N` abria o painel SwayNC — errado, esse bind é do painel do relógio (Quickshell); quem abre o SwayNC é o clique no sino da Waybar (`swaync-client -t`).
+**Menu de escolha direta no painel SwayNC (2026-08-21):** o botão `` no painel SwayNC (`buttons-grid` do `swaync/config.json`) chamava `power-profile.sh` sem argumento — ciclava pro próximo perfil, igual ao clique na Waybar. Agora chama `power-profile.sh menu`, que abre um Ghostty flutuante com `fzf` listando os 5 perfis (ícone + nome) e aplica direto o escolhido via a função `switch_to()` (mesma lógica de brilho/notify do ciclo, extraída pra evitar duplicação). A seta `=>` é o cursor real do `fzf`, então acompanha ↑/↓; o cabeçalho mostra o perfil atual. Esc ou fechar sem escolher não faz nada. O clique na Waybar (`custom/battery-conservation`) continua ciclando — só o botão do painel abre o menu, por ser navegação de mouse onde escolha direta faz mais sentido que ciclar. **Correção junto:** a doc antiga dizia que `Super+N` abria o painel SwayNC — errado, esse bind é do painel do relógio (Quickshell); quem abre o SwayNC é o clique no sino da Waybar (`swaync-client -t`).
 
 ## Aceleração de vídeo por hardware — Brave (2026-08-21)
 

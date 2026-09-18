@@ -370,6 +370,15 @@ hl.window_rule({
     center = true,
 })
 
+-- Menu de perfil de energia aberto pelo SwayNC: fecha o painel e flutua acima do workspace.
+hl.window_rule({
+    name   = "power-profile-menu-float",
+    match  = { class = "^(com.mitchellh.ghostty)$", title = "^power-profile-menu$" },
+    float  = true,
+    size   = {480, 220},
+    center = true,
+})
+
 -- GNOME Calendar aberto pelo painel Quickshell usa tamanho próximo do btop
 hl.window_rule({
     name   = "gnome-calendar-float",
