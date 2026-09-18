@@ -36,6 +36,18 @@ sudo nextdns activate
 - `-report-client-info` manda o hostname da máquina (`archlinux`) pro dashboard, pra identificar de qual device veio cada query nos Registros.
 - `nextdns activate` reescreve `/etc/resolv.conf` pra apontar `nameserver 127.0.0.1` (com comentário `# This file is managed by nextdns.`), via hook no NetworkManager. Reverter com `sudo nextdns deactivate`.
 
+### NetworkManager — DNS automático, sem overrides
+
+O NextDNS é o resolvedor efetivo do host porque controla `/etc/resolv.conf`; os perfis de rede não precisam apontar para Cloudflare, Google ou para o próprio NextDNS. Estado alvo para todo perfil Wi-Fi:
+
+- `ipv4.dns` e `ipv6.dns` vazios;
+- `ipv4.ignore-auto-dns` e `ipv6.ignore-auto-dns` em `no`;
+- IPv4 e IPv6 automáticos.
+
+Em 2026-09-17, os seis perfis Wi-Fi salvos foram auditados e os overrides restantes foram removidos. O DNS do DHCP pode aparecer em `nmcli device show`, mas as aplicações continuam consultando `127.0.0.1:53`.
+
+Os servidores manuais também não seriam fallback automático se o serviço parasse: enquanto `/etc/resolv.conf` apontar para localhost, a resolução falha. Para devolver o controle ao NetworkManager de forma deliberada, usar `sudo nextdns deactivate`.
+
 ### Config resultante — `/etc/nextdns.conf`
 
 ```

@@ -2,11 +2,11 @@
 
 Configuração de rede fora do stow (NetworkManager, DNS). Este documento existe para reproduzir a config numa máquina nova e para diagnosticar problemas recorrentes.
 
-> Desde a instalação do NextDNS (ver [`nextdns/nextdns.md`](../nextdns/nextdns.md)), `/etc/resolv.conf` é gerenciado pelo `nextdns.service` (`nameserver 127.0.0.1`, proxy DoH), não mais diretamente pelos servidores pinados abaixo via `nmcli`. O par `1.1.1.1`/`8.8.8.8` configurado na conexão NetworkManager continua existindo como config subjacente (relevante se algum dia `nextdns deactivate` for usado, ou pra outras conexões/redes sem NextDNS ativo), mas não é o resolver efetivo enquanto o NextDNS estiver rodando.
+> **Estado atual (2026-09-17):** o `nextdns.service` gerencia `/etc/resolv.conf` (`nameserver 127.0.0.1`, proxy DoH) e todos os seis perfis Wi-Fi salvos no NetworkManager usam DNS automático, sem servidores IPv4/IPv6 manuais. Ver [`nextdns/nextdns.md`](../nextdns/nextdns.md).
 
 ---
 
-## 1. DNS — não usar o DNS do provedor
+## 1. DNS — política atual e histórico do provedor
 
 ### O problema (2026-07-11)
 
@@ -35,35 +35,43 @@ s.sendto(q, ('177.184.73.32', 53))
 print(s.recvfrom(512))"
 ```
 
-### A solução
+### Política atual — NextDNS + DNS automático no NetworkManager (2026-09-17)
 
-Fixar DNS público na conexão e ignorar o DNS do DHCP:
+Com o cliente NextDNS instalado no host, os perfis do NetworkManager não devem fixar Cloudflare, Google ou outro resolvedor:
+
+- `ipv4.dns` e `ipv6.dns`: vazios;
+- `ipv4.ignore-auto-dns` e `ipv6.ignore-auto-dns`: `no`;
+- método IPv4/IPv6: automático.
+
+O DNS entregue pelo DHCP ainda aparece em `nmcli device show`, mas não é o resolvedor usado pelas aplicações: `/etc/resolv.conf` aponta para `127.0.0.1`, onde o NextDNS recebe DNS53 e encaminha por DoH para o profile `932497`.
+
+DNS manual no perfil também não funciona como fallback se o daemon NextDNS cair, pois `/etc/resolv.conf` continua apontando para localhost. A recuperação deliberada é `sudo nextdns deactivate`, que devolve o controle ao NetworkManager; nesse caso ele volta a usar o DNS automático da rede.
+
+Para limpar um perfil legado:
 
 ```bash
-nmcli connection modify "TAPI WIFI -GIULIBROW 5G" \
-  ipv4.dns "1.1.1.1 1.0.0.1" ipv4.ignore-auto-dns yes \
-  ipv6.dns "2606:4700:4700::1111 2606:4700:4700::1001" ipv6.ignore-auto-dns yes
-nmcli connection up "TAPI WIFI -GIULIBROW 5G"
+nmcli connection modify "<perfil>" \
+  ipv4.dns "" ipv4.ignore-auto-dns no \
+  ipv6.dns "" ipv6.ignore-auto-dns no
+nmcli device reapply wlan0  # somente se esse perfil estiver ativo
 ```
 
-> A config é **por conexão**. Em outra rede Wi-Fi com o mesmo problema, repetir trocando o nome da conexão (`nmcli connection show` lista todas).
-
-Verificar depois:
+Verificação do estado efetivo:
 
 ```bash
-cat /etc/resolv.conf   # deve mostrar 1.1.1.1 e 1.0.0.1
+nextdns status              # running
+cat /etc/resolv.conf        # nameserver 127.0.0.1
+getent ahosts example.com   # resolução IPv4/IPv6 funcionando
 ```
 
-### Escolha dos servidores
+### Solução histórica — DNS público fixado (2026-07-11 a 2026-09-17)
 
-Em uso (desde 2026-07-21): **`1.1.1.1` + `8.8.8.8`** — ver episódio abaixo.
+Antes da adoção do NextDNS, a solução para o DNS defeituoso do provedor foi ignorar o DNS do DHCP e fixar servidores públicos por conexão. O par passou de `1.1.1.1`/`1.0.0.1` para `1.1.1.1`/`8.8.8.8` após o incidente de rota descrito abaixo. Essa configuração foi removida de todos os perfis Wi-Fi em 2026-09-17 e não deve ser recriada enquanto o NextDNS estiver ativo.
 
-Anterior (2026-07-11 a 2026-07-21): `1.1.1.1` + `1.0.0.1`, par oficial do Cloudflare — mais rápido testado à época (~10ms), política de privacidade forte (logs descartados em 24h), consistência entre primário e secundário. Trocado após o episódio de perda de pacotes específica ao Cloudflare.
-
-| Par | Vantagem | Desvantagem |
+| Par histórico | Vantagem | Desvantagem |
 |---|---|---|
-| `1.1.1.1` + `8.8.8.8` (atual) | Redundância real entre provedores | Fallback Google com política/respostas diferentes |
-| `1.1.1.1` + `1.0.0.1` | Consistência, privacidade uniforme | Mesmo provedor: pane/rota ruim derruba os dois |
+| `1.1.1.1` + `8.8.8.8` | Redundância entre provedores | Fallback Google com política/respostas diferentes |
+| `1.1.1.1` + `1.0.0.1` | Consistência e privacidade uniforme | Mesmo provedor: pane/rota ruim derruba os dois |
 | `9.9.9.9` (Quad9) | Bloqueia malware/phishing no resolver | Latência um pouco maior no BR |
 
 ### O problema (2026-07-21) — perda de pacotes específica ao Cloudflare
@@ -84,7 +92,7 @@ curl -o /dev/null -s -w "%{time_total}s | %{speed_download} B/s\n" \
   "https://speed.cloudflare.com/__down?bytes=25000000" --max-time 15
 ```
 
-Solução: mesmo comando de `nmcli connection modify` da seção acima, trocando o par para `1.1.1.1 8.8.8.8` (sem precisar de `sudo` — modificar a própria conexão de usuário no NetworkManager não exige root nesta config).
+Solução aplicada na época: trocar o par manual para `1.1.1.1`/`8.8.8.8`. Esse workaround foi aposentado com o NextDNS e removido de todos os perfis Wi-Fi em 2026-09-17; hoje o diagnóstico continua útil para distinguir problema de rota, mas não é motivo para recriar DNS manual no NetworkManager.
 
 > Se o padrão se repetir (perda de pacotes isolada a um destino específico, resto da rede limpo), é sinal de problema de peering/rota do provedor até aquele destino, não da rede local. Vale reavaliar o par de DNS ou reportar ao provedor se persistir.
 
