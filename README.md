@@ -477,6 +477,8 @@ Sequência do `hypridle.conf`:
 
 Alternância: clique no ícone de bateria na Waybar (`custom/battery-conservation`, ver [Waybar](#waybar)) cicla pro próximo perfil. No painel SwayNC (aberto clicando no sino da Waybar), o botão `󰓅` abre um Ghostty flutuante com `fzf`; a seta `=>` é o cursor real e acompanha ↑/↓, enquanto o cabeçalho mostra o perfil atual. Ciclo da Waybar: Super Economia → Economia → Balanceado → Balanceado+ → Performance → Super Economia.
 
+Atalho direto: `Super+Shift+P` abre o mesmo gerenciador em Ghostty flutuante (`power-profile.sh menu`), sem depender da Waybar nem do painel SwayNC. `Super+P` continua reservado ao `pseudo` do Hyprland; por isso o menu usa o modificador `Shift`.
+
 **Persistência no boot (2026-09-14):** o `tuned` roda em modo `manual` (`profile_mode`) e grava o último perfil escolhido em `/etc/tuned/active_profile`, restaurando-o a cada boot — mas o `tuned-ppd` (D-Bus-ativado por qualquer cliente PPD, mesmo com o serviço `disabled` no systemd) reaplica por cima o perfil resolvido a partir de `/etc/tuned/ppd_base_profile` toda vez que sobe, inclusive no boot. Sem alinhar os dois, o boot podia cair silenciosamente em Economia (`ppd_base_profile=power-saver` de uma sessão anterior sobrescrevendo o `balanced-battery` do `active_profile`). Fix: `/etc/tuned/ppd.conf` mapeia `balanced` (tier PPD) para `balanced-battery` (não para `balanced` puro — esse só fica acessível como Balanceado+, fora do tier PPD de 3 níveis) nas seções `[profiles]` e `[battery]`, e `/etc/tuned/ppd_base_profile` fica fixo em `balanced`. Config canônica em `tuned/etc/tuned/ppd.conf` do repo; aplicação em `/etc/tuned/` é manual (mesmo padrão do `super-powersave`, fora do Stow).
 
 **Super Economia (2026-08-21):** `super-powersave` é perfil custom deste repo (sem equivalente no pacote `tuned`), herda `powersave` e soma PCIe ASPM `powersave`, `max_perf_pct=50`, `usb autosuspend=1`, brilho em 20% (via `power-profile.sh`, restaura ao sair) e bloqueio de Bluetooth via `rfkill` — só se `bluetoothctl devices Connected` vier vazio (não derruba mouse/fone em uso; desbloqueia sozinho ao trocar de perfil). Economia e Balanceado continuam 100% stock. Os arquivos do profile ficam em `tuned/etc/tuned/` e são copiados manualmente para `/etc/tuned/`; registro da construção em [`docs/history/dotfiles-historico.md`](docs/history/dotfiles-historico.md).
@@ -631,7 +633,7 @@ Documentação completa: [`docs/keyboard-keyd.md`](docs/keyboard-keyd.md).
 | `screenshot.sh` | Screenshots fullscreen/área/clipboard via grim+slurp |
 | `volume.sh` | Controle de volume com notificação |
 | `brightness.sh` | Controle de brilho |
-| `power-profile.sh` | Alterna perfis tuned-adm |
+| `power-profile.sh` | Alterna perfis tuned-adm; `menu` abre o gerenciador via `Super+Shift+P` ou botão `󰓅` do SwayNC |
 | `power-confirm.sh` | Confirma desligamento/reinicialização via Fuzzel antes de chamar `systemctl` |
 | `clock-panel-toggle.sh` | Toggle do painel Quickshell do relógio via IPC |
 | `clock-panel-status.sh` | Métricas do painel Quickshell: CPU, MEM, DISK e GPU em barras |
