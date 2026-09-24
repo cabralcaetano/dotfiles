@@ -6,24 +6,33 @@
 
 Manter navegação por abas previsível nos browsers principais:
 
-- Brave: extensão local para mover abas por atalho nativo do browser.
+- Chromium/Chrome: extensão local para mover abas por atalho nativo do browser.
 - Zen Browser: extensão local `Tab Shifter` para mover abas verticais com `Alt+Shift+J/K`.
 - Zen Browser: nova aba manual entra no fim da lista vertical, preservando WhatsApp em `Alt+1`.
 
-## Brave — extensão original
+## Chromium/Chrome — extensão MV3
 
 Source versionado:
 
 - `scripts/.local/share/browser-tab-mover/manifest.json`
 - `scripts/.local/share/browser-tab-mover/background.js`
+- `scripts/.local/bin/browser-tab-mover-sync-shortcuts.sh`
 
-Instalação ativa observada no Brave profile `swprofile1`:
+Identidade da extensão:
 
 - Extension ID: `lbbccpioeaehfbmgncdkoncheiebaeja`
-- Path carregado pelo Brave: `/home/caetano/Projects/dotfiles/scripts/.local/share/browser-tab-mover`
 - Nome no manifest: `OMP Tab Mover`
+- Permissão: `tabs`
+- Ação: move a aba ativa via `chrome.tabs.move`
 
-Atalhos configurados no Brave via `Preferences > extensions.commands`:
+Instalação ativa no Chromium principal:
+
+- Profile: `~/.config/chromium/Profile 2`
+- External extension: `~/.config/chromium/External Extensions/lbbccpioeaehfbmgncdkoncheiebaeja.json`
+- Source local: `~/.local/share/browser-tab-mover -> ~/Projects/dotfiles/scripts/.local/share/browser-tab-mover`
+- CRX local: `~/.local/share/browser-tab-mover.crx`
+
+Atalhos gravados em `Preferences > extensions.commands`:
 
 | Atalho | Comando |
 |---|---|
@@ -32,11 +41,15 @@ Atalhos configurados no Brave via `Preferences > extensions.commands`:
 | `Alt+Shift+1..9` | `move-to-1..9` |
 | `Alt+Shift+0` | `move-to-10` |
 
-O manifest do Brave não fixa `suggested_key`; os atalhos ficam no profile do Brave.
+Reaplicar atalhos com o navegador fechado:
+
+```bash
+~/.local/bin/browser-tab-mover-sync-shortcuts.sh ~/.config/chromium/Profile\ 2/Preferences
+```
 
 ## Zen Browser — port local
 
-Zen é Firefox/Gecko, então a extensão do Brave foi portada para Manifest V2 com `browser.*` APIs e empacotada como XPI local.
+Zen é Firefox/Gecko, então a extensão MV3 do Chromium/Chrome foi portada para Manifest V2 com `browser.*` APIs e empacotada como XPI local.
 
 Source versionado:
 
