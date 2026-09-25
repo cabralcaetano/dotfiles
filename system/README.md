@@ -21,6 +21,8 @@ esse mesmo bloco como pendência, em vez de aplicá-lo.
 | `etc/keyd/default.conf` | keyboard | CapsLock normal no tap; Caps+h/j/k/l como setas vim para teclados gerais |
 | `etc/keyd/f75.conf` | keyboard | Mesmo layer de setas + correção Alt/Super para AULA F75/Compx (`3554:fa09`, `1d57:fa60`) |
 | `etc/nftables.conf` | firewall | Firewall único da máquina. Substituiu a convivência ufw+nftables, e restringe SSH à tailnet em vez de aceitar em qualquer interface |
+| `etc/chromium/policies/managed/pwa-install.json` | browser | desativa instalação manual de PWA/web app para ocultar o ícone “instalar app” do Chromium; ver `docs/ungoogled-chromium.md` |
+| `etc/chromium/policies/managed/startup-homepage.json` | browser | `RestoreOnStartup=1` — restaura a sessão real (abas que estavam de fato abertas) em vez de forçar uma lista fixa de URLs |
 
 ## Instalação
 
@@ -35,6 +37,8 @@ sudo install -Dm644 system/etc/systemd/zram-generator.conf /etc/systemd/zram-gen
 sudo install -Dm644 system/etc/keyd/default.conf             /etc/keyd/default.conf
 sudo install -Dm644 system/etc/keyd/f75.conf                 /etc/keyd/f75.conf
 sudo install -Dm644 system/etc/nftables.conf                 /etc/nftables.conf
+sudo install -Dm644 system/etc/chromium/policies/managed/pwa-install.json /etc/chromium/policies/managed/pwa-install.json
+sudo install -Dm644 system/etc/chromium/policies/managed/startup-homepage.json /etc/chromium/policies/managed/startup-homepage.json
 
 sudo sysctl --system
 sudo systemctl restart earlyoom
@@ -61,6 +65,8 @@ zramctl
 # keyd deve estar ativo e configs válidas
 systemctl is-active keyd
 keyd check /etc/keyd/default.conf /etc/keyd/f75.conf
+
+# Chromium deve listar WebAppInstallByUserEnabled=false e RestoreOnStartup=1 em chrome://policy
 ```
 
 ## Contexto
