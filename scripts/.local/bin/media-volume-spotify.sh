@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Controls Spotify's own player volume (the slider inside the Spotify UI).
-# During Brave/WhatsApp ducking, the desired Spotify volume is persisted in
+# Controls Spotifast's MPRIS volume (the slider inside the app).
+# During Chromium/WhatsApp ducking, the desired volume is persisted in
 # DUCK_STATE while the PipeWire stream stays capped at DUCK_LEVEL.
 
-PLAYER="${SPOTIFY_PLAYER:-spotify}"
+PLAYER="${SPOTIFY_PLAYER:-spotifast}"
 DUCK_LEVEL=30
-DUCK_STATE="${XDG_RUNTIME_DIR:-/run/user/$UID}/spotify-duck-volume"
-MUTE_STATE="${XDG_RUNTIME_DIR:-/run/user/$UID}/spotify-panel-volume-before-mute"
+DUCK_STATE="${XDG_RUNTIME_DIR:-/run/user/$UID}/spotifast-duck-volume"
+MUTE_STATE="${XDG_RUNTIME_DIR:-/run/user/$UID}/spotifast-panel-volume-before-mute"
 
-spotify_id() {
+spotifast_id() {
   pactl -f json list sink-inputs 2>/dev/null \
-    | jq -r '.[] | select(.properties["application.name"] == "Spotify") | .properties["object.id"]' \
+    | jq -r '.[] | select(.properties["application.name"] == "Spotifast") | .properties["object.id"]' \
     | sed -n '1p'
 }
 
@@ -102,7 +102,7 @@ print_state() {
   echo "${vol:-0}|$muted"
 }
 
-ID="$(spotify_id || true)"
+ID="$(spotifast_id || true)"
 
 case "${1:-get}" in
   up)

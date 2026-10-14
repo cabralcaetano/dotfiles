@@ -6,23 +6,23 @@ DUCK_LEVEL=0.3
 FADE_STEPS=20
 FADE_DELAY=0.03
 is_ducked=false
-saved_spotify_volume=""
-DUCK_STATE="${XDG_RUNTIME_DIR:-/run/user/$UID}/spotify-duck-volume"
+saved_spotifast_volume=""
+DUCK_STATE="${XDG_RUNTIME_DIR:-/run/user/$UID}/spotifast-duck-volume"
 
 
 
-get_spotify_id() {
-  local spotify_client
-  spotify_client=$(wpctl status | grep -i "spotify" | grep -oP '^\s+\K\d+' | head -1)
-  [ -z "$spotify_client" ] && return
+get_spotifast_id() {
+  local spotifast_client
+  spotifast_client=$(wpctl status | grep -i "spotifast" | grep -oP '^\s+\K\d+' | head -1)
+  [ -z "$spotifast_client" ] && return
 
-  pactl list sink-inputs 2>/dev/null | awk -v cid="\"$spotify_client\"" '
+  pactl list sink-inputs 2>/dev/null | awk -v cid="\"$spotifast_client\"" '
     /client\.id /  { matched = ($3 == cid) }
     /object\.id /  { if (matched) { gsub(/"/, "", $3); print $3; exit } }
   '
 }
 
-get_spotify_volume() {
+get_spotifast_volume() {
   wpctl get-volume "$1" 2>/dev/null | awk '/^Volume:/ { print $2; exit }'
 }
 
@@ -79,12 +79,12 @@ resolve_hyprland_env() {
   return 1
 }
 
-has_whatsapp_zen_window() {
+has_whatsapp_chromium_window() {
   resolve_hyprland_env || return 1
 
   hyprctl clients 2>/dev/null | awk '
     /^Window / {
-      if (class ~ /zen/ && title ~ /whatsapp/) found = 1
+      if (class ~ /chromium/ && title ~ /whatsapp/) found = 1
       class = ""; title = ""
       next
     }
@@ -98,70 +98,70 @@ has_whatsapp_zen_window() {
       next
     }
     END {
-      if (class ~ /zen/ && title ~ /whatsapp/) found = 1
+      if (class ~ /chromium/ && title ~ /whatsapp/) found = 1
       exit found ? 0 : 1
     }
   '
 }
 
-check_zen() {
-  local zen_audio
-  zen_audio=$(pactl list sink-inputs 2>/dev/null | awk '
-    /^Entrada|^Sink Input/ {
-      if (zen && playing) count++
-      zen=0; playing=0
+check_chromium() {
+  local chromium_audio
+  chromium_audio=$(LC_ALL=C pactl list sink-inputs 2>/dev/null | awk '
+    /^Sink Input/ {
+      if (chromium && playing) count++
+      chromium=0; playing=0
     }
-    /application\.process\.binary.*"zen"/ { zen=1 }
+    /application\.process\.binary.*"chromium"/ { chromium=1 }
     /Cork(ed)?:.*(não|no)/ { playing=1 }
     END {
-      if (zen && playing) count++
+      if (chromium && playing) count++
       print count+0
     }
   ')
 
-  [ "${zen_audio:-0}" -eq 0 ] && echo 0 && return
+  [ "${chromium_audio:-0}" -eq 0 ] && echo 0 && return
 
-  if has_whatsapp_zen_window; then
-    echo "$zen_audio"
+  if has_whatsapp_chromium_window; then
+    echo "$chromium_audio"
   else
     echo 0
   fi
 }
 
-zen_really_stopped() {
+chromium_really_stopped() {
   for i in 1 2 3; do
-    [ "$(check_zen)" -gt 0 ] && return 1
+    [ "$(check_chromium)" -gt 0 ] && return 1
     sleep 0.3
   done
   return 0
 }
 
 while true; do
-  SPOTIFY_ID=$(get_spotify_id)
-  ZEN_PLAYING=$(check_zen)
+  SPOTIFAST_ID=$(get_spotifast_id)
+  CHROMIUM_PLAYING=$(check_chromium)
 
-  if [ "$ZEN_PLAYING" -gt 0 ] && [ "$is_ducked" = "false" ] && [ -n "$SPOTIFY_ID" ]; then
-    saved_spotify_volume=$(get_spotify_volume "$SPOTIFY_ID")
-    if [ -n "$saved_spotify_volume" ]; then
-      printf '%s\n' "$saved_spotify_volume" > "$DUCK_STATE"
-      echo "$(date +%T.%N) - Zen tocando, fade_out para preservar volume $saved_spotify_volume"
-      fade_out "$SPOTIFY_ID" "$saved_spotify_volume"
+  if [ "$CHROMIUM_PLAYING" -gt 0 ] && [ "$is_ducked" = "false" ] && [ -n "$SPOTIFAST_ID" ]; then
+    saved_spotifast_volume=$(get_spotifast_volume "$SPOTIFAST_ID")
+    if [ -n "$saved_spotifast_volume" ]; then
+      printf '%s\n' "$saved_spotifast_volume" > "$DUCK_STATE"
+      echo "$(date +%T.%N) - Chromium tocando, fade_out para preservar volume $saved_spotifast_volume"
+      fade_out "$SPOTIFAST_ID" "$saved_spotifast_volume"
       is_ducked=true
     fi
-  elif [ "$ZEN_PLAYING" -eq 0 ] && [ "$is_ducked" = "true" ]; then
-    if zen_really_stopped; then
+  elif [ "$CHROMIUM_PLAYING" -eq 0 ] && [ "$is_ducked" = "true" ]; then
+    if chromium_really_stopped; then
       if [ -f "$DUCK_STATE" ]; then
-        saved_spotify_volume=$(cat "$DUCK_STATE")
+        saved_spotifast_volume=$(cat "$DUCK_STATE")
       fi
-      echo "$(date +%T.%N) - Zen parou, fade_in para $saved_spotify_volume"
-      SPOTIFY_ID=$(get_spotify_id)
-      if [ -n "$SPOTIFY_ID" ] && [ -n "$saved_spotify_volume" ]; then
-        current_spotify_volume=$(get_spotify_volume "$SPOTIFY_ID")
-        [ -n "$current_spotify_volume" ] && fade_in "$SPOTIFY_ID" "$current_spotify_volume" "$saved_spotify_volume"
+      echo "$(date +%T.%N) - Chromium parou, fade_in para $saved_spotifast_volume"
+      SPOTIFAST_ID=$(get_spotifast_id)
+      if [ -n "$SPOTIFAST_ID" ] && [ -n "$saved_spotifast_volume" ]; then
+        current_spotifast_volume=$(get_spotifast_volume "$SPOTIFAST_ID")
+        [ -n "$current_spotifast_volume" ] && fade_in "$SPOTIFAST_ID" "$current_spotifast_volume" "$saved_spotifast_volume"
       fi
       echo "$(date +%T.%N) - fade_in concluido"
       rm -f "$DUCK_STATE"
-      saved_spotify_volume=""
+      saved_spotifast_volume=""
       is_ducked=false
     fi
   fi

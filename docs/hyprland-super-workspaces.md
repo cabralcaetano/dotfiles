@@ -208,10 +208,10 @@ Apps fixos do boot entram no super workspace `1`:
 | Zen Browser | `name:super-1-1 silent` |
 | Ghostty/tmux wiki-ia | `name:super-1-2 silent` |
 | Obsidian | `name:super-1-2 silent` |
-| Spotify | `name:super-1-3 silent` |
+| Spotifast | `name:super-1-3 silent` |
 | Discord | `name:super-1-4 silent` |
 
-Isso preserva o layout antigo (`1` browser, `2` terminal/Obsidian, `3` Spotify, `4` Discord), mas dentro do banco `super-1-*`.
+Isso preserva o layout (`1` browser, `2` terminal/Obsidian, `3` Spotifast, `4` Discord) dentro do banco `super-1-*`.
 
 ## Adicionar outro super workspace
 
@@ -279,10 +279,10 @@ era chamado pelos helpers de profile; hoje é invocação manual. O equivalente 
 Zen é a extensão `Tab Shifter`, ver
 [`browser-tab-shifter.md`](browser-tab-shifter.md).
 
-**Fora do escopo de propósito:** Spotify e Discord ficam nativos (Electron).
-O `zen-duck.sh` identifica o Spotify pelo client PipeWire nativo
-(`get_spotify_id` via `wpctl status`) e só abaixa o volume quando há áudio do
-Zen com janela do WhatsApp visível.
+**Fora do escopo de propósito:** Spotifast e Discord ficam como apps nativos.
+O `chromium-duck.sh` identifica o Spotifast pelo client PipeWire
+(`get_spotifast_id` via `wpctl status`) e abaixa o volume quando há áudio do
+Chromium e uma janela com WhatsApp no título; não identifica a aba emissora.
 
 ## Comandos úteis
 

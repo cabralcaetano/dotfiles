@@ -20,7 +20,7 @@ local browser     = "chromium --new-window"
 local mainMod     = "SUPER"
 local vscode      = "code"
 local discord     = "discord"
-local spotify     = "spotify-launcher"
+local spotifast   = os.getenv("HOME") .. "/.local/bin/spotifast"
 local obsidian    = "flatpak run md.obsidian.Obsidian"
 local obsidianQuickNote = "~/.config/hypr/scripts/obsidian-quick-note.sh"
 local waterReminder = "~/.local/bin/water-reminder"
@@ -50,9 +50,8 @@ hl.on("hyprland.start", function()
     -- aplicativos com workspace fixo, no super workspace 1 (padrão do boot)
     hl.dispatch(hl.dsp.exec_cmd(browser, { workspace = "name:super-1-1 silent" }))
     hl.dispatch(hl.dsp.exec_cmd(terminal .. " -e zsh -lc \"tmux new-session -A -s wiki-ia -c ~/Projects/wiki-ia\"", { workspace = "name:super-1-2 silent" }))
-    hl.dispatch(hl.dsp.exec_cmd(spotify, { workspace = "name:super-1-3 silent" }))
+    hl.dispatch(hl.dsp.exec_cmd(spotifast, { workspace = "name:super-1-3 silent" }))
 
-    hl.exec_cmd("bash ~/.config/hypr/autostart.sh")
     hl.exec_cmd("~/.local/bin/super-workspace-urgent-watch.sh")
 end)
 
@@ -201,7 +200,7 @@ hl.bind(mainMod .. " + C", hl.dsp.window.close())
 hl.bind(mainMod .. " + V", hl.dsp.window.float())
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + A", hl.dsp.layout("togglesplit")) -- era + J; liberado p/ Super+H/J/K/L de foco
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(spotify))
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd(spotifast))
 
 -- Tela cheia
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen({

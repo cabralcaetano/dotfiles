@@ -36,6 +36,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 - [Instalação](#instalação)
 - [Estrutura do repo](#estrutura-do-repo)
 - [Autostart](#autostart)
+- [Spotifast](#spotifast)
 - [Keybindings](#keybindings)
 - [Shell — Zsh](#shell--zsh)
 - [Terminal — Ghostty](#terminal--ghostty)
@@ -110,6 +111,7 @@ O que cada arquivo resolve e como verificar: [`system/README.md`](system/README.
 > | **SDDM Silent theme** | `/etc/sddm.conf.d/`, `/usr/share/sddm/` | aplicar manualmente; ver `sddm/` e o registro em [`docs/history/dotfiles-historico.md`](docs/history/dotfiles-historico.md) |
 > | **Battery conservation helper** | `/usr/local/sbin`, `/etc/systemd/system`, `/etc/sudoers.d` | `~/.local/bin/install-battery-conservation-root.sh` |
 > | **Antigravity desktop entries** | `~/.local/share/applications`, `~/.config/mimeapps.list` | `stow --target="$HOME" desktop-apps` após extrair os apps em `~/.local/opt` |
+> | **Spotifast** | `~/.local/bin`, desktop entry e ícone do usuário | instalação manual da release oficial; ver [`docs/spotifast.md`](docs/spotifast.md) |
 > | **Snapshots Btrfs** | snapper + grub-btrfs | ver [`docs/arch-migration.md §1.2`](docs/arch-migration.md) |
 > | **Windows VM / Incogniton** | libvirt/QEMU, Windows guest | ver [`docs/windows-vm-incogniton.md`](docs/windows-vm-incogniton.md) |
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
@@ -148,7 +150,7 @@ bootstrap.sh    → instalação idempotente (pacotes, flatpaks, plugins zsh/tmu
 packages/       → manifestos reproduzíveis: pacman.txt, aur.txt,
                   flatpak.txt, vscode-extensions.txt
 hypr/           → hyprland.lua, hypridle.conf, hyprlock.conf,
-                  autostart.sh, workspace-float.lua, super-workspaces.txt
+                  workspace-float.lua, super-workspaces.txt
                   (hyprland.lua migrado de hyprland.conf em 2026-08-07 — hyprlang
                   deprecated desde Hyprland 0.55, suporte removido no 0.57;
                   original em legacy/hyprland-conf/)
@@ -203,12 +205,23 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Zen Browser | super workspace 1 / slot 1 (`name:super-1-1`) | `[workspace name:super-1-1 silent]` |
 | ghostty | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
 | obsidian (flatpak) | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
-| spotify | super workspace 1 / slot 3 (`name:super-1-3`) | `[workspace name:super-1-3 silent]` |
+| Spotifast | super workspace 1 / slot 3 (`name:super-1-3`) | binário nativo direto em `~/.local/bin/spotifast` com workspace silencioso |
 | discord | super workspace 1 / slot 4 (`name:super-1-4`) | `[workspace name:super-1-4 silent]` |
 
-> Spotify e Discord usam `move_when_ready` porque têm updaters que quebram o `[workspace X silent]`.
+O Spotifast não usa launcher/updater intermediário no boot; o Hyprland executa
+o binário diretamente. O antigo `autostart.sh`, que esperava a janela Electron
+do Spotify para movê-la depois, foi removido.
 
 ---
+## Spotifast
+
+Cliente Spotify atual: Spotifast `0.13.2`, nativo em Rust/egui, instalado para o
+usuário em `~/.local/bin/spotifast`. `Super+M`, o autostart e a integração MPRIS
+do painel apontam para ele. Instalação, OAuth, atualização e remoção:
+[`docs/spotifast.md`](docs/spotifast.md).
+
+---
+
 
 ## Keybindings
 
@@ -221,7 +234,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Super+E | Gerenciador de arquivos (Nautilus) |
 | Super+R | Launcher (Fuzzel) |
 | Super+D | Discord |
-| Super+M | Spotify |
+| Super+M | Spotifast |
 | Super+O | Obsidian |
 | Super+Ctrl+N | Bloco de notas (GNOME Text Editor) |
 | Super+Shift+C | VS Code |
@@ -515,11 +528,11 @@ Detalhes, política e procedimento de restore em
 
 ## Audio Ducking
 
-Abaixa automaticamente o volume do Spotify quando áudio do WhatsApp Web toca no Zen Browser e restaura o volume exato que estava antes do ducking.
+Abaixa automaticamente o volume do Spotifast quando há áudio do Chromium e uma janela do WhatsApp Web; restaura o volume anterior ao terminar.
 
-- **Serviço:** `zen-duck.service` (systemd user)
-- **Implementação atual:** script PipeWire/Pulse com polling de áudio do Zen + filtro de janela WhatsApp no Hyprland
-  - Outros sites com áudio no Zen não ativam ducking.
+- **Serviço:** `chromium-duck.service` (systemd user), desabilitado por escolha do operador.
+- **Implementação atual:** script PipeWire/Pulse com polling do stream do Spotifast + filtro de título WhatsApp no Hyprland.
+- **Limitação:** não identifica a aba emissora; áudio de outro site pode ativar o ducking se outra janela tiver WhatsApp no título.
 
 ---
 
@@ -638,7 +651,7 @@ Documentação completa: [`docs/keyboard-keyd.md`](docs/keyboard-keyd.md).
 | `clock-panel-toggle.sh` | Toggle do painel Quickshell do relógio via IPC |
 | `clock-panel-status.sh` | Métricas do painel Quickshell: CPU, MEM, DISK e GPU em barras |
 | `clock-panel-weather.sh` | Tempo atual + previsão das próximas horas para o painel Quickshell |
-| `media-volume-spotify.sh` | Controle do volume interno do Spotify (slider do app) para o painel Quickshell; durante ducking atualiza o volume desejado e mantém o stream PipeWire temporariamente limitado |
+| `media-volume-spotify.sh` | Controle do volume MPRIS do Spotifast para o painel Quickshell; durante ducking atualiza o volume desejado e mantém o stream PipeWire temporariamente limitado |
 | `wifi-menu.sh` | Menu WiFi via Fuzzel |
 | `kb-toggle.sh` | Alterna layout de teclado ABNT2/ANSI |
 | `workspace-float.sh` | Toggle workspace float mode — flota todas as janelas, desativa warp no Alt+Tab |
@@ -683,7 +696,7 @@ Documentação completa: [`docs/browser-tab-shifter.md`](docs/browser-tab-shifte
 - Removido `"on-click": "activate"` — é sintaxe do `sway/workspaces`; o `hyprland/workspaces` troca no clique nativamente (sem config extra), e deixar essa chave quebrava o handler.
 - `#workspaces button { padding: 0 8px; min-width: 16px; }` em `style.css` — numeral romano sozinho tinha área de clique minúscula.
 
-**Alcance maior que o Waybar:** o mesmo dispatch antigo (`hyprctl dispatch focuswindow "class:^(X)$"`) quebra em qualquer script, não só no Waybar. Achados e corrigidos: `scripts/.local/bin/media-open-spotify.sh` (clique na capa do álbum no painel Quickshell foca o Spotify) e `scripts/.local/bin/waybar-calendar.sh`. Forma correta: `hyprctl dispatch "hl.dsp.focus({ window = 'class:^(X)\$' })"`. Os dois arquivos em `~/.local/bin/` tinham virado cópias soltas (symlink do Stow quebrado) — restaurados.
+**Alcance maior que o Waybar:** o mesmo dispatch antigo (`hyprctl dispatch focuswindow "class:^(X)$"`) quebra em qualquer script, não só no Waybar. Achados e corrigidos: `scripts/.local/bin/media-open-spotify.sh` (clique na capa do álbum no painel Quickshell foca o Spotifast) e `scripts/.local/bin/waybar-calendar.sh`. Forma correta: `hyprctl dispatch "hl.dsp.focus({ window = 'class:^(X)\$' })"`. Os dois arquivos em `~/.local/bin/` tinham virado cópias soltas (symlink do Stow quebrado) — restaurados.
 
 **Bateria / perfil de energia (2026-08-10):** um ícone só de perfil (`custom/power-profile`, sem clique) causava mira errada — some quando não há nada ao lado pra empurrar, e o vizinho (`custom/battery-conservation`) desliza pro lugar e rouba o clique. Solução: o clique pra trocar perfil (Balanceado/Performance/Economia) foi pro ícone de bateria (`custom/battery-conservation`, sempre visível e largo — alvo fácil); o `custom/power-profile` virou indicador passivo, sem `on-click`, só aparece fora do Balanceado. `battery-conservation.sh waybar` agora usa `return-type: json` pra devolver `{"text": "...", "tooltip": "..."}` com tooltip curto e dinâmico (`Balanceado · Preservação`, `Performance · 100%` etc.) em vez de texto instrucional fixo. **Trade-off:** o toggle Long_Life/100% perdeu o clique dedicado na Waybar — agora só via terminal (`battery-conservation.sh toggle`), já que na prática raramente é trocado.
 
@@ -718,7 +731,7 @@ Documentação completa: [`docs/browser-tab-shifter.md`](docs/browser-tab-shifte
 |---|---|
 | gh (v2.96.0) | GitHub CLI — pacote `github-cli` (pacman), autenticado via `gh auth setup-git` |
 | pyenv (2.6.26) | Gerenciamento de versões Python |
-| spicetify | Customização do cliente Spotify |
+| spicetify | Legado do cliente Spotify anterior; não se aplica ao Spotifast |
 | matugen | Geração de paletas de cores (Material You) |
 ---
 
@@ -822,11 +835,11 @@ Inventário e contrato operacional em [`docs/agent-harnesses-and-skills.md`](doc
 |---|---|
 | awww em vez de hyprpaper/swww | No Arch, `awww` substitui `swww` mantendo CLI compatível e transições animadas |
 | Repo standalone em `~/Projects/dotfiles` | Evita depender do submodule dentro do `wiki-ia` para aplicar Stow no sistema |
-| move_when_ready para Spotify/Discord | Updaters separados quebram `[workspace X silent]` |
+| Spotifast direto no workspace 3 | Binário nativo não tem launcher intermediário; dispensa o antigo `move_when_ready` do Spotify Electron |
 | Alt+Tab via cyclenext (nativo) | hyprshell e hyprswitch incompatíveis com Hyprland 0.55 (formato de endereço IPC mudou de hex para decimal) |
 | workspace-float.conf no repo | Estado inicial/atual de workspaces floating é preservado via Stow |
 | Flatpaks em Wayland nativo | Resolve cursor inconsistente e melhora integração com compositor |
-| zen-duck.service como systemd user | Persiste entre reinicializações sem intervenção manual |
+| chromium-duck.service como systemd user | Ativação opcional; autostart desabilitado por escolha do operador |
 | waybar-git em vez de waybar (pacman) | Fix do clique em `hyprland/workspaces` com o dispatcher Lua do Hyprland só existe no `master` (Waybar#5008/#5013), sem release estável ainda |
 
 ---

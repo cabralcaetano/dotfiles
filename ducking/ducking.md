@@ -9,17 +9,19 @@
 ### O que você vai precisar
 - Fedora 34+ / Ubuntu 22.04+ / Arch (qualquer versão recente)
 - PipeWire como servidor de áudio (padrão no Fedora 34+)
-- Spotify instalado como app nativo (não Flatpak)
+- Spotifast instalado como app nativo (não Flatpak)
 - WhatsApp Web no navegador
 
-### Setup atual — Zen Browser + Spotify nativo
+### Setup atual — Chromium + Spotifast
 
-> O Flatpak cria uma sandbox que pode atrapalhar controle externo de áudio. Use Spotify nativo e navegador nativo/local.
+> A instalação nativa expõe o stream PipeWire ao controle de volume. O Spotifast atual fica em `~/.local/bin/spotifast`.
 
 O ambiente atual usa:
 
-- `scripts/.local/bin/zen-duck.sh`
-- `scripts/.config/systemd/user/zen-duck.service`
+- `scripts/.local/bin/chromium-duck.sh`
+- `scripts/.config/systemd/user/chromium-duck.service`
+- `scripts/.local/bin/media-volume-spotify.sh` usa o player MPRIS `spotifast`
+  e compartilha o estado temporário `spotifast-duck-volume` com o ducking.
 
 Aplicar pelo repo:
 
@@ -27,24 +29,26 @@ Aplicar pelo repo:
 cd ~/Projects/dotfiles
 stow --restow --target="$HOME" scripts
 systemctl --user daemon-reload
-systemctl --user enable --now zen-duck.service
+# Opcional: habilitar somente quando desejar início automático.
+systemctl --user enable --now chromium-duck.service
 ```
 
 Verificar:
 
 ```bash
-systemctl --user status zen-duck.service
+systemctl --user status chromium-duck.service
 ```
 
 Comportamento:
 
-- O ducking só dispara quando o Zen tem áudio ativo e há uma janela com `whatsapp` no título visível no Hyprland.
-- Outros sites com áudio no Zen não ativam ducking.
-- `zen_really_stopped()` confirma 3× com 0.3s de intervalo antes de fazer o fade-in; evita oscilação em pausas curtas.
+- O ducking dispara quando o Chromium tem áudio ativo e há uma janela com `whatsapp` no título no Hyprland.
+- Não identifica a aba emissora: áudio de outro site pode ativar o ducking se outra janela tiver WhatsApp no título.
+- `chromium_really_stopped()` confirma 3× com 0.3s de intervalo antes de fazer o fade-in; evita oscilação em pausas curtas.
+- Migração de 2026-09-26: Zen substituído por Chromium; serviço permanece parado e com autostart desabilitado por escolha do operador.
 
 ### Ajustar o nível de volume do ducking
 
-Edite `~/.local/bin/zen-duck.sh`:
+Edite `~/.local/bin/chromium-duck.sh`:
 
 - `DUCK_LEVEL=0.3` → porcentagem do volume (0.3 = 30%, 0.5 = 50%)
 - `FADE_STEPS=20` → quantidade de passos do fade (mais = mais suave)

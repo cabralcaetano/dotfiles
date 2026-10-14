@@ -82,11 +82,12 @@ Sobrevivem, sem relação com esse modelo: a extensão local
 `scripts/.local/bin/browser-tab-mover-sync-shortcuts.sh` — ver
 [`browser-tab-shifter.md`](browser-tab-shifter.md).
 
-## Decisão preservada: Spotify e Discord ficam nativos
+## Decisão atual: Spotifast e Discord ficam nativos
 
-Cada um paga o mesmo tipo de tax (GPU + zygote + network service próprios, como
-qualquer app Electron/Chromium), mas virar aba de navegador **não compensa**:
-`ducking/ducking.md` e o serviço de ducking identificam o Spotify pelo client
-nativo no PipeWire (`get_spotify_id` via `wpctl status`). Como aba, o áudio
-apareceria como cliente do navegador e o ducking automático pararia de
-funcionar. Os dois seguem nativos.
+O Spotify Electron usado durante este post-mortem foi substituído pelo
+Spotifast, cliente nativo em Rust/egui. Isso remove do player de música o custo
+de uma engine Chromium própria sem transformar a música em aba do navegador.
+
+O ducking continua separando o player do navegador: `ducking/ducking.md` e
+`chromium-duck.service` identificam o Spotifast pelo client PipeWire. Discord
+continua nativo; nenhum dos dois é roteado como aba.

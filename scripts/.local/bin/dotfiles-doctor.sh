@@ -34,7 +34,7 @@ check_symlinks() {
 
 check_commands() {
   log "Verificando comandos essenciais…"
-  local cmds=(git stow zsh starship eza bat fzf rg zoxide yazi lazygit btop jq podman qs)
+  local cmds=(git stow zsh starship eza bat fzf rg zoxide yazi lazygit btop jq podman qs spotifast)
   local missing=()
   local c
   for c in "${cmds[@]}"; do
@@ -68,8 +68,8 @@ check_flatpak() {
 
 check_services() {
   log "Verificando serviços systemd…"
-  # zen-duck roda como serviço --user; battery-conservation roda system-wide.
-  local user_services=(zen-duck.service)
+  # chromium-duck roda como serviço --user; battery-conservation roda system-wide.
+  local user_services=(chromium-duck.service)
   local system_services=(battery-conservation.service)
   local s
 
