@@ -206,7 +206,7 @@ Apps fixos do boot entram no super workspace `1`:
 | App | Workspace interno |
 |---|---|
 | Zen Browser | `name:super-1-1 silent` |
-| Ghostty/tmux wiki-ia | `name:super-1-2 silent` |
+| Ghostty/tmux padrão (`cwd` em `~/Projects/wiki-ia`) | `name:super-1-2 silent` |
 | Obsidian | `name:super-1-2 silent` |
 | Spotifast | `name:super-1-3 silent` |
 | Discord | `name:super-1-4 silent` |

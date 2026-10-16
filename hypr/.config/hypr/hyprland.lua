@@ -49,7 +49,7 @@ hl.on("hyprland.start", function()
 
     -- aplicativos com workspace fixo, no super workspace 1 (padrão do boot)
     hl.dispatch(hl.dsp.exec_cmd(browser, { workspace = "name:super-1-1 silent" }))
-    hl.dispatch(hl.dsp.exec_cmd(terminal .. " -e zsh -lc \"tmux new-session -A -s wiki-ia -c ~/Projects/wiki-ia\"", { workspace = "name:super-1-2 silent" }))
+    hl.dispatch(hl.dsp.exec_cmd(terminal .. " -e tmux new-session -c " .. os.getenv("HOME") .. "/Projects/wiki-ia", { workspace = "name:super-1-2 silent" }))
     hl.dispatch(hl.dsp.exec_cmd(spotifast, { workspace = "name:super-1-3 silent" }))
 
     hl.exec_cmd("~/.local/bin/super-workspace-urgent-watch.sh")
