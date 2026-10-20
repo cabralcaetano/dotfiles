@@ -34,9 +34,8 @@ keybind = ctrl+shift+t=unbind
 keybind = ctrl+shift+w=unbind
 
 # === Copiar via tmux, não via Ghostty ===
-# com mouse on, a seleção é do tmux — o Ghostty não tem seleção própria pra
-# copiar, então ctrl+shift+c (copy_to_clipboard) copiava vazio. Desbindado
-# pra que a tecla chegue no tmux, que copia a seleção do copy-mode com
-# wl-copy — ver tmux.conf
-keybind = ctrl+shift+c=unbind
+# C-S-c não é imprimível: `unbind` só repassa teclas imprimíveis ao processo
+# filho. Enviamos CSI-u explicitamente para o tmux distinguir C-S-c de C-c
+# com extended-keys e copiar a seleção de copy-mode via wl-copy.
+keybind = ctrl+shift+c=text:\x1b[99;6u
 

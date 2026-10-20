@@ -399,7 +399,7 @@ Plugins carregados manualmente de `~/.zsh/`:
 | Alt+W ou Ctrl+Shift+C (com seleção ativa) | Copia a seleção pro clipboard do sistema via `wl-copy` |
 | Ctrl+Shift+V | Cola do clipboard (nativo do Ghostty, `paste_from_clipboard`) |
 
-Ctrl+Shift+C só chega ao zsh como `\e[99;6u` (CSI-u) por causa do `bind-key -n C-S-c` em `tmux.conf` — ver [Terminal — tmux](#terminal--tmux). Fora do tmux essa combinação não funciona (degrada pra Ctrl+C/SIGINT).
+Ghostty emite explicitamente `\e[99;6u` (CSI-u) para Ctrl+Shift+C: `unbind` não repassa essa tecla não imprimível. Dentro do tmux, o bind global preserva a sequência até o zsh; fora dele, ela chega diretamente ao mesmo bind do `zsh-shift-select`.
 
 ---
 
@@ -443,9 +443,9 @@ Atalhos úteis:
 | `y` em copy-mode | Copia para `wl-copy` e sai do copy-mode |
 | `q` em copy-mode | Sai do copy-mode |
 
-### Ctrl+Shift+C fora do copy-mode
+### Ctrl+Shift+C dentro e fora do copy-mode
 
-`extended-keys` ligado (`set -s extended-keys on`) permite ao tmux distinguir Ctrl+Shift+C de Ctrl+C. Dentro do copy-mode ele copia a seleção do tmux pro `wl-copy` (igual a tecla `y`). Fora do copy-mode ele repassa pro shell como CSI-u (`\e[99;6u`, via `send-keys -H`) em vez de ser engolido — sem esse repasse explícito a tecla degradaria pra Ctrl+C puro (SIGINT) ao chegar no pane. O zsh liga essa sequência na cópia de seleção do `zsh-shift-select` — ver [Shell — Zsh](#shell--zsh).
+Ghostty envia Ctrl+Shift+C como CSI-u (`\e[99;6u`), em vez de `unbind`: a ação `unbind` só repassa teclas imprimíveis e por isso descartava este atalho. `extended-keys` ligado (`set -s extended-keys on`) permite ao tmux distinguir Ctrl+Shift+C de Ctrl+C. Dentro do copy-mode ele copia a seleção do tmux para o `wl-copy` (igual a tecla `y`). Fora do copy-mode, o tmux repassa a mesma sequência ao zsh (`send-keys -H`), que a usa para copiar a seleção do `zsh-shift-select`; fora do tmux, Ghostty entrega CSI-u diretamente ao mesmo bind.
 
 ### Home/End dentro do tmux
 

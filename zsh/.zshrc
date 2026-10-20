@@ -70,8 +70,8 @@ alias top='btop'
 # Seleção com Ctrl+Shift+Setas (zsh-shift-select acima) — Alt+W ou
 # Ctrl+Shift+C copiam a seleção pro kill-ring do zsh e também sincronizam
 # com o clipboard do sistema via wl-copy, igual o copy-mode do tmux já faz.
-# Ctrl+Shift+C só chega aqui como "\e[99;6u" por causa do bind-key -n C-S-c
-# em tmux.conf (fora do tmux ela não funcionaria — degrada pra Ctrl+C).
+# Ghostty emite Ctrl+Shift+C como "\e[99;6u" (CSI-u); o bind global do tmux
+# preserva essa sequência até aqui. Fora do tmux ela chega diretamente.
 # Delete/Backspace apagam a seleção (definido pelo plugin) sem tocar o
 # clipboard, igual em editores GUI. Ctrl+Shift+V cola: já funciona nativo
 # via Ghostty (paste_from_clipboard), não precisa de bind aqui.
