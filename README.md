@@ -111,7 +111,6 @@ O que cada arquivo resolve e como verificar: [`system/README.md`](system/README.
 > | **SDDM Silent theme** | `/etc/sddm.conf.d/`, `/usr/share/sddm/` | aplicar manualmente; ver `sddm/` e o registro em [`docs/history/dotfiles-historico.md`](docs/history/dotfiles-historico.md) |
 > | **Battery conservation helper** | `/usr/local/sbin`, `/etc/systemd/system`, `/etc/sudoers.d` | `~/.local/bin/install-battery-conservation-root.sh` |
 > | **Antigravity desktop entries** | `~/.local/share/applications`, `~/.config/mimeapps.list` | `stow --target="$HOME" desktop-apps` após extrair os apps em `~/.local/opt` |
-> | **Spotifast** | `~/.local/bin`, desktop entry e ícone do usuário | instalação manual da release oficial; ver [`docs/spotifast.md`](docs/spotifast.md) |
 > | **Snapshots Btrfs** | snapper + grub-btrfs | ver [`docs/arch-migration.md §1.2`](docs/arch-migration.md) |
 > | **Windows VM / Incogniton** | libvirt/QEMU, Windows guest | ver [`docs/windows-vm-incogniton.md`](docs/windows-vm-incogniton.md) |
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
@@ -205,7 +204,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | Zen Browser | super workspace 1 / slot 1 (`name:super-1-1`) | `[workspace name:super-1-1 silent]` |
 | ghostty | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
 | obsidian (flatpak) | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
-| Spotifast | super workspace 1 / slot 3 (`name:super-1-3`) | binário nativo direto em `~/.local/bin/spotifast` com workspace silencioso |
+| Spotifast | super workspace 1 / slot 3 (`name:super-1-3`) | `/usr/bin/spotifast` (`spotifast-bin` do AUR) com workspace silencioso |
 | discord | super workspace 1 / slot 4 (`name:super-1-4`) | `[workspace name:super-1-4 silent]` |
 
 O Spotifast não usa launcher/updater intermediário no boot; o Hyprland executa
@@ -215,9 +214,9 @@ do Spotify para movê-la depois, foi removido.
 ---
 ## Spotifast
 
-Cliente Spotify atual: Spotifast `0.13.2`, nativo em Rust/egui, instalado para o
-usuário em `~/.local/bin/spotifast`. `Super+M`, o autostart e a integração MPRIS
-do painel apontam para ele. Instalação, OAuth, atualização e remoção:
+Cliente Spotify atual: Spotifast estável, nativo em Rust/egui e instalado pelo
+pacote AUR `spotifast-bin`. `Super+M`, o autostart e a integração MPRIS do
+painel apontam para ele. Instalação, OAuth, atualização e remoção:
 [`docs/spotifast.md`](docs/spotifast.md).
 
 ---

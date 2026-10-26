@@ -14,7 +14,7 @@
 
 ### Setup atual — Chromium + Spotifast
 
-> A instalação nativa expõe o stream PipeWire ao controle de volume. O Spotifast atual fica em `~/.local/bin/spotifast`.
+> A instalação nativa expõe o stream PipeWire ao controle de volume. O Spotifast atual é o pacote AUR `spotifast-bin`, executado de `/usr/bin/spotifast`.
 
 O ambiente atual usa:
 

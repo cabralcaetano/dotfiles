@@ -1,52 +1,37 @@
 # Spotifast
 
 Cliente Spotify nativo usado neste sistema. O projeto upstream é
-[`crmne/spotifast`](https://github.com/crmne/spotifast); a instalação atual é a
-release oficial para Linux em `~/.local/bin/spotifast`, fora do `pacman` e do
-Stow.
+[`crmne/spotifast`](https://github.com/crmne/spotifast). A release estável é
+instalada pelo pacote AUR `spotifast-bin`, que fornece `/usr/bin/spotifast` e
+os arquivos de integração com o desktop.
 
 ## Estado atual
 
-- Versão instalada: `0.13.2`.
-- Binário: `~/.local/bin/spotifast`.
-- Desktop entry: `~/.local/share/applications/spotifast.desktop`.
-- Ícone: `~/.local/share/icons/hicolor/scalable/apps/spotifast.svg`.
-- Autostart: `hypr/.config/hypr/hyprland.lua` abre o binário diretamente em
-  `name:super-1-3 silent`.
+- Pacote: `spotifast-bin`, gerenciado pelo `yay`.
+- Binário: `/usr/bin/spotifast`.
+- Desktop entry e ícone: fornecidos pelo pacote em `/usr/share`.
+- Autostart: `hypr/.config/hypr/hyprland.lua` abre `/usr/bin/spotifast`
+  diretamente em `name:super-1-3 silent`.
 - Atalho: `Super+M` abre o Spotifast.
 - MPRIS: player `spotifast`; usado pelo painel Quickshell e por `playerctl`.
 - Credenciais: Secret Service (`gnome-keyring`), serviço
   `rocks.spotifast.Spotifast`; nunca versionar tokens ou Client Secret.
 
-A instalação foi feita por usuário porque o ambiente de sessão não tinha
-`~/.local/bin` no `PATH` e a instalação AUR exigia elevação. Por isso o
-`hyprland.lua` e o desktop entry usam o caminho absoluto do binário. O
-`bootstrap.sh` não instala o Spotifast automaticamente.
+O pacote AUR substitui a antiga instalação manual em `~/.local/bin`. Manter
+outro binário nesse caminho sombrearia `/usr/bin/spotifast` no shell e faria o
+Hyprland, o launcher e o gerenciador de pacotes usarem versões diferentes.
 
-## Instalação por usuário
+## Instalação e atualização
 
-Baixe a release `x86_64-unknown-linux-gnu.tar.gz` e o `checksums.txt` na
-[página de releases](https://github.com/crmne/spotifast/releases). Antes de
-instalar, confira o SHA-256 do arquivo contra o manifesto da mesma release.
-Depois extraia e copie:
+Instale a release estável pronta pelo AUR:
 
 ```bash
-install -Dm755 spotifast ~/.local/bin/spotifast
-install -Dm644 LICENSE ~/.local/share/licenses/spotifast/LICENSE
-install -Dm644 README.md ~/.local/share/doc/spotifast/README.md
-install -Dm644 packaging/applications/spotifast.desktop \
-  ~/.local/share/applications/spotifast.desktop
-install -Dm644 packaging/icons/spotifast.svg \
-  ~/.local/share/icons/hicolor/scalable/apps/spotifast.svg
+yay -S spotifast-bin
 ```
 
-Ajuste o `Exec=` do desktop entry para
-`/home/caetano/.local/bin/spotifast %u`; launchers gráficos não recebem hoje
-`~/.local/bin` no `PATH` da sessão systemd.
-
-Alternativa futura: `yay -S spotifast-bin`. Antes de migrar para o pacote AUR,
-remova o binário em `~/.local/bin/spotifast`; caso contrário ele continua
-sombreando `/usr/bin/spotifast` no shell.
+O pacote passa a ser atualizado com os demais pacotes AUR nas atualizações
+normais do `yay`. O `pacman` não instala `spotifast-bin` diretamente porque o
+pacote não está nos repositórios oficiais do Arch.
 
 ## Conta e reprodução
 
@@ -64,23 +49,12 @@ O app pessoal da Web API e a reprodução local são autorizações independente
 O Client ID pode ficar nas configurações locais do aplicativo; credenciais e
 tokens permanecem no Secret Service e não entram neste repositório.
 
-## Atualização
-
-O Spotifast consulta releases no GitHub e possui atualizador próprio com
-verificação de assinatura e SHA-256. A instalação atual é gravável pelo usuário,
-mas esse fluxo ainda não foi exercitado neste sistema.
-
-Se a atualização interna falhar, repita a instalação manual com a nova release,
-verifique o checksum e substitua apenas o binário e os arquivos de integração.
-Configurações, caches e credenciais ficam em diretórios separados e não são
-substituídos.
-
 ## Remoção
 
 1. Use **Sair da conta** no Spotifast para remover grants e credenciais.
-2. Remova o autostart e o atalho do `hyprland.lua` antes de apagar o binário.
-3. Apague `~/.local/bin/spotifast`, o desktop entry, o ícone, a licença e o
-   README instalados.
+2. Remova o pacote com `yay -Rns spotifast-bin`.
+3. Remova o autostart e o atalho do `hyprland.lua` se não for instalar outro
+   cliente no lugar.
 4. Opcionalmente remova estado e cache em `~/.config/spotifast`,
    `~/.local/state/spotifast` e `~/.cache/spotifast`.
 

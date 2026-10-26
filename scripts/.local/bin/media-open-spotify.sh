@@ -7,5 +7,5 @@ CLASS="spotifast"
 if /usr/bin/hyprctl clients -j | /usr/bin/jq -e --arg class "$CLASS" '.[] | select(.class == $class)' >/dev/null; then
   /usr/bin/hyprctl dispatch "hl.dsp.focus({ window = 'class:^(${CLASS})\$' })" >/dev/null
 else
-  "$HOME/.local/bin/spotifast" >/dev/null 2>&1 &
+  /usr/bin/spotifast >/dev/null 2>&1 &
 fi
