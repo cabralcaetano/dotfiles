@@ -59,7 +59,7 @@ sudo snapper -c root set-config \
   TIMELINE_LIMIT_WEEKLY=0 TIMELINE_LIMIT_MONTHLY=0 TIMELINE_LIMIT_YEARLY=0 \
   NUMBER_LIMIT=10 NUMBER_LIMIT_IMPORTANT=5
 sudo systemctl enable --now snapper-timeline.timer snapper-cleanup.timer
-sudo snapper -c root create -d "baseline pos-install SDDM+desktop" -c important
+sudo snapper -c root create -d "baseline pos-install SDDM+desktop"   # sem -c: -c é --cleanup-algorithm, "important" não é válido
 ```
 
 **grub-btrfs:**
@@ -86,6 +86,15 @@ active
 active
 active
 ```
+
+> **Atualização 2026-10-30 — snapshots só manuais.** O timeline (`TIMELINE_CREATE=no`, `snapper-timeline.timer` desabilitado) foi desligado. Os snapshots `important` ("antes de atualizar tudo") nunca são limpos pelo snapper e, somados ao timeline, chegaram a prender ~104 GiB (apagar arquivos em `@` não liberava espaço). Agora o snapshot é criado à mão antes de atualizar:
+>
+> ```bash
+> sudo snapper -c root create -d "antes de atualizar"   # sem -c: nunca é apagado sozinho
+> sudo snapper -c root list
+> sudo snapper -c root delete <id>   # apagar os antigos depois de validar o update
+> sudo btrfs subvolume sync /        # espera o espaço voltar
+> ```
 
 **Recuperação:** reinicie → menu do GRUB → submenu **"Arch Linux snapshots"** → escolhe o snapshot. Como o layout é flat (sem aninhamento), o rollback aqui tem menos ressalvas que o do Fedora.
 
@@ -117,6 +126,17 @@ O repo não fica mais direto em `~/dotfiles` — está em `~/Projects/dotfiles` 
 ## 5. GRUB não lista mais o Fedora (sem apagar nada)
 
 Depois da migração, rodamos `grub-mkconfig` com o `os-prober` ativo (`GRUB_DISABLE_OS_PROBER=false`) — ele só detectou o **Windows Boot Manager**, não o Fedora (motivo exato não investigado, possivelmente o layout de subvolumes Btrfs do Fedora confunde o prober). Resultado: o menu do GRUB ficou limpo (Arch + Windows) sem precisar apagar a partição do Fedora, que continua intacta em disco. `GRUB_TIMEOUT_STYLE` trocado de `menu` pra `countdown` — boot automático no Arch, `ESC` mostra o menu completo se precisar.
+
+### 5.1 GRUB: sem tema, sem entradas BootNext, boot verboso (2026-10-30)
+
+Alterações em `/etc/default/grub` (arquivo do sistema, fora do stow; backup anterior em `/etc/default/grub.bak`):
+
+- **Tema removido:** apaguei `GRUB_BACKGROUND` e `GRUB_THEME` (eram `Elegant-mojave-window-left-dark`). Sem tema, o GRUB usa o menu padrão preto e branco, 1 px por pixel e fonte de 16 px. Os temas em `/boot/grub/themes/Elegant-*` foram apagados; `starfield` ficou.
+- **Entradas "(EFI BootNext)" desligadas:** `GRUB_DISABLE_BOOTNEXT=true`. O script `/etc/grub.d/31_efi_bootnext` (pacote `grub`) cria uma entrada para cada item da NVRAM da UEFI, o que listava Fedora, GRUB, Arch, Windows (duplicado do `os-prober`), USB, DVD e Rede. O menu fica com Arch, Windows (via `os-prober`), UEFI Firmware Settings e o submenu de snapshots quando houver.
+- **Resto do Fedora removido:** entrada `Boot0004 Fedora` da NVRAM (`sudo efibootmgr -B -b 0004`) e `/boot/efi/EFI/fedora`. A partição do Fedora já tinha sido apagada (§9). A entrada `Boot0001 GRUB` (outro `grubx64.efi`) ficou.
+- **Boot verboso:** `GRUB_CMDLINE_LINUX_DEFAULT="loglevel=4 systemd.show_status=true"` (antes `loglevel=3 quiet`). Não há Plymouth instalado, então só o `quiet` escondia as mensagens.
+- Depois de qualquer mudança: `sudo grub-mkconfig -o /boot/grub/grub.cfg`.
+- Pendente: `GRUB_GFXMODE=1920x1080,auto` não bate com a tela de 1920×1200; `1920x1200,auto` evita a imagem esticada, se o firmware oferecer o modo (`videoinfo` no prompt do GRUB lista os modos).
 
 ## 6. Pastas XDG recriadas em inglês
 
