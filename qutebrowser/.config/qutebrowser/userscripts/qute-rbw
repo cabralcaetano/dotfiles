@@ -1,0 +1,98 @@
+#!/usr/bin/env python3
+"""Preenche login (usuário + senha) no qutebrowser usando o rbw (Bitwarden).
+
+Uso (config.py):
+    config.bind(",p", "spawn --userscript qute-rbw")
+    config.bind(",P", "spawn --userscript qute-rbw --password-only")
+    (opcional) --username-only preenche só o usuário.
+
+Foque o campo de usuário antes (modo insert) e rode o atalho. Com --password-only
+foque o campo de senha. O rbw pede a senha mestra via pinentry se o cofre estiver
+bloqueado. Menu de escolha: $QUTE_RBW_MENU (padrão: fuzzel --dmenu).
+"""
+import os
+import shlex
+import subprocess
+import sys
+from urllib.parse import urlparse
+
+MENU = shlex.split(os.environ.get("QUTE_RBW_MENU", "fuzzel --dmenu"))
+
+
+def qute(command):
+    with open(os.environ["QUTE_FIFO"], "w") as fifo:
+        fifo.write(command + "\n")
+
+
+def error(msg):
+    qute("message-error " + shlex.quote("qute-rbw: " + msg))
+    sys.exit(0)
+
+
+def rbw(*args):
+    return subprocess.run(["rbw", *args], capture_output=True, text=True)
+
+
+def entries(term=None):
+    """Lista (id, name, user) via rbw search/list."""
+    args = ["search", term] if term else ["list"]
+    proc = rbw(*args, "--fields", "id,name,user")
+    if proc.returncode != 0:
+        error(proc.stderr.strip() or "rbw falhou (cofre bloqueado ou sem login?)")
+    rows = []
+    for line in proc.stdout.splitlines():
+        parts = line.split("\t")
+        if len(parts) >= 2 and parts[0]:
+            rows.append((parts[0], parts[1], parts[2] if len(parts) > 2 else ""))
+    return rows
+
+
+def choose(rows):
+    if len(rows) == 1:
+        return rows[0]
+    labels = [f"{name}  <{user}>" if user else name for _, name, user in rows]
+    proc = subprocess.run(MENU, input="\n".join(labels), capture_output=True, text=True)
+    pick = proc.stdout.rstrip("\n")
+    if proc.returncode != 0 or pick not in labels:
+        sys.exit(0)
+    return rows[labels.index(pick)]
+
+
+def main():
+    mode = "both"
+    if "--password-only" in sys.argv:
+        mode = "password"
+    elif "--username-only" in sys.argv:
+        mode = "username"
+
+    host = (urlparse(os.environ.get("QUTE_URL", "")).hostname or "").removeprefix("www.")
+    labels = host.split(".")
+    terms = [t for t in dict.fromkeys([host, labels[-2] if len(labels) > 1 else ""]) if t]
+
+    rows = []
+    for term in terms:
+        rows = entries(term)
+        if rows:
+            break
+    if not rows:
+        rows = entries()  # nada casou com o site: mostra o cofre inteiro
+    if not rows:
+        error("nenhuma entrada no cofre (rode: rbw sync)")
+
+    entry_id, _, user = choose(rows)
+
+    if mode in ("both", "username"):
+        if not user:
+            error("entrada sem usuário")
+        qute("insert-text " + user)
+    if mode == "both":
+        qute("fake-key <Tab>")
+    if mode in ("both", "password"):
+        proc = rbw("get", entry_id)
+        if proc.returncode != 0:
+            error(proc.stderr.strip() or "rbw get falhou")
+        qute("insert-text " + proc.stdout.rstrip("\n"))
+
+
+if __name__ == "__main__":
+    main()
