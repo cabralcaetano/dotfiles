@@ -623,7 +623,7 @@ Documentação completa: [`docs/keyboard-keyd.md`](docs/keyboard-keyd.md).
 |---|---|
 | Overskride (Bluetooth) | Float, 800×500, centralizado |
 | pavucontrol | Float, 800×500, centralizado |
-| btop via Waybar | Ghostty dedicado, 80×24 efetivo (`window-width=84`, `window-height=25`), sem decoração, float, centralizado |
+| btop via Waybar | Ghostty dedicado, 80×24 efetivo com Ghostty 1.4 (`window-width=87`, `window-height=27`), sem decoração, float, centralizado |
 | Menu de perfil de energia | Ghostty dedicado com `fzf`, 480×220, sem decoração, float, centralizado |
 | GNOME Calendar (Quickshell) | Float, 882×575, centralizado |
 | GNOME Text Editor | Float, 882×575, centralizado |

@@ -116,6 +116,7 @@ rofimoji
 networkmanager
 networkmanager-dmenu
 inotify-tools
+socat
 
 # --- GoLiveBypass / WireGuard por namespace ---
 wireguard-tools

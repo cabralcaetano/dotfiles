@@ -351,6 +351,16 @@ case "$cmd" in
     sync_waybar "$NEW"
     notify-send -t 1200 "Super workspace" "$NEW"
     ;;
+  boot)
+    # Chamado no hyprland.start: os apps do autostart entram em super-<primeiro>-*,
+    # então o banco ativo e os slots lembrados da sessão anterior são descartados.
+    NEW="${SUPER_WORKSPACES[0]}"
+    rm -f "$SLOT_STATE_DIR"/*
+    printf '%s' "$NEW" > "$STATE_FILE"
+    hyprctl dispatch "hl.dsp.focus({ workspace = \"name:$(workspace_name "$NEW" 1)\" })" >/dev/null
+    printf '1' > "$(slot_state_file "$NEW")"
+    sync_waybar "$NEW"
+    ;;
   sync-waybar)
     sync_waybar "$SW"
     ;;
@@ -400,7 +410,7 @@ case "$cmd" in
     waybar_payload
     ;;
   *)
-    echo "usage: super-workspace.sh {focus|move|move-super|switch|scratchpad|scratchpad-move|next|prev|menu|sync-waybar|icon|name|waybar} [n]" >&2
+    echo "usage: super-workspace.sh {focus|move|move-super|switch|scratchpad|scratchpad-move|next|prev|boot|menu|sync-waybar|icon|name|waybar} [n]" >&2
     exit 1
     ;;
 esac

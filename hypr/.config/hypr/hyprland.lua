@@ -23,7 +23,6 @@ local discord     = "discord"
 local spotifast   = "/usr/bin/spotifast"
 local obsidian    = "flatpak run md.obsidian.Obsidian"
 local obsidianQuickNote = "~/.config/hypr/scripts/obsidian-quick-note.sh"
-local waterReminder = "~/.local/bin/water-reminder"
 local wallpaperRestore = "~/.local/bin/wallpaper-restore.sh"
 
 -- === TEMA (cores) — gerado por theme-set.sh, ver themes/ no root do repo ===
@@ -45,7 +44,8 @@ hl.on("hyprland.start", function()
     -- Portais XDG não são iniciados aqui: os backends são units D-Bus
     -- (Type=dbus) e sobem sob demanda. Lançar à mão concorre com o
     -- xdg-desktop-portal.service e quebra a ativação.
-    hl.exec_cmd(waterReminder)
+    -- banco ativo sempre começa no super workspace 1 (estado da sessão anterior é descartado)
+    hl.exec_cmd("~/.local/bin/super-workspace.sh boot")
 
     -- aplicativos com workspace fixo, no super workspace 1 (padrão do boot)
     hl.dispatch(hl.dsp.exec_cmd(browser, { workspace = "name:super-1-1 silent" }))
