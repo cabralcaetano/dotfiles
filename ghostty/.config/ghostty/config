@@ -33,6 +33,20 @@ keybind = ctrl+shift+down=scroll_page_lines:1
 keybind = ctrl+shift+t=unbind
 keybind = ctrl+shift+w=unbind
 
+# Alt+Shift+1..0 deve chegar ao tmux como Alt+!/…/) para reposicionar a
+# janela atual nos slots 1..10. Usamos códigos físicos para não depender do
+# layout nem do protocolo de teclas que o Ghostty escolhe para modificadores.
+keybind = alt+shift+Digit1=text:\x1b!
+keybind = alt+shift+Digit2=text:\x1b@
+keybind = alt+shift+Digit3=text:\x1b#
+keybind = alt+shift+Digit4=text:\x1b$
+keybind = alt+shift+Digit5=text:\x1b%
+keybind = alt+shift+Digit6=text:\x1b^
+keybind = alt+shift+Digit7=text:\x1b&
+keybind = alt+shift+Digit8=text:\x1b*
+keybind = alt+shift+Digit9=text:\x1b(
+keybind = alt+shift+Digit0=text:\x1b)
+
 # === Copiar via tmux, não via Ghostty ===
 # C-S-c não é imprimível: `unbind` só repassa teclas imprimíveis ao processo
 # filho. Enviamos CSI-u explicitamente para o tmux distinguir C-S-c de C-c
