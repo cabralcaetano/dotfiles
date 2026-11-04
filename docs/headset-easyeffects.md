@@ -1,16 +1,29 @@
-# EasyEffects — QCY H3 Pro
+# QCY H3 Pro — áudio Bluetooth e EasyEffects
 
-**Status:** instalado, config de EQ/presets ainda pendente
-**Contexto:** fone Bluetooth QCY H3 Pro, LDAC
+**Status:** saída Bluetooth automática validada; preset de EQ pendente
+**Contexto:** fone Bluetooth QCY H3 Pro; PipeWire + WirePlumber + BlueZ
 
-## Descrição
+## Operação atual
 
-Config do EasyEffects (`8.2.7-1`, Qt6/Kirigami — não é mais GTK, ver `docs/gtk-qt-theming.md`) aplicada especificamente ao fone QCY H3 Pro.
+- **Saída padrão:** ao conectar um headset Bluetooth com sink disponível, o WirePlumber o seleciona; ao desconectar, volta para o speaker. A preferência persistida do speaker foi desativada em `~/.config/wireplumber/wireplumber.conf.d/50-auto-switch-headset-profile.conf`.
+- **Mídia:** usar A2DP/AAC (ou LDAC quando disponível), perfil de alta fidelidade sem microfone do fone.
+- **Chamadas:** usar HSP/HFP com codec mSBC; ele fornece reprodução e captura pelo QCY, em mono/baixa taxa de amostragem. A escolha do perfil é separada da troca automática de saída.
+- **Aplicativos:** após reiniciar PipeWire, Chrome/Discord podem precisar recriar a captura. Confirmar no app que o dispositivo de entrada é o QCY quando a chamada usar o microfone do fone.
+
+## Diagnóstico e recuperação
+
+1. Se o QCY conecta mas não aparece em **Dispositivos de saída** do `pavucontrol`, não é falha de prioridade: o Bluetooth não criou um sink A2DP/HFP.
+2. Confirmar o estado com `wpctl status`, `pactl get-default-sink` e `pactl get-default-source`. Com chamada ativa, a fonte e o sink devem ser `bluez_input.84:AC:60:E7:7B:5E` e `bluez_output.84_AC_60_E7_7B_5E.1`.
+3. Em 2026-11-04, `bluez 5.87-2` falhou a negociação A2DP do QCY (`load_remote_sep(): Unable to load LastUsed: rseid … not found`): o fone conectava, mas não havia saída. O workaround validado foi `bluez 5.86-6`, seguido de reinício de `bluetooth`, PipeWire e WirePlumber.
+4. Depois da recuperação, validar os dois sentidos: desconectar → speaker; reconectar → `bluez_output.84_AC_60_E7_7B_5E.1`. Se o microfone ainda falhar, confirmar HSP/HFP mSBC, fonte padrão QCY e recriar a captura no aplicativo.
+
+> Não há pin de pacote. Uma atualização completa pode restaurar a versão regressiva; quando houver release com o fix upstream, atualizar BlueZ e repetir a validação.
 
 ## Decisões tomadas
 
 - **Tema visual:** tentativa de aproximar de GNOME (Material style, Kvantum) testada e **revertida**. Ficou preso no visual Breeze/Kirigami padrão — sem solução limpa, ver `docs/gtk-qt-theming.md` pra detalhes técnicos.
-- **Roteamento de microfone (Discord):** LDAC é perfil A2DP **só de saída** — Bluetooth clássico não permite LDAC (saída) + mic (entrada) simultâneos no mesmo dispositivo. Ao usar o mic do fone, o WirePlumber troca o perfil pra `headset-head-unit` (mSBC), derrubando a qualidade da saída também. Solução aplicada: **Discord configurado para usar o microfone do notebook** (`Digital Microphone`) em vez do mic do QCY H3 Pro — assim o perfil do fone nunca sai de `a2dp-sink` (LDAC), mesmo em call.
+- **Roteamento de microfone (chamadas):** Bluetooth clássico não oferece A2DP/LDAC de alta fidelidade e mic do mesmo fone simultaneamente. Para usar o mic do QCY, selecionar `headset-head-unit` com mSBC; isso reduz a qualidade da saída por limite do HSP/HFP. O antigo workaround que fixava o `Digital Microphone` do notebook no Discord não é a regra atual.
+- **Microfone interno restaurado (2026-10-26):** a regra local não versionada `~/.config/wireplumber/wireplumber.conf.d/51-disable-internal-microphones.conf` definia `node.disabled = true` para `Mic1` e `Mic2`, removendo todas as entradas internas do PipeWire. A regra foi removida e o WirePlumber reiniciado; `Raptor Lake-P/U/H cAVS Digital Microphone` voltou como fonte disponível.
 
 ## Vesktop — teste em andamento (2026-08-14)
 
@@ -18,7 +31,7 @@ Avaliado como alternativa mais leve ao Discord oficial (~2,5x menos RAM). Instal
 
 - **Screen share:** sem `~/.config/xdg-desktop-portal/*-portals.conf`, o `ScreenCast` do `xdg-desktop-portal` não tinha backend preferido explícito entre `xdg-desktop-portal-hyprland` e `xdg-desktop-portal-gtk` rodando juntos. Fix: pacote stow novo `xdg-desktop-portal/` (`STOW_PKGS` em `_dotfiles-lib.sh`) com `hyprland-portals.conf` fixando `ScreenCast`/`Screenshot` em `hyprland` e `FileChooser` em `gtk`. Aplicado e portais reiniciados — **pendente confirmar em call real**.
 - **Renderização (janela preta/flicker):** `~/.config/vesktop/settings/settings.json` tinha `"transparent": true`. É bug conhecido de Electron+transparência em compositores wlroots (Hyprland) com GPU Intel iGPU. Confirmado também 1 crash de GPU no `coredumpctl` (`SIGTRAP`, 16/jul, logo após instalar). Fix: `transparent` setado pra `false` diretamente no JSON.
-- **Áudio em call:** mesma causa raiz já documentada acima pro Discord oficial — troca de perfil Bluetooth pra `headset-head-unit` ao abrir o mic. A correção de "usar `Digital Microphone` do notebook" foi aplicada só no Discord oficial (linha acima), **nunca replicada no Vesktop** (é config por app, cada instalação tem sua própria lista de dispositivo de voz). Provável causa do "áudio não funcionava" — precisa configurar o mesmo device em Vesktop → User Settings → Voice & Video → Input Device.
+- **Áudio em call:** para usar o mic do QCY, Vesktop precisa selecionar o QCY como entrada e saída; o perfil esperado é `headset-head-unit` com mSBC. A orientação antiga de fixar o `Digital Microphone` do notebook era um workaround de qualidade e não é a regra atual. Testar em call real depois de qualquer reinício do PipeWire.
 
 ## Presets — tentativa com pacote da comunidade (revertida)
 
@@ -52,4 +65,4 @@ Avaliado como alternativa mais leve ao Discord oficial (~2,5x menos RAM). Instal
   ```
   Trade-off: mais glitches em ambiente com interferência 2.4GHz — se acontecer, reverter pra `auto`.
 - [ ] Excluir Discord da cadeia de efeitos do EasyEffects (latência em call) caso efeitos sejam aplicados globalmente
-- [ ] **Confirmar fix do Vesktop em call real**: testar screen share (portal) e áudio (configurar `Digital Microphone` em Voice & Video) numa call de teste. Se áudio ainda falhar mesmo com o mic certo, investigar se é bug específico do Vesktop/Electron 144 com WebRTC + PipeWire (não só o profile switch do Bluetooth).
+- [ ] **Confirmar fix do Vesktop em call real**: testar screen share (portal) e áudio selecionando o QCY como entrada/saída e HSP/HFP com mSBC. Se áudio ainda falhar, conferir o sink/source BlueZ no `pavucontrol` antes de atribuir o problema ao Vesktop/Electron.

@@ -45,6 +45,7 @@ O clone ativo fica em `~/Projects/dotfiles`. GNU Stow cria symlinks do repo para
 - [Idle / Lock](#idle--lock)
 - [Perfil de energia](#perfil-de-energia)
 - [Backup](#backup)
+- [Bluetooth headset](#bluetooth-headset)
 - [Audio Ducking](#audio-ducking)
 - [Cursor](#cursor)
 - [Temas](#temas)
@@ -532,6 +533,11 @@ Abaixa automaticamente o volume do Spotifast quando há áudio do Chromium e uma
 - **Serviço:** `chromium-duck.service` (systemd user), desabilitado por escolha do operador.
 - **Implementação atual:** script PipeWire/Pulse com polling do stream do Spotifast + filtro de título WhatsApp no Hyprland.
 - **Limitação:** não identifica a aba emissora; áudio de outro site pode ativar o ducking se outra janela tiver WhatsApp no título.
+
+## Bluetooth headset
+
+Perfis Bluetooth, saída padrão, microfone em chamadas e recuperação de falhas
+BlueZ/PipeWire: [`docs/headset-easyeffects.md`](docs/headset-easyeffects.md).
 
 ---
 
