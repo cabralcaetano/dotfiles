@@ -2,19 +2,11 @@
 # Sem `-e`: o modo `waybar-check` usa o exit code de um teste como retorno intencional.
 set -uo pipefail
 CURRENT=$(tuned-adm active | awk '{print $NF}')
-BRIGHTNESS_STATE="/tmp/.power-profile-brightness-before-super-economia"
+# O brilho da tela é independente do perfil de energia (nenhum perfil o altera).
 
-# Aplica o perfil $1 com label $2 (ícone + nome, pra notificação): brilho
-# desce/restaura ao entrar/sair do Super Economia, tuned-adm aplica, notifica.
+# Aplica o perfil $1 com label $2 (ícone + nome, pra notificação).
 switch_to() {
     local next="$1" label="$2"
-    if [ "$next" = "super-powersave" ] && [ "$CURRENT" != "super-powersave" ]; then
-        brightnessctl get > "$BRIGHTNESS_STATE" 2>/dev/null
-        brightnessctl -n2 set 20% >/dev/null 2>&1
-    elif [ "$CURRENT" = "super-powersave" ] && [ -f "$BRIGHTNESS_STATE" ]; then
-        brightnessctl set "$(cat "$BRIGHTNESS_STATE")" >/dev/null 2>&1
-        rm -f "$BRIGHTNESS_STATE"
-    fi
     tuned-adm profile "$next" && notify-send "Perfil de energia" "$label"
 }
 
