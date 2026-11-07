@@ -6,7 +6,7 @@ mapfile -t WALLPAPERS < <(find "$WALLPAPER_DIR" -maxdepth 1 -type f \( -iname "*
 
 (( ${#WALLPAPERS[@]} > 0 )) || { notify-send "Wallpaper" "Nenhum wallpaper encontrado em $WALLPAPER_DIR"; exit 1; }
 
-CURRENT=$(awww query | grep -o 'image: .*' | sed 's/image: //' || true)
+CURRENT=$(awww query | awk '/^: eDP-1:.*image: / { sub(/^.*image: /, ""); print; exit }' || true)
 
 NEXT="${WALLPAPERS[0]}"
 for i in "${!WALLPAPERS[@]}"; do
