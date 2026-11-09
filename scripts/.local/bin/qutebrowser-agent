@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# qutebrowser dedicado ao agente (omp): perfil separado + CDP em 127.0.0.1:9222.
+# Perfil separado é obrigatório: com o mesmo perfil, o qutebrowser reaproveita a
+# instância aberta (IPC) e ignora a porta de debug.
+# Config, tema, userscripts Greasemonkey e userscripts de teclado vêm do perfil normal
+# (symlinks); logins, cookies, sessão e listas de bloqueio ficam só neste perfil.
+# omp: browser.open({ app: { cdp_url: "http://127.0.0.1:9222" } })
+set -euo pipefail
+
+base="${QUTE_AGENT_BASEDIR:-$HOME/.local/share/qutebrowser-agent}"
+main="$HOME/.config/qutebrowser"
+
+mkdir -p "$base/config"
+for item in config.py colors.py greasemonkey userscripts; do
+  [ -e "$main/$item" ] || continue
+  # o qutebrowser cria greasemonkey/ vazio no primeiro uso; troca por symlink
+  [ -d "$base/config/$item" ] && [ ! -L "$base/config/$item" ] && rmdir "$base/config/$item" 2>/dev/null || true
+  [ -e "$base/config/$item" ] || ln -s "$main/$item" "$base/config/$item"
+done
+
+export QTWEBENGINE_REMOTE_DEBUGGING="127.0.0.1:${QUTE_AGENT_PORT:-9222}"
+exec qutebrowser --basedir "$base" "$@"

@@ -16,7 +16,7 @@ hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "0x0", scale = 
 local terminal    = "ghostty"
 local fileManager = "nautilus"
 local menu        = "fuzzel"
-local browser     = "chromium --new-window"
+local browser     = "qutebrowser --target window"
 local mainMod     = "SUPER"
 local vscode      = "code"
 local discord     = "discord"
