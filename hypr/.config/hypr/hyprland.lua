@@ -11,18 +11,21 @@
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 -- Painel interno fixo no modo nativo.
 hl.monitor({ output = "eDP-1", mode = "1920x1200@60", position = "0x0", scale = 1.25 })
+-- Monitor virtual do fluxcast-samsung (só existe durante a transmissão): acima do notebook, centralizado.
+-- Regra fixa para um `hyprctl reload` não reconfigurar o monitor (isso derruba a captura).
+hl.monitor({ output = "fluxcast-tv", mode = "1280x720@60", position = "128x-720", scale = 1 })
 
 -- === VARIÁVEIS ====================================
 local terminal    = "ghostty"
-local fileManager = "nautilus"
+local fileManager = "nemo"
 local menu        = "fuzzel"
 local browser     = "qutebrowser --target window"
 local mainMod     = "SUPER"
 local vscode      = "code"
 local discord     = "discord"
 local spotifast   = "/usr/bin/spotifast"
-local obsidian    = "flatpak run md.obsidian.Obsidian"
-local obsidianQuickNote = "~/.config/hypr/scripts/obsidian-quick-note.sh"
+local obsidian    = "obsidian"
+local textEditor  = "apostrophe"
 local wallpaperRestore = "~/.local/bin/wallpaper-restore.sh"
 
 -- === TEMA (cores) — gerado por theme-set.sh, ver themes/ no root do repo ===
@@ -44,9 +47,9 @@ hl.on("hyprland.start", function()
     -- Portais XDG não são iniciados aqui: os backends são units D-Bus
     -- (Type=dbus) e sobem sob demanda. Lançar à mão concorre com o
     -- xdg-desktop-portal.service e quebra a ativação.
+
     -- banco ativo sempre começa no super workspace 1 (estado da sessão anterior é descartado)
     hl.exec_cmd("~/.local/bin/super-workspace.sh boot")
-
     -- aplicativos com workspace fixo, no super workspace 1 (padrão do boot)
     hl.dispatch(hl.dsp.exec_cmd(browser, { workspace = "name:super-1-1 silent" }))
     hl.dispatch(hl.dsp.exec_cmd(terminal .. " -e tmux new-session -c " .. os.getenv("HOME") .. "/Projects/wiki-ia", { workspace = "name:super-1-2 silent" }))
@@ -190,7 +193,7 @@ hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.local/bin/fuzzel-toggle.sh"))
 hl.bind(mainMod .. " + D", hl.dsp.exec_cmd(discord))
 hl.bind(mainMod .. " + O", hl.dsp.exec_cmd(obsidian))
-hl.bind(mainMod .. " + CTRL + N", hl.dsp.exec_cmd(obsidianQuickNote))
+hl.bind(mainMod .. " + CTRL + N", hl.dsp.exec_cmd(textEditor))
 
 hl.bind(mainMod .. " + SHIFT + C", hl.dsp.exec_cmd(vscode))
 hl.bind(mainMod .. " + SHIFT + V", hl.dsp.exec_cmd("~/.local/bin/workspace-float.sh"))
@@ -218,6 +221,12 @@ hl.bind(mainMod .. " + SHIFT + L", hl.dsp.window.swap({ direction = "r" }))
 hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.swap({ direction = "u" }))
 hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.swap({ direction = "d" }))
 
+-- Redimensionar tiles (setas; segure para repetir)
+hl.bind(mainMod .. " + CTRL + left",  hl.dsp.window.resize({ x = -50, y = 0,   relative = true }), { repeating = true })
+hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 50,  y = 0,   relative = true }), { repeating = true })
+hl.bind(mainMod .. " + CTRL + up",    hl.dsp.window.resize({ x = 0,   y = -50, relative = true }), { repeating = true })
+hl.bind(mainMod .. " + CTRL + down",  hl.dsp.window.resize({ x = 0,   y = 50,  relative = true }), { repeating = true })
+
 -- — Foco — (setas + hjkl)
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "l" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "r" }))
@@ -227,6 +236,17 @@ hl.bind(mainMod .. " + H", hl.dsp.focus({ direction = "l" }))
 hl.bind(mainMod .. " + L", hl.dsp.focus({ direction = "r" })) -- era hyprlock; lock via Super+Shift+Q → L (wlogout) ou lid switch
 hl.bind(mainMod .. " + K", hl.dsp.focus({ direction = "u" })) -- era kb-toggle.sh; realocado p/ Super+I
 hl.bind(mainMod .. " + J", hl.dsp.focus({ direction = "d" }))
+
+-- — Monitores — (Super+Alt; útil com o monitor virtual `fluxcast-tv`)
+hl.bind(mainMod .. " + ALT + left",  hl.dsp.window.move({ monitor = "l" }))
+hl.bind(mainMod .. " + ALT + up",    hl.dsp.window.move({ monitor = "u" }))
+hl.bind(mainMod .. " + ALT + down",  hl.dsp.window.move({ monitor = "d" }))
+hl.bind(mainMod .. " + ALT + K",     hl.dsp.window.move({ monitor = "u" }))
+hl.bind(mainMod .. " + ALT + J",     hl.dsp.window.move({ monitor = "d" }))
+hl.bind(mainMod .. " + ALT + right", hl.dsp.window.move({ monitor = "r" }))
+hl.bind(mainMod .. " + ALT + H",     hl.dsp.window.move({ monitor = "l" }))
+hl.bind(mainMod .. " + ALT + L",     hl.dsp.window.move({ monitor = "r" }))
+hl.bind(mainMod .. " + ALT + M",     hl.dsp.focus({ monitor = "+1" })) -- alterna o foco entre monitores
 
 -- — Workspaces (dentro do super workspace ativo, ver super-workspaces.txt) —
 -- SUPER+Tab troca em ciclo; SUPER+Tab+1..2 pula direto para o super workspace.
@@ -398,10 +418,19 @@ hl.window_rule({
     center = true,
 })
 
--- GNOME Text Editor abre como bloco de notas flutuante
+-- Nemo abre como gerenciador de arquivos flutuante no workspace atual.
 hl.window_rule({
-    name   = "gnome-text-editor-float",
-    match  = { class = "^(org.gnome.TextEditor)$" },
+    name   = "nemo-float",
+    match  = { class = "^(nemo|org\\.Nemo)$" },
+    float  = true,
+    size   = {1000, 800},
+    center = true,
+})
+
+-- Apostrophe abre como bloco de notas flutuante
+hl.window_rule({
+    name   = "apostrophe-float",
+    match  = { class = "^(org.gnome.gitlab.somas.Apostrophe)$" },
     float  = true,
     size   = {882, 575},
     center = true,
@@ -425,10 +454,20 @@ hl.window_rule({
     center = true,
 })
 
--- Bitwarden abre flutuante por padrão, 1000x800
+-- Bitwarden desktop abre flutuante por padrão, 1000x800.
 hl.window_rule({
-    name   = "bitwarden-float",
+    name   = "bitwarden-desktop-float",
     match  = { class = "^(Bitwarden)$" },
+    float  = true,
+    size   = {1000, 800},
+    center = true,
+})
+
+-- Popout da extensão Bitwarden no Chromium: mesmo comportamento/tamanho do
+-- Bitwarden desktop, para evitar a janela tileada bugada em meia tela.
+hl.window_rule({
+    name   = "bitwarden-chromium-extension-float",
+    match  = { class = "^chrome-nngceckbapebfimnlniiiahkandclblb.*$" },
     float  = true,
     size   = {1000, 800},
     center = true,
