@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Caetano Dashboard",
+  "description": "Nova guia com clima, GitHub, estatísticas de navegação e NextDNS.",
+  "version": "1.6.0",
+  "permissions": [
+    "history",
+    "storage",
+    "topSites"
+  ],
+  "host_permissions": [
+    "https://api.github.com/*",
+    "https://api.nextdns.io/*",
+    "https://api.open-meteo.com/*",
+    "https://geocoding-api.open-meteo.com/*"
+  ],
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  }
+}

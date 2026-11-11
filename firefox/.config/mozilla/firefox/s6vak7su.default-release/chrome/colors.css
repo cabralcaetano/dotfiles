@@ -1,0 +1,12 @@
+/* Gerado por theme-set.sh — NÃO editar à mão, sobrescrito a cada troca de tema.
+ * Fonte: themes/<tema>/colors.toml
+ * Importado por userChrome.css. */
+:root {
+  --qb-bg: #0f0f10;
+  --qb-surface: #18181b;
+  --qb-surface-hover: #252529;
+  --qb-fg: #f0f0f0;
+  --qb-fg-dim: #9a9996;
+  --qb-accent: #8a8a8d;
+  --qb-error: #9c5b5f;
+}

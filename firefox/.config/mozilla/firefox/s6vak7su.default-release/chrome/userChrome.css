@@ -1,0 +1,45 @@
+/* Firefox minimal, no estilo do qutebrowser. Cores em colors.css (gerado por theme-set.sh). */
+@import url("colors.css");
+
+/* Fundo e texto da interface */
+:root {
+  --toolbar-bgcolor: var(--qb-bg) !important;
+  --toolbar-color: var(--qb-fg) !important;
+  --lwt-accent-color: var(--qb-bg) !important;
+  --lwt-text-color: var(--qb-fg) !important;
+  --tab-selected-bgcolor: var(--qb-surface-hover) !important;
+  --tab-selected-textcolor: var(--qb-fg) !important;
+  --urlbar-box-bgcolor: var(--qb-surface) !important;
+  --arrowpanel-background: var(--qb-surface) !important;
+  --arrowpanel-color: var(--qb-fg) !important;
+}
+#navigator-toolbox,
+#TabsToolbar,
+#nav-bar {
+  background: var(--qb-bg) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Barra de endereço escondida; aparece enquanto tem foco (Ctrl+L, F6 ou Tridactyl) */
+#nav-bar:not(:focus-within) {
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Abas: finas, quadradas, só aparecem com mais de uma aba */
+#tabbrowser-tabs { --tab-min-height: 26px; }
+.tabbrowser-tab .tab-background { border-radius: 0 !important; box-shadow: none !important; }
+.tabbrowser-tab:not([selected]) .tab-label { color: var(--qb-fg-dim) !important; }
+.tabbrowser-tab .tab-close-button { display: none !important; }
+#tabbrowser-tabs[haspinnedtabs]:not([overflow]) > #tabbrowser-arrowscrollbox > .tabbrowser-tab[pinned] { display: none !important; }
+#TabsToolbar:has(#tabbrowser-tabs tab:only-of-type:not([pinned])) { visibility: collapse !important; }
+#TabsToolbar .titlebar-buttonbox-container,
+#TabsToolbar #alltabs-button,
+#TabsToolbar #new-tab-button { display: none !important; }
+
+/* Sem barra de favoritos nem separadores */
+#PersonalToolbar { display: none !important; }
+toolbarseparator { display: none !important; }

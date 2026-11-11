@@ -1,10 +1,76 @@
-# Extensões de navegador — Zen (principal) e Brave (secundário)
+# Extensões de navegador — Ungoogled Chromium ativo, Zen/Brave preservados
 
-> Zen Browser é o navegador padrão do sistema (ver `README.md` § Estrutura do repo). Brave fica só pra uso manual/pontual — hoje principalmente pra tarefas de dev (Claude, React DevTools) e Web Clipper do Obsidian. Inventário abaixo levantado direto dos profiles reais (`~/.config/zen/*/extensions.json` e `~/.config/BraveSoftware/Brave-Browser/Default/Preferences`), não é uma lista de intenção.
+> Ungoogled Chromium é o perfil Chromium enxuto atual para RAM/performance/privacidade. Zen e Brave ficam preservados para fallback/uso específico, mas deprecated como navegadores principais. Inventário levantado dos profiles reais quando documentado; não apagar configs antigas. Setup completo do Ungoogled Chromium em [`../docs/ungoogled-chromium.md`](../docs/ungoogled-chromium.md).
 
 ---
 
-## Zen Browser (perfil `fygd0cys.Default (release)`)
+## Ungoogled Chromium (ativo/enxuto)
+
+| Extensão | ID | Função |
+|---|---|---|
+| **Bitwarden Password Manager** | `nngceckbapebfimnlniiiahkandclblb` | Gerenciador de senhas/passkeys. |
+| **uBlock Origin** | `cjpalhdlnbpafiamejdnhcphjbkeiagm` | Bloqueio de ads/tracker com cosmetic filtering; preferir o normal ao `uBlock Origin Lite` quando disponível. |
+| **Caetano Dashboard** | local/unpacked | Substitui a nova guia por painel local com clima, GitHub, navegação e estatísticas do NextDNS; fonte em [`chromium-dashboard/`](chromium-dashboard/). |
+| **Vimium C** | `hfjbmagddngcpeloejdejnfgbamkjaeg` | Navegação por teclado (hints `f`, `J`/`K` entre abas, omnibar). ID conferido de memória; confirmar na Chrome Web Store ao instalar. Não funciona em `chrome://` nem na nova guia local. |
+
+Instalar em máquina nova:
+
+```bash
+yay -S --needed ungoogled-chromium-bin chromium-extension-web-store
+```
+
+Depois abrir `chrome://extensions` e confirmar **Chromium Web Store** ativo. Se a Chrome Web Store bloquear `.crx`, abrir `chrome://flags/#extension-mime-request-handling`, escolher **Always prompt for install** e relançar.
+
+Links:
+
+```
+https://chromewebstore.google.com/detail/bitwarden-password-manager/nngceckbapebfimnlniiiahkandclblb
+https://chromewebstore.google.com/detail/ublock-origin/cjpalhdlnbpafiamejdnhcphjbkeiagm
+```
+
+Dashboard local:
+
+1. abrir `chrome://extensions`;
+2. ativar **Modo do desenvolvedor**;
+3. escolher **Carregar sem compactação**;
+4. selecionar `~/Projects/dotfiles/browser-extensions/chromium-dashboard`;
+5. abrir uma nova guia e, nas configurações do dashboard, informar cidade e credenciais da API do NextDNS.
+
+A extensão solicita histórico e sites mais acessados para métricas locais. A API key do NextDNS fica em `chrome.storage.local` do próprio perfil; não entra nos dotfiles.
+
+O dashboard mantém a linguagem TUI — tipografia monoespaçada, superfícies
+planas, cantos retos e estados entre colchetes — mas replica os valores medidos
+na UI do dark nativo do Chromium no perfil real:
+
+- frame/background `#1f2020`;
+- toolbar/cards `#3c3c3c`;
+- bordas `#5a5a5a`;
+- texto `#e3e3e3`;
+- texto secundário `#89898c`.
+
+Accents são semânticos: azul `#8ab4f8` identifica labels, navegação, foco e
+ações; verde `#81c995` fica restrito a estados saudáveis/`ONLINE`; vermelho
+`#f28b82` aparece apenas em erros de validação. As superfícies continuam iguais
+às cores medidas do Chromium. A busca interna foi removida; o omnibox nativo já
+cobre essa função sem duplicar espaço.
+
+No desktop, o shell ocupa exatamente `100vh` e o grid divide o espaço restante
+em duas linhas iguais; a página não cria scroll vertical. Em largura de até
+`860px`, volta ao fluxo de uma coluna com scroll normal para não cortar conteúdo.
+
+O card **Agora** reúne saudação, hora, data e clima. O botão de configurações
+também fica nesse card, eliminando o cabeçalho isolado.
+
+O atalho **Favoritos** abre o gerenciador nativo `chrome://bookmarks/` na mesma
+aba.
+
+Tema do navegador: usar o **dark nativo do Chromium**. `Caetano Arch Black`
+permanece apenas como fonte experimental preservada em
+`chromium-black-theme/`; não carregar no perfil real.
+
+---
+
+## Zen Browser (perfil `fygd0cys.Default (release)`, deprecated como principal leve)
 
 | Extensão | ID | Função |
 |---|---|---|
@@ -27,7 +93,7 @@ Tab Shifter: `stow --target="$HOME" scripts` (instala o XPI local) — ver `docs
 
 ---
 
-## Brave (perfil `Default`, uso manual/dev)
+## Brave (perfil `Default`, deprecated como navegador principal; uso manual/dev/fallback)
 
 | Extensão | ID | Função |
 |---|---|---|

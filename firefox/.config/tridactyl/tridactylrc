@@ -1,0 +1,17 @@
+" Tridactyl — atalhos próximos aos do qutebrowser. Requer o native messenger (:installnative).
+" A interface (barras escondidas) vem de chrome/userChrome.css, NÃO do :guiset.
+colourscheme dark
+set smoothscroll true
+set hintchars asdfghjkl
+set newtab https://start.duckduckgo.com
+set searchengine duckduckgo
+set searchurls.g https://www.google.com/search?q=
+set searchurls.yt https://www.youtube.com/results?search_query=
+set searchurls.aw https://wiki.archlinux.org/?search=
+
+" J/K trocam de aba como no qutebrowser (J = próxima, K = anterior)
+bind J tabnext
+bind K tabprev
+" d fecha a aba, u reabre a última fechada
+bind d tabclose
+bind u undo

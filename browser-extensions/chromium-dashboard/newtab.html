@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="shortcuts" aria-label="Atalhos">
+        <a href="https://web.whatsapp.com/" class="shortcut"><span class="shortcut-mark">WA</span><span>WhatsApp</span></a>
+        <a href="https://github.com/" class="shortcut"><span class="shortcut-mark">GH</span><span>GitHub</span></a>
+        <a href="chrome://bookmarks/" class="shortcut" id="open-bookmarks"><span class="shortcut-mark">★</span><span>Favoritos</span></a>
+        <a href="https://crm.codeup.dev.br/dashboard" class="shortcut"><span class="shortcut-mark">TF</span><span>Teachflow CRM</span></a>
+        <a href="https://notebooklm.google.com/" class="shortcut"><span class="shortcut-mark">NL</span><span>NotebookLM</span></a>
+        <a href="https://www.youtube.com/" class="shortcut"><span class="shortcut-mark">YT</span><span>YouTube</span></a>
+      </section>
+
+      <section class="dashboard" aria-label="Informações do dashboard">
+        <article class="card weather-card">
+          <div class="card-heading">
+            <div><p class="label">AGORA</p><h2 id="weather-place">Cidade não definida</h2></div>
+            <div class="card-actions">
+              <span class="status-dot" id="weather-status"></span>
+              <button class="icon-button" id="open-settings" type="button" aria-label="Abrir configurações" title="Configurações">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.56V21h-4v-.08A1.7 1.7 0 0 0 8.97 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.53-1H3v-4h.08A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 8.97 4.6a1.7 1.7 0 0 0 1.03-1.52V3h4v.08A1.7 1.7 0 0 0 15.03 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.22.62.8 1 1.53 1H21v4h-.08c-.72 0-1.3.4-1.52 1Z"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="weather-layout">
+            <section class="time-block" aria-label="Hora e data">
+              <p class="eyebrow" id="greeting">BOA TARDE</p>
+              <strong class="clock" id="clock">00:00</strong>
+              <p class="date" id="date">Carregando data…</p>
+            </section>
+            <div class="weather-pane">
+              <div id="weather-empty" class="empty-state">
+                <p>Defina uma cidade para ver temperatura, sensação térmica e previsão.</p>
+                <button class="text-button" id="configure-weather" type="button">Definir cidade</button>
+              </div>
+              <div id="weather-content" class="weather-content" hidden>
+                <div class="weather-now"><strong id="weather-temp">--°</strong><div><span id="weather-description">—</span><small id="weather-feels">Sensação --°</small></div></div>
+                <div class="metric-row"><span>Máxima <strong id="weather-max">--°</strong></span><span>Mínima <strong id="weather-min">--°</strong></span><span>Chuva <strong id="weather-rain">--%</strong></span></div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="card nextdns-card">
+          <div class="card-heading"><div><p class="label">NEXTDNS</p><h2>Proteção nas últimas 24 horas</h2></div><span class="privacy-pill" id="nextdns-status">API</span></div>
+          <div id="nextdns-empty" class="empty-state">
+            <p>Conecte sua conta para ver consultas DNS, bloqueios e os domínios mais bloqueados.</p>
+            <button class="text-button" id="configure-nextdns" type="button">Conectar NextDNS</button>
+          </div>
+          <div id="nextdns-content" hidden>
+            <div class="stat-grid nextdns-stats">
+              <div><strong id="nextdns-queries">--</strong><span>consultas</span></div>
+              <div><strong id="nextdns-blocked">--</strong><span>bloqueadas</span></div>
+              <div><strong id="nextdns-rate">--%</strong><span>taxa de bloqueio</span></div>
+            </div>
+            <div class="blocked-domains" id="nextdns-domains"></div>
+          </div>
+        </article>
+
+        <article class="card github-card">
+          <div class="card-heading"><div><p class="label">GITHUB</p><h2 id="github-login">@cabralcaetano</h2></div><a class="external-link" id="github-profile" href="https://github.com/cabralcaetano" aria-label="Abrir perfil do GitHub">↗</a></div>
+          <div class="stat-grid">
+            <div><strong id="github-repos">--</strong><span>repositórios</span></div>
+            <div><strong id="github-followers">--</strong><span>seguidores</span></div>
+            <div><strong id="github-events">--</strong><span>ações em 7 dias</span></div>
+          </div>
+          <p class="card-footnote" id="github-detail">Carregando atividade pública…</p>
+        </article>
+
+        <article class="card browsing-card">
+          <div class="card-heading"><div><p class="label">NAVEGAÇÃO</p><h2>Hoje</h2></div><span class="privacy-pill">LOCAL</span></div>
+          <div class="browsing-summary"><strong id="history-count">--</strong><span>páginas diferentes visitadas</span></div>
+          <div class="top-sites" id="top-sites"><p class="card-footnote">Lendo sites frequentes…</p></div>
+        </article>
+      </section>
+    </main>
+
+    <dialog id="settings-dialog">
+      <form method="dialog" id="settings-form">
+        <div class="dialog-heading"><div><p class="label">DASHBOARD</p><h2>Configurações</h2></div><button class="icon-button close-button" value="cancel" aria-label="Fechar" type="submit">×</button></div>
+        <label for="city">Cidade do clima</label>
+        <input id="city" name="city" placeholder="Ex.: São Paulo" autocomplete="address-level2">
+        <label for="github-user">Usuário do GitHub</label>
+        <input id="github-user" name="githubUser" placeholder="cabralcaetano" autocomplete="off">
+        <label for="nextdns-profile">ID do perfil NextDNS</label>
+        <input id="nextdns-profile" name="nextdnsProfile" placeholder="932497" autocomplete="off">
+        <label for="nextdns-api-key">API key do NextDNS</label>
+        <input id="nextdns-api-key" name="nextdnsApiKey" type="password" placeholder="Salva somente nesta extensão" autocomplete="off">
+        <p class="form-error" id="settings-error" role="alert"></p>
+        <div class="dialog-actions"><button class="secondary-button" value="cancel" type="submit">Cancelar</button><button class="primary-button" id="save-settings" value="default" type="submit">Salvar</button></div>
+      </form>
+    </dialog>
+
+    <script src="newtab.js"></script>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Caetano Arch Black",
+  "description": "Tema preto e monocromático para integrar o Chromium ao desktop Arch.",
+  "version": "1.1.0",
+  "theme": {
+    "colors": {
+      "frame": [0, 0, 0],
+      "frame_inactive": [0, 0, 0],
+      "frame_incognito": [0, 0, 0],
+      "frame_incognito_inactive": [0, 0, 0],
+      "toolbar": [8, 8, 8],
+      "toolbar_button_icon": [220, 220, 220],
+      "toolbar_text": [238, 238, 238],
+      "tab_text": [248, 248, 248],
+      "tab_background_text": [150, 150, 150],
+      "tab_background_text_inactive": [105, 105, 105],
+      "bookmark_text": [220, 220, 220],
+      "omnibox_background": [14, 14, 14],
+      "omnibox_text": [240, 240, 240],
+      "omnibox_results_bg": [10, 10, 10],
+      "omnibox_results_text": [225, 225, 225],
+      "omnibox_results_url": [170, 170, 170],
+      "ntp_background": [5, 5, 5],
+      "ntp_text": [238, 238, 238],
+      "ntp_link": [210, 210, 210],
+      "button_background": [16, 16, 16],
+      "toolbar_top_separator": [42, 42, 42],
+      "toolbar_top_separator_inactive": [24, 24, 24]
+    },
+    "tints": {
+      "buttons": [-1, -1, 0.82]
+    },
+    "properties": {
+      "ntp_background_alignment": "center",
+      "ntp_background_repeat": "no-repeat"
+    }
+  }
+}

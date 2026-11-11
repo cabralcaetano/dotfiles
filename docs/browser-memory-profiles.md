@@ -4,11 +4,14 @@
 helpers que a implementavam foram removidos do repo em 2026-09-10. Este
 documento é registro histórico — não há nada aqui para executar.
 
-**O que vale hoje:** Zen Browser é o navegador padrão XDG e do `SUPER+B`
-(`hyprland.lua` chama `~/.local/bin/zen` direto). O Brave **continua
-instalado e em uso**, lançado pelo `.desktop` próprio dele
-(`brave-browser.desktop`, pacote `brave-bin`). O que morreu foi só o modelo de
-rotear navegador/profile por super workspace.
+**O que vale hoje:** Ungoogled Chromium é a opção ativa quando a meta é um
+Chromium enxuto por RAM/performance/privacidade. Zen Browser ainda é o
+navegador XDG/do boot/`SUPER+B` enquanto a config Hyprland não for migrada,
+mas está deprecated como opção “leve”. Brave continua instalado e preservado
+para uso manual/fallback (`brave-browser.desktop`, pacote `brave-bin`), mas
+também deprecated como navegador principal. O que morreu foi só o modelo de
+rotear navegador/profile por super workspace. Setup atual em
+[`ungoogled-chromium.md`](ungoogled-chromium.md).
 
 ## Contexto do problema (2026-08)
 
