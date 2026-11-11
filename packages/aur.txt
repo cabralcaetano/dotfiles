@@ -21,6 +21,8 @@ wlogout
 # --- Apps ---
 beekeeper-studio-bin
 brave-bin
+ungoogled-chromium-bin
+chromium-extension-web-store
 overskride-bin
 spotifast-bin
 vesktop
@@ -48,3 +50,4 @@ ttf-apple-emoji
 
 # --- Diversos ---
 neofetch
+firefox-tridactyl-native-bin

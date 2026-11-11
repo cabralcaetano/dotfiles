@@ -116,7 +116,7 @@ O que cada arquivo resolve e como verificar: [`system/README.md`](system/README.
 > | **Windows VM / Incogniton** | libvirt/QEMU, Windows guest | ver [`docs/windows-vm-incogniton.md`](docs/windows-vm-incogniton.md) |
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
 > | **NextDNS** | Serviço systemd `nextdns` + conta na nuvem, profile `932497` | ver [`nextdns/nextdns.md`](nextdns/nextdns.md) — `yay -S nextdns-bin && sudo nextdns install -profile 932497 -report-client-info && sudo nextdns activate`, depois replicar config do profile no dashboard |
-> | **Extensões de navegador** | Zen (AMO) + Brave (Chrome Web Store) | ver [`browser-extensions/browser-extensions.md`](browser-extensions/browser-extensions.md) — instalar manualmente pelos links de cada extensão, exceto Tab Shifter (local, via `stow scripts`) |
+> | **Extensões de navegador** | Ungoogled Chromium (Chrome Web Store helper), Zen (AMO) + Brave legado | ver [`browser-extensions/browser-extensions.md`](browser-extensions/browser-extensions.md) e [`docs/ungoogled-chromium.md`](docs/ungoogled-chromium.md) — instalar manualmente só o mínimo; policy do Chromium para ocultar ícone PWA em `system/etc/chromium/policies/managed/pwa-install.json`; configs de Zen/Brave/Chrome ficam preservadas, mas deprecated como navegador principal |
 > | **Fedora legado** | dnf/grub-btrfs Fedora | ver [`docs/history/system-setup-fedora.md`](docs/history/system-setup-fedora.md) e o manifesto arquivado `legacy/fedora/dnf.txt`; fora do fluxo atual |
 > | **Reflector (mirrorlist automático)** | `/etc/xdg/reflector/reflector.conf` | copiar `reflector/etc/xdg/reflector/reflector.conf`; depois `sudo systemctl enable --now reflector.timer` (ranqueia mirrors do Brasil por velocidade, semanalmente) |
 > | **keyd / earlyoom / zram** | `/etc/keyd/`, `/etc/default/earlyoom`, `/etc/sysctl.d/`, `/etc/systemd/` | `bash bootstrap.sh --system` aplica tudo; à mão, ver [`system/README.md`](system/README.md) |
@@ -182,7 +182,9 @@ sddm/           → referência system-wide manual do SDDM/SilentSDDM
 reflector/      → reflector.conf (mirrorlist Brasil, sort rate) + reflector.timer manual
 ducking/        → guia completo do audio ducking
 nextdns/        → guia completo do setup NextDNS (DoH, profile 932497, blocklists, iPhone)
-browser-extensions/ → inventário real das extensões do Zen e do Brave, com links de instalação
+browser-extensions/ → inventário real das extensões do Ungoogled Chromium, Zen e Brave, com links e status operacional
+firefox/        → userChrome.css/user.js (interface mínima) + tridactylrc; cores geradas por theme-set.sh; perfil s6vak7su.default-release
+qutebrowser/    → config.py + colors.py (gerado pelo theme-set.sh) + userscripts (anúncios do YouTube, Bitwarden via rbw); navegador secundário; ver docs/qutebrowser-rbw.md
 themes/         → theme-set (troca de paleta system-wide, normal/catppuccin); ver themes/README.md
 claude/         → skills pessoais do Claude Code / harnesses de agente; ver docs/agent-harnesses-and-skills.md
 system/          → configs system-wide manuais em /etc: earlyoom, zram, keyd
@@ -204,7 +206,7 @@ Ordem de inicialização definida no `hyprland.lua`:
 | GTK dark theme | — | exec-once com sleep 2s |
 | Zen Browser | super workspace 1 / slot 1 (`name:super-1-1`) | `[workspace name:super-1-1 silent]` |
 | ghostty | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
-| obsidian (flatpak) | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
+| obsidian | super workspace 1 / slot 2 (`name:super-1-2`) | `[workspace name:super-1-2 silent]` |
 | Spotifast | super workspace 1 / slot 3 (`name:super-1-3`) | `/usr/bin/spotifast` (`spotifast-bin` do AUR) com workspace silencioso |
 | discord | super workspace 1 / slot 4 (`name:super-1-4`) | `[workspace name:super-1-4 silent]` |
 
@@ -231,12 +233,12 @@ painel apontam para ele. Instalação, OAuth, atualização e remoção:
 |---|---|
 | Super+Q | Terminal (Ghostty) |
 | Super+B | Navegador (Zen Browser) |
-| Super+E | Gerenciador de arquivos (Nautilus) |
+| Super+E | Gerenciador de arquivos (Nemo) |
 | Super+R | Launcher (Fuzzel) |
 | Super+D | Discord |
 | Super+M | Spotifast |
 | Super+O | Obsidian |
-| Super+Ctrl+N | Bloco de notas (GNOME Text Editor) |
+| Super+Ctrl+N | Nova nota no vault `obsidian-scratch` |
 | Super+Shift+C | VS Code |
 
 **Janelas**
@@ -252,6 +254,7 @@ painel apontam para ele. Instalação, OAuth, atualização e remoção:
 | Super+A | Alterna split (era Super+J — liberado p/ foco via H/J/K/L) |
 | Super+Setas / Super+H,J,K,L | Move foco |
 | Super+Shift+Setas / Super+Shift+H,J,K,L | Swap janelas |
+| Super+Ctrl+Setas | Redimensiona a janela ativa no tiling |
 | Super+F | Tela cheia (toggle) |
 | Super+LMB | Move janela (mouse) |
 | Super+RMB | Redimensiona janela (mouse) |
@@ -342,7 +345,7 @@ O script também lembra o último slot focado em cada super workspace. Se você 
 
 Waybar mostra só os slots do super workspace ativo. O ícone da esquerda vem de `super-workspace.sh waybar`, mapa `>` `~` `=` `^` `*` para os 5 super workspaces. Tooltip mostra o banco ativo + qualquer outro banco com janela aberta (bancos vazios ficam de fora). Clique esquerdo abre um menu `fuzzel` com os 5 pra escolher direto ou digitar um nome para o banco ativo; clique direito cicla pro anterior. O nome salvo aparece depois de `custom/active-window`.
 
-Zen Browser é o navegador padrão XDG, do boot e do `SUPER+B`. O Brave continua instalado e em uso, lançado pelo `.desktop` próprio dele — mas fora dos super workspaces: os helpers de profile por banco (`brave-profile.sh`, `chromium-profile.sh`, `brave-super-workspace.sh`, `browser-super-workspace.sh`) foram removidos em 2026-09-10. Post-mortem em [`docs/browser-memory-profiles.md`](docs/browser-memory-profiles.md).
+Ungoogled Chromium é a opção ativa para navegação Chromium enxuta por RAM/performance/privacidade; Zen Browser permanece como navegador XDG/do boot/`SUPER+B` enquanto a config Hyprland não for migrada, mas fica deprecated como opção “leve”. O Brave continua instalado e preservado para uso manual/fallback, também deprecated como navegador principal. Helpers antigos de profile por banco (`brave-profile.sh`, `chromium-profile.sh`, `brave-super-workspace.sh`, `browser-super-workspace.sh`) foram removidos em 2026-09-10. Post-mortem em [`docs/browser-memory-profiles.md`](docs/browser-memory-profiles.md); setup atual do Ungoogled Chromium em [`docs/ungoogled-chromium.md`](docs/ungoogled-chromium.md).
 
 Documentação completa: [`docs/hyprland-super-workspaces.md`](docs/hyprland-super-workspaces.md).
 
@@ -550,7 +553,7 @@ Configurado em GTK 3/4, Hyprland, systemd/DBus user e fallback de `default` para
 Pontos versionados no repo:
 
 - `hypr/.config/hypr/hyprland.lua` exporta `XCURSOR_THEME=capitaine-cursors` e `XCURSOR_SIZE=24`.
-- No start da sessão, `hyprland.lua` importa essas variáveis para DBus/systemd user e roda `hyprctl setcursor capitaine-cursors 24`. Isso é necessário para apps XWayland, como o Obsidian Flatpak quando o sandbox não abre Wayland.
+- No start da sessão, `hyprland.lua` importa essas variáveis para DBus/systemd user e roda `hyprctl setcursor capitaine-cursors 24`, mantendo o cursor consistente em apps XWayland.
 
 Overrides locais necessários quando um Flatpak ignora o cursor do compositor:
 
@@ -576,7 +579,7 @@ Inherits=capitaine-cursors
 ## Temas
 
 `theme-set.sh <tema>` troca a paleta do sistema inteiro — Hyprland, Hyprlock,
-Ghostty, Kitty, Fuzzel, Waybar, SwayNC, Quickshell, Neovim, tmux, GTK/Qt e btop
+Ghostty, Kitty, Fuzzel, Waybar, SwayNC, Quickshell, Neovim, tmux e GTK/Qt
 — regenerando templates a partir de `themes/<tema>/colors.toml`. Mecanismo
 adaptado do `omarchy-theme-set`, mas standalone.
 
@@ -672,9 +675,12 @@ Documentação completa: [`docs/keyboard-keyd.md`](docs/keyboard-keyd.md).
 Extensão local `Tab Shifter` no Zen Browser move abas verticais com `Alt+Shift+J/K`.
 Nova aba manual no Zen fica no fim da lista para preservar WhatsApp em `Alt+1`.
 Fechar abas em sequência com `Ctrl+W` mantém foco na vizinhança da lista, sem voltar para WhatsApp.
-O Brave mantém a extensão original `browser-tab-mover` para mover abas/posições.
+O Brave mantém a extensão original `browser-tab-mover` para mover abas/posições, mas esse fluxo está deprecated junto com o Brave como navegador principal.
 
 Documentação completa: [`docs/browser-tab-shifter.md`](docs/browser-tab-shifter.md).
+Google Meet no Zen (QCY H3 Pro, PipeWire, câmera integrada e crop/enquadramento): [`docs/zen-google-meet-media.md`](docs/zen-google-meet-media.md).
+Ungoogled Chromium enxuto, Chrome Web Store helper, uBlock/Bitwarden e política de updates: [`docs/ungoogled-chromium.md`](docs/ungoogled-chromium.md).
+
 
 ---
 
@@ -703,7 +709,7 @@ Documentação completa: [`docs/browser-tab-shifter.md`](docs/browser-tab-shifte
 
 **Alcance maior que o Waybar:** o mesmo dispatch antigo (`hyprctl dispatch focuswindow "class:^(X)$"`) quebra em qualquer script, não só no Waybar. Achados e corrigidos: `scripts/.local/bin/media-open-spotify.sh` (clique na capa do álbum no painel Quickshell foca o Spotifast) e `scripts/.local/bin/waybar-calendar.sh`. Forma correta: `hyprctl dispatch "hl.dsp.focus({ window = 'class:^(X)\$' })"`. Os dois arquivos em `~/.local/bin/` tinham virado cópias soltas (symlink do Stow quebrado) — restaurados.
 
-**Bateria / perfil de energia (2026-08-10):** um ícone só de perfil (`custom/power-profile`, sem clique) causava mira errada — some quando não há nada ao lado pra empurrar, e o vizinho (`custom/battery-conservation`) desliza pro lugar e rouba o clique. Solução: o clique pra trocar perfil (Balanceado/Performance/Economia) foi pro ícone de bateria (`custom/battery-conservation`, sempre visível e largo — alvo fácil); o `custom/power-profile` virou indicador passivo, sem `on-click`, só aparece fora do Balanceado. `battery-conservation.sh waybar` agora usa `return-type: json` pra devolver `{"text": "...", "tooltip": "..."}` com tooltip curto e dinâmico (`Balanceado · Preservação`, `Performance · 100%` etc.) em vez de texto instrucional fixo. **Trade-off:** o toggle Long_Life/100% perdeu o clique dedicado na Waybar — agora só via terminal (`battery-conservation.sh toggle`), já que na prática raramente é trocado.
+**Bateria / perfil de energia (2026-08-10):** um ícone só de perfil (`custom/power-profile`, sem clique) causava mira errada — some quando não há nada ao lado pra empurrar, e o vizinho (`custom/battery-conservation`) desliza pro lugar e rouba o clique. Solução: o clique pra trocar perfil (Balanceado/Performance/Economia) foi pro ícone de bateria (`custom/battery-conservation`, sempre visível e largo — alvo fácil); o `custom/power-profile` virou indicador passivo, sem `on-click`, só aparece fora do Balanceado. `battery-conservation.sh waybar` agora usa `return-type: json` pra devolver `{"text": "...", "tooltip": "..."}` com tooltip curto e dinâmico (`Balanceado · Preservação`, `Performance · 100%` etc.) em vez de texto instrucional fixo. Em `Long_Life`, o firmware do IdeaPad pode parar conectado em 79–81%, embora o alvo nominal seja 80%; nesse intervalo com `Not charging`, a barra mostra `80%` e o tooltip informa o valor bruto (`medido: 79%`, por exemplo). Descarga e carregamento ativo nunca são normalizados. **Trade-off:** o toggle Long_Life/100% perdeu o clique dedicado na Waybar — agora só via terminal (`battery-conservation.sh toggle`), já que na prática raramente é trocado.
 
 **Tooltips — tamanho de fonte:** `tooltip, tooltip * { font-size: ...px }` em `style.css` controla o tamanho. Gotcha: o hot-reload (`reload_on_style_change`) não repropaga pro popup de tooltip do GTK — precisa `pkill waybar && waybar &` (restart completo), CSS sozinho não basta.
 
@@ -746,7 +752,6 @@ Tabela derivada de `packages/flatpak.txt` (dump de `flatpak list --app`, 2026-09
 
 | App | ID |
 |---|---|
-| Obsidian | md.obsidian.Obsidian |
 | Google Chrome | com.google.Chrome |
 | RustDesk | com.rustdesk.RustDesk |
 | Stremio | com.stremio.Stremio |
@@ -767,7 +772,7 @@ Apps distribuídos como `.tar.gz`/binário solto (sem pacote nativo em uso), ext
 |---|---|---|
 | Antigravity 2.0 (desktop) | `~/.local/opt/Antigravity-x64/antigravity` | `antigravity://` |
 | Antigravity IDE | `~/.local/opt/Antigravity IDE/antigravity-ide` | `antigravity-ide://` |
-| Zen Browser | `~/.local/opt/zen/zen` (symlink `~/.local/bin/zen`) | `http`/`https` via `zen.desktop` — navegador padrão XDG |
+| Zen Browser | `~/.local/opt/zen/zen` (symlink `~/.local/bin/zen`) | deprecated como navegador padrão; configs preservadas |
 | ai-usagebar | `~/.local/bin/ai-usagebar` | — (legado; `clock-panel-status.sh` usa `omp usage --json`) |
 
 Passos para reinstalar em máquina nova (o binário em si **não** é versionado no repo, só o `.desktop`/ícone/mimeapps):
@@ -808,16 +813,10 @@ stow --target="$HOME" desktop-apps
 
 **Neovim**
 
-| Atalho | Ação |
-|---|---|
-| Alt+1..9 | Vai para a aba/buffer visível na `bufferline.nvim` |
-| Ctrl+t | Cria uma aba/buffer vazio (`:enew`) |
-| Ctrl+w | Fecha a aba/buffer atual sem fechar o split |
-| Alt+h/j/k/l | Move foco entre splits do Neovim |
-| Alt+Setas | Move foco entre splits do Neovim |
-| Ctrl-w Ctrl-w | No terminal embutido, alterna para o próximo split |
-| Ctrl-w h/j/k/l | No terminal embutido, move foco entre splits |
-| Ctrl-w Setas | No terminal embutido, move foco entre splits |
+Usa os keymaps padrão do LazyVim, sem overrides locais em
+`nvim/.config/nvim/lua/config/keymaps.lua`. `Espaço` abre o WhichKey com os
+atalhos disponíveis no contexto atual; `Espaço s k` pesquisa os keymaps
+ativos.
 
 ---
 
@@ -861,6 +860,7 @@ MIT
 - [[docs/backup-restic|Backup off-site com restic]]
 - [[docs/browser-tab-shifter|Browser tab shifter]]
 - [[docs/browser-memory-profiles|Browser memory profiles]]
+- [[docs/ungoogled-chromium|Ungoogled Chromium]]
 - [[docs/hyprland-super-workspaces|Hyprland super workspaces]]
 - [[docs/history/dotfiles-historico|Dotfiles — registro histórico]]
 - [[ducking/ducking|Audio ducking]]

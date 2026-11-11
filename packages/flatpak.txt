@@ -16,10 +16,10 @@ br.gov.fazenda.receita.irpf2022
 br.gov.fazenda.receita.irpf2023
 br.gov.fazenda.receita.irpf2024
 br.gov.fazenda.receita.irpf2025
+# Google Chrome fica deprecated/fallback: manter se algum serviço exigir Chrome oficial.
 com.google.Chrome
 com.rustdesk.RustDesk
 com.stremio.Stremio
 io.mpv.Mpv
-md.obsidian.Obsidian
 org.gnome.Extensions
 org.qbittorrent.qBittorrent

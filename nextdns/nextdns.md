@@ -75,7 +75,22 @@ use-hosts true
 
 ### Serviço systemd — `/etc/systemd/system/nextdns.service`
 
-Instalado pelo pacote `nextdns-bin`, habilitado automaticamente (`WantedBy=multi-user.target`). Não precisa de unit customizada neste repo.
+Instalado pelo pacote `nextdns-bin`, habilitado automaticamente (`WantedBy=multi-user.target`). O processo pode permanecer ativo, porém sem endpoint DoH utilizável, após uma troca de rede; `Restart=on-failure` não cobre esse estado.
+
+### Recuperação automática após troca de rede
+
+**Sintoma:** depois de mudar de Wi-Fi, renovar o DHCP ou retomar conectividade, a interface ganha rota, mas as aplicações não resolvem nomes até reiniciar `nextdns.service`.
+
+**Causa:** o processo NextDNS pode continuar escutando em `127.0.0.1:53`, porém manter endpoints DoH inválidos. Como `/etc/resolv.conf` aponta somente para `127.0.0.1`, não há resolvedor alternativo para as aplicações. O processo não encerra, portanto o `Restart=on-failure` do systemd não se aplica. O comportamento foi observado localmente na versão `1.47.3` e corresponde aos relatos upstream [#699](https://github.com/nextdns/nextdns/issues/699) e [#888](https://github.com/nextdns/nextdns/issues/888).
+
+**Correção:** `system/etc/NetworkManager/dispatcher.d/50-nextdns-reconnect` é instalado como `/etc/NetworkManager/dispatcher.d/50-nextdns-reconnect`. Em eventos `up` ou `dhcp4-change` que tenham gateway IPv4, o hook executa `systemctl try-restart nextdns.service`.
+
+- `up` acontece depois da interface ser ativada; `dhcp4-change` cobre renovação ou troca de lease.
+- A condição de gateway evita reinícios por interfaces sem rota IPv4, como `tailscale0`.
+- `try-restart` recupera um serviço ativo, mas não religa o NextDNS quando ele foi parado deliberadamente.
+- O hook é implantado por `bash bootstrap.sh --system` ou `bash bootstrap.sh --system-only`; ambos preservam o modo executável `755`.
+
+Após uma mudança de rede, o log deve mostrar `Stopping NextDNS`, `Starting NextDNS`, `Activating` e uma nova conexão a `dns.nextdns.io`. Confirmar o resultado com `https://test.nextdns.io/`: `status` deve ser `ok` e `protocol`, `DOH`.
 
 ---
 

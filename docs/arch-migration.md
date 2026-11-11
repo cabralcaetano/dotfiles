@@ -20,7 +20,7 @@ Alguns apps não têm o mesmo nome de pacote/binário no Arch. Os binds e script
 | swww (wallpaper) | pacote `swww`, binários `swww`/`swww-daemon` | não existe no Arch — o pacote é `awww` (fork com CLI compatível), binários `awww`/`awww-daemon` | `exec-once` do daemon e do wallpaper inicial em `hyprland.conf`, `wallpaper.sh`, `wallpaper-toggle.sh` |
 | Brave | pacote `brave-browser`, binário `brave-browser` | pacote `brave-bin` (AUR), binário `brave` (o `.desktop` até se chama `brave-browser.desktop`, mas o `Exec=` é `brave`) | `$browser` em `hyprland.conf`, exec-once do workspace 1 |
 
-> Obsidian continua igual (flatpak `md.obsidian.Obsidian` funciona nos dois).
+> Obsidian foi migrado do Flatpak `md.obsidian.Obsidian` para o pacote oficial `obsidian` do pacman em 2026-10-08; os atalhos do Hyprland executam `obsidian`.
 
 ## 1.1 Pacotes que sumiram por completo (não vinham pré-instalados)
 

@@ -1,0 +1,10 @@
+#!/bin/sh
+# Recover the local DoH proxy after NetworkManager establishes or renews an IPv4 route.
+# Do not start a deliberately stopped NextDNS service.
+
+case "$2" in
+  up|dhcp4-change)
+    [ -n "$IP4_GATEWAY" ] || exit 0
+    exec /usr/bin/systemctl try-restart nextdns.service
+    ;;
+esac

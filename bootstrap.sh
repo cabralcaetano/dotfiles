@@ -103,6 +103,11 @@ SYSTEM_INSTALLS=(
   "system/etc/nftables.conf|/etc/nftables.conf"
 )
 
+# Hooks do NetworkManager precisam ser executáveis.
+SYSTEM_EXECUTABLE_INSTALLS=(
+  "system/etc/NetworkManager/dispatcher.d/50-nextdns-reconnect|/etc/NetworkManager/dispatcher.d/50-nextdns-reconnect"
+)
+
 # Comandos que recarregam o que os arquivos acima mudaram.
 SYSTEM_RELOADS=(
   "sysctl --system"
@@ -121,6 +126,10 @@ print_system_commands() {
     src="${pair%%|*}"; dest="${pair##*|}"
     printf '  sudo install -Dm644 %-42s %s\n' "$src" "$dest"
   done
+  for pair in "${SYSTEM_EXECUTABLE_INSTALLS[@]}"; do
+    src="${pair%%|*}"; dest="${pair##*|}"
+    printf '  sudo install -Dm755 %-42s %s\n' "$src" "$dest"
+  done
   printf '\n'
   for cmd in "${SYSTEM_RELOADS[@]}"; do
     printf '  sudo %s\n' "$cmd"
@@ -136,6 +145,13 @@ apply_system_files() {
     src="${pair%%|*}"; dest="${pair##*|}"
     [[ -f "$src" ]] || die "Arquivo ausente no repo: $src"
     sudo install -Dm644 "$src" "$dest"
+    ok "$dest"
+  done
+
+  for pair in "${SYSTEM_EXECUTABLE_INSTALLS[@]}"; do
+    src="${pair%%|*}"; dest="${pair##*|}"
+    [[ -f "$src" ]] || die "Arquivo ausente no repo: $src"
+    sudo install -Dm755 "$src" "$dest"
     ok "$dest"
   done
 

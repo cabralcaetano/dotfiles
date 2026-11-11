@@ -7,7 +7,7 @@
 #   comm -23 <(pacman -Qqen | sort) \
 #            <(sed '/^[[:space:]]*#/d;/^[[:space:]]*$/d' packages/pacman.txt | sort -u)
 # Pacotes AUR ficam em packages/aur.txt — precisam de um AUR helper (yay).
-# Atualizado: 2026-09-10 · Arch Linux
+# Atualizado: 2026-10-08 · Arch Linux
 
 # --- Sistema base ---
 base
@@ -155,7 +155,7 @@ tuned
 tuned-ppd
 
 # --- File manager ---
-nautilus
+nemo
 
 # --- Apps GNOME usados fora do GNOME ---
 # evolution saiu: não está mais instalado (as contas do GNOME Online Accounts
@@ -173,6 +173,7 @@ evince
 bitwarden
 discord
 spotify-launcher
+obsidian
 imv
 ncspot
 tauon-music-box
@@ -183,7 +184,13 @@ v4l2loopback-dkms
 
 # --- Navegadores ---
 # o Zen é instalado fora do pacman, em ~/.local/opt/zen (ver README.md)
+# chromium fica como fallback/deprecated; navegador Chromium ativo é ungoogled-chromium-bin no AUR
 firefox
+firefox-tridactyl
+# qutebrowser: navegador secundário (ver wiki: personal/projects/dotfiles/browser-qutebrowser-evaluation); python-adblock habilita listas estilo uBlock
+qutebrowser
+python-adblock
+rbw
 chromium
 
 # --- Snapshots Btrfs (ver docs/arch-migration.md §1.2) ---
