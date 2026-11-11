@@ -15,7 +15,7 @@
   // === MÓDULOS =================================
   "modules-left": ["custom/super-workspace", "hyprland/workspaces", "custom/active-window", "custom/super-workspace-name"],
   "modules-center": ["clock"],
-  "modules-right": ["group/tray-drawer", "cpu", "memory", "network", "bluetooth", "pulseaudio", "custom/power-profile", "custom/battery-conservation", "custom/swaync-hotspot"],
+  "modules-right": ["group/tray-drawer", "network", "bluetooth", "pulseaudio", "custom/power-profile", "custom/battery-conservation", "custom/swaync-hotspot"],
 
   // === CPU =====================================
   "cpu": {
@@ -25,11 +25,23 @@
     "on-click": "ghostty --gtk-single-instance=false --title=btop --window-save-state=never --window-decoration=none --window-width=87 --window-height=27 -e btop"
   },
 
+  // === TEMPERATURA CPU ==========================
+  "temperature": {
+    "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
+    "input-filename": "temp1_input",
+    "critical-threshold": 90,
+    "format": "{icon} {temperatureC}°C",
+    "format-critical": "󰸁 {temperatureC}°C",
+    "format-icons": ["󰔏", "󰔏", "󰔏"],
+    "tooltip-format": "CPU package: {temperatureC}°C"
+  },
+
   // === MEMÓRIA ==================================
   "memory": {
     "interval": 10,
     "format": "󰍛 {percentage}%",
-    "tooltip-format": "{used:0.1f}G / {total:0.1f}G"
+    "tooltip-format": "{used:0.1f}G / {total:0.1f}G",
+    "on-click": "ghostty --gtk-single-instance=false --title=btop --window-save-state=never --window-decoration=none --window-width=87 --window-height=27 -e btop"
   },
 
   // === ÍCONE CUSTOM ============================
@@ -159,9 +171,10 @@
   },
 
   // === VELOCIDADE DE REDE =======================
-  "network#speed": {
-    "interval": 2,
-    "format": "↑{bandwidthUpBytes} ↓{bandwidthDownBytes}",
+  "custom/network-speed": {
+    "exec": "$HOME/.local/bin/waybar-network-speed.sh",
+    "interval": 5,
+    "format": "{}",
     "tooltip": false
   },
 
@@ -172,7 +185,7 @@
       "transition-duration": 400,
       "transition-left-to-right": false
     },
-    "modules": ["custom/tray-arrow", "network#speed", "tray"]
+    "modules": ["custom/tray-arrow", "custom/network-speed", "temperature", "cpu", "memory", "tray"]
   },
 
   "custom/tray-arrow": {
@@ -203,7 +216,7 @@
   "format": "󰂯",
   "format-connected": "󰂱",
   "format-off": "󰂲",
-  "on-click": "overskride",
+  "on-click": "$HOME/.local/bin/overskride-toggle.sh",
   "tooltip": true,
   "tooltip-format-connected": "{device_alias}\nBateria: {device_battery_percentage}%"
   },

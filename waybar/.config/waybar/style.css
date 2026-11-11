@@ -164,15 +164,20 @@ tooltip * {
   min-width: 2px;
   font-size: 1px;
 }
-/* === VELOCIDADE DE REDE ========================= */
-#network-speed {
-  font-size: 9px;
+/* === DRAWER: REDE / CPU / TEMPERATURA / MEMÓRIA = */
+#custom-network-speed,
+#cpu,
+#temperature,
+#memory {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 13px;
   font-weight: 700;
   color: @foreground;
   background-color: transparent;
   border: none;
   border-radius: 0;
-  padding: 0 8px;
+  padding: 0 5px;
+  margin: 0;
 }
 
 /* === RELÓGIO =================================== */
@@ -193,10 +198,6 @@ tooltip * {
 }
 
 /* === REDE / STATUS RIGHT ======================= */
-/* Espaçamento entre módulos vem só de "spacing" no config.jsonc.
- * Padding horizontal por módulo distorce a distância visual entre RAM/Wi-Fi/BT/áudio. */
-#cpu,
-#memory,
 #network,
 #bluetooth,
 #pulseaudio,
@@ -210,8 +211,6 @@ tooltip * {
   margin: 0;
 }
 
-#cpu,
-#memory,
 #network,
 #bluetooth,
 #pulseaudio {
@@ -239,13 +238,6 @@ tooltip * {
   background-color: alpha(@foreground, 0.1);
 }
 
-/* === CPU / MEMÓRIA ============================== */
-#cpu,
-#memory {
-  font-weight: 700;
-  font-size: 13px;
-  color: @foreground;
-}
 
 /* === PERFIL / CONSERVAÇÃO ======================= */
 #custom-power-profile {
