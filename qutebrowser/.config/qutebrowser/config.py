@@ -33,6 +33,14 @@ c.tabs.last_close = "close"
 # `:wq` salva a sessão; fechar de qualquer outro jeito perde as abas.
 c.auto_save.session = True
 
+# Seletor GTK nativo em uploads; evita o diálogo Qt padrão do qutebrowser.
+c.fileselect.handler = "external"
+c.fileselect.single_file.command = ["zenity", "--file-selection"]
+c.fileselect.multiple_files.command = [
+    "sh", "-c", "zenity --file-selection --multiple --separator='|' | tr '|' '\\n'"
+]
+c.fileselect.folder.command = ["zenity", "--file-selection", "--directory"]
+
 # Cores: geradas por theme-set.sh a partir de themes/<tema>/colors.toml
 config.source("colors.py")
 
