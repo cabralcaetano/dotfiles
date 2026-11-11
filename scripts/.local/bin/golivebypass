@@ -4,5 +4,14 @@ set -eu
 APPIMAGE="$HOME/Applications/GoLiveBypass.AppImage"
 LOG_DIR="$HOME/.local/share/GoLiveBypass/logs"
 
+if [ ! -x "$APPIMAGE" ]; then
+    latest="$(find "$HOME/Applications" -maxdepth 1 -type f -name 'GoLiveBypass-*.AppImage' -executable -printf '%f\n' | sort -V | sed -n '$p')"
+    [ -n "$latest" ] || {
+        printf 'Erro: nenhuma AppImage executável do GoLiveBypass em %s.\n' "$HOME/Applications" >&2
+        exit 1
+    }
+    ln -sfn "$HOME/Applications/$latest" "$APPIMAGE"
+fi
+
 mkdir -p "$LOG_DIR"
 exec "$APPIMAGE" "$@" >>"$LOG_DIR/appimage-stdio.log" 2>&1

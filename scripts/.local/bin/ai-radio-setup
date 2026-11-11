@@ -1,0 +1,26 @@
+#!/bin/sh
+# Autoriza a Web API do Spotify. Claude Code usa a assinatura já autenticada;
+# Kokoro sintetiza a voz localmente, sem chave de API.
+
+set -eu
+
+PROJECT="$HOME/Projects/ai-radio-station"
+
+if [ ! -f "$PROJECT/package.json" ]; then
+    printf 'Erro: projeto ausente em %s\n' "$PROJECT" >&2
+    exit 1
+fi
+if ! command -v claude >/dev/null 2>&1; then
+    printf 'Erro: Claude Code não está instalado.\n' >&2
+    exit 1
+fi
+
+if ! claude auth status >/dev/null 2>&1; then
+    printf 'A sessão do Claude expirou. Abrindo login da assinatura...\n'
+    claude auth login
+fi
+
+
+printf 'Iniciando autorização do Spotify...\n'
+cd "$PROJECT"
+exec bun run src/index.tsx --auth

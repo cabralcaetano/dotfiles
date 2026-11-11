@@ -12,7 +12,7 @@ set -euo pipefail
 
 before=$(hyprctl clients -j | jq -r '.[] | select(.class=="obsidian") | .address')
 
-flatpak run md.obsidian.Obsidian "obsidian://new?vault=obsidian-scratch" &
+obsidian "obsidian://new?vault=obsidian-scratch" &
 disown
 
 for _ in $(seq 1 60); do

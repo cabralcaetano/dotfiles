@@ -1,7 +1,7 @@
 # Theme switching — troca de paleta system-wide
 
 **Status:** implementado e verificado — 5 temas ativos (`normal`, `matte-black`, `tokyo-night`, `kanagawa`, `catppuccin`), aplicados via CLI ou theme-picker.
-**Contexto:** Hyprland + Waybar + SwayNC + Ghostty/Kitty + Fuzzel + Hyprlock + btop + Quickshell + Neovim + tmux, sem instalar Omarchy/HyDE.
+**Contexto:** Hyprland + Waybar + SwayNC + Ghostty/Kitty + Fuzzel + Hyprlock + Quickshell + Neovim + tmux, sem instalar Omarchy/HyDE. btop fica propositalmente fora da troca de paleta.
 
 ## Descrição
 
@@ -12,8 +12,8 @@ standalone — sem Walker/Elephant/CLI de outra distro.
 
 ## Decisões tomadas
 
-- **Schema de cor único (`colors.toml`)**, copiado do formato real do Omarchy: `background`, `surface`, `surface_hover`, `foreground`, `accent`, `error` (paleta de UI) + `term_*` (paleta do terminal, deliberadamente separada da UI — ver "Por que dois foregrounds" abaixo) + `color0`–`color15` (ANSI, Ghostty/btop).
-- **Um arquivo de cor dedicado por app**, não o config inteiro regenerado. Diferença consciente do Omarchy: lá cada app já tem um `.tpl` isolado dentro do *pacote de tema* porque o config real já é modular; aqui os configs reais (`hyprland.lua`, `ghostty config`, `hyprlock.conf`, `waybar/style.css`, `swaync/style.css`, `fuzzel.ini`) misturam cor com bind/layout/transparência etc. — regenerar o arquivo inteiro arriscaria sobrescrever configuração não relacionada a tema. Solução: cada app passou a **importar/incluir** um arquivo pequeno só de cor, gerado pelo `theme-set.sh`:
+- **Schema de cor único (`colors.toml`)**, copiado do formato real do Omarchy: `background`, `surface`, `surface_hover`, `foreground`, `accent`, `error` (paleta de UI) + `term_*` (paleta do terminal, deliberadamente separada da UI — ver "Por que dois foregrounds" abaixo) + `color0`–`color15` (ANSI do terminal).
+- **Um arquivo de cor dedicado por app**, não o config inteiro regenerado. Diferença consciente do Omarchy: lá cada app já tem um `.tpl` isolado dentro do *pacote de tema* porque o config real já é modular; aqui os configs reais (`hyprland.lua`, `ghostty config`, `hyprlock.conf`, `waybar/style.css`, `swaync/style.css`, `fuzzel.ini`) misturam cor com bind/layout/transparência etc. — regenerar o arquivo inteiro arriscaria sobrescrever configuração não relacionada a tema. Solução: cada app passou a **importar/incluir** um arquivo pequeno só de cor, gerado pelo `theme-set.sh`. O btop fica fora do theme-set de propósito: usa o tema builtin `Default` fixo.
 
   | App | Mecanismo | Arquivo gerado |
   |---|---|---|
@@ -23,15 +23,13 @@ standalone — sem Walker/Elephant/CLI de outra distro.
   | Fuzzel | `include=` (fuzzel ≥ 1.10, instalado é 1.14.1) | `fuzzel/.config/fuzzel/colors.ini` |
   | Waybar | `@import` + `@define-color` (GTK CSS) | `waybar/.config/waybar/colors.css` |
   | SwayNC | mesmo mecanismo do Waybar | `swaync/.config/swaync/colors.css` |
-  | btop | sem template — troca `color_theme` entre `"Default"` (builtin) e `"catppuccin-mocha"` (arquivo estático oficial do `catppuccin/btop`, copiado literal) | — |
 
 - **Por que dois "foreground" (`foreground` vs `term_*`)**: no estado real do sistema antes desse trabalho, Waybar/Hyprlock/Fuzzel usavam branco puro (`#ffffff`) mas o Ghostty usava um off-white mais suave (`#deddda`, convenção Adwaita). Forçar os dois a convergir pra um valor só teria mudado a aparência real do terminal — inaceitável, já que o tema "normal" precisa ser **byte-idêntico** ao estado anterior. Schema ficou com dois campos em vez de um.
 - **CSS refatorado pra usar variáveis nomeadas** (`@accent`, `@foreground` etc. via `@define-color`, confirmado que Waybar e SwayNC suportam — ambos GTK3 CSS) em vez de hex literal espalhado pelas regras. Author verificou: `alpha()`/`shade()` do GTK funcionam em cima de `@named-color`, não só hex — usado pra opacidades variáveis (ex: `alpha(@accent, 0.2)`).
 - **`fail_color` do Hyprlock virou campo `error` dedicado**, não reaproveitou `color1` — o hex real (`#ff6464`) não batia com o vermelho da paleta ANSI (`#ed333b`), e forçar igualdade teria mudado a cor de erro do lockscreen.
 - **`outer_color` (borda do campo de senha) precisou de alpha diferente do `check_color`** (mesmo accent, alphas `33` vs `ff`) — motivo de existir `$accent_color` *e* `$accent_faint` no `colors.conf` gerado, em vez de uma variável só.
-- **btop segue sem template genérico** — `theme-set.sh` alterna `color_theme`
-  no `btop.conf`; temas que precisam de mapeamento próprio entram como arquivos
-  estáticos em `btop/.config/btop/themes/*.theme`.
+- **btop fora da troca de tema** — `theme-set.sh` não toca mais em `btop.conf`; o
+  usuário prefere o visual normal do btop, independente da paleta do sistema.
 - **Theme-picker local em Quickshell**: carousel filtrável de previews, inspirado
   no Omarchy. O namespace real da layer do Fuzzel é `launcher`; o bind `Super+R`
   chama `fuzzel-toggle.sh` para ignorar processos zumbis que antes impediam o

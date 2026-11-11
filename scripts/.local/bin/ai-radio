@@ -1,0 +1,22 @@
+#!/bin/sh
+# AI DJ para o Spotifast. Usa a assinatura já autenticada do Claude Code e
+# Kokoro local para voz; código e dependências ficam fora do dotfiles.
+
+set -eu
+
+PROJECT="$HOME/Projects/ai-radio-station"
+
+if [ ! -f "$PROJECT/package.json" ]; then
+    printf 'Erro: projeto ausente em %s\n' "$PROJECT" >&2
+    exit 1
+fi
+
+cd "$PROJECT"
+
+case " ${*:-} " in
+    *" --auth "*|*" --list-devices "*|*" --help "*|*" -h "*)
+        exec bun run src/index.tsx "$@"
+        ;;
+esac
+
+exec bun run src/index.tsx --config show.yaml --device "${AI_RADIO_DEVICE:-arch linux}" "$@"

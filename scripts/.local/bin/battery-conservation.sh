@@ -139,13 +139,29 @@ case "${1:-toggle}" in
     waybar)
         capacity="$(cat /sys/class/power_supply/BAT0/capacity 2>/dev/null || echo "?")"
         battery_status="$(cat /sys/class/power_supply/BAT0/status 2>/dev/null || echo unknown)"
-        case "$(current_mode):$battery_status" in
-            *:Charging)       text="󰂄 ${capacity}%" ;;
-            conservation:*)   text="󰁹 ${capacity}%" ;;
-            full:*)           text="󰁹 ${capacity}%" ;;
-            *)                text="󰂑 ${capacity}%" ;;
+        mode="$(current_mode)"
+        display_capacity="$capacity"
+        raw_capacity=""
+
+        # O firmware do IdeaPad pode encerrar Long_Life entre 79% e 81%,
+        # embora o limite nominal seja 80%. Normaliza só essa faixa de corte,
+        # nunca descarga ou carregamento ativo.
+        if [ "$mode" = "conservation" ] && [ "$battery_status" = "Not charging" ]; then
+            case "$capacity" in
+                79|80|81)
+                    display_capacity="80"
+                    raw_capacity="$capacity"
+                    ;;
+            esac
+        fi
+
+        case "$mode:$battery_status" in
+            *:Charging)       text="󰂄 ${display_capacity}%" ;;
+            conservation:*)   text="󰁹 ${display_capacity}%" ;;
+            full:*)           text="󰁹 ${display_capacity}%" ;;
+            *)                text="󰂑 ${display_capacity}%" ;;
         esac
-        case "$(current_mode)" in
+        case "$mode" in
             conservation) cons_label="Preservação" ;;
             *)             cons_label="100%" ;;
         esac
@@ -159,6 +175,10 @@ case "${1:-toggle}" in
         esac
         tooltip="• ${profile_label}
 • ${cons_label}"
+        if [ -n "$raw_capacity" ]; then
+            tooltip="${tooltip}
+• medido: ${raw_capacity}%"
+        fi
         if [ "$battery_status" = "Discharging" ]; then
             energy_now="$(cat /sys/class/power_supply/BAT0/energy_now 2>/dev/null)"
             power_now="$(cat /sys/class/power_supply/BAT0/power_now 2>/dev/null)"

@@ -2,6 +2,8 @@
 
 **Escopo:** `obsidian/` guarda só as configs (`.obsidian/*.json` + `snippets/`) de referência do vault principal (`~/Projects/wiki-ia`). Não entra no `bootstrap.sh` — é manual, aplicado copiando/stow desses arquivos pro `.obsidian/` do vault.
 
+**Aplicativo:** pacote oficial `obsidian` instalado pelo pacman (`/usr/bin/obsidian`). Preferências globais ficam em `~/.config/obsidian/`; as configurações, plugins e snippets específicos continuam em `.obsidian/` dentro de cada vault.
+
 Plugins em si **não são vendorizados** aqui (ver `.gitignore`: `obsidian/plugins/*`). Todos são de terceiros, reinstaláveis pela loja de community plugins do Obsidian a partir de `obsidian/community-plugins.json`. Histórico: `default-zoom-fixer` chegou a ter o source completo vendorizado por engano (removido em `e095c17`/`8784be0`) — não é plugin próprio, é do [mcavallo](https://github.com/mcavallo).
 
 ## Community plugins (`community-plugins.json`)

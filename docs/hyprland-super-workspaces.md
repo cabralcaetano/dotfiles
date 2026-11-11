@@ -246,17 +246,19 @@ wrappers já executavam o Zen apesar do nome/ícone de Brave, e nenhum banco
 usava profile isolado no dia a dia. Post-mortem com as medições de RAM que
 motivaram a ideia em [`browser-memory-profiles.md`](browser-memory-profiles.md).
 
-Como ficou:
+Como ficou no Hyprland:
 
 | Entrada | Navegador | Slot |
 |---|---|---|
-| Boot | Zen Browser | `super-1-1` |
-| `SUPER+B` | Zen Browser (`~/.local/bin/zen`, chamado direto pelo `hyprland.lua`) | workspace atual |
+| Boot | Zen Browser, **deprecated como principal leve** | `super-1-1` |
+| `SUPER+B` | Zen Browser (`~/.local/bin/zen`, chamado direto pelo `hyprland.lua`), **deprecated até migrar a config** | workspace atual |
 | `xdg-open`/links `http(s)` | Zen Browser (`desktop-apps/.config/mimeapps.list` → `zen.desktop`) | decisão do Zen/Hyprland |
 
-O Brave **continua instalado e em uso**, lançado pelo `.desktop` próprio dele
-(`brave-browser.desktop`) — só não participa mais de nenhum roteamento por
-super workspace nem tem launcher versionado neste repo.
+Ungoogled Chromium é a opção ativa para navegação Chromium enxuta, documentada
+em [`ungoogled-chromium.md`](ungoogled-chromium.md), mas este documento não
+migra atalhos nem apaga configs antigas. O Brave **continua instalado e
+preservado**, lançado pelo `.desktop` próprio dele (`brave-browser.desktop`) —
+deprecated como navegador principal e sem roteamento por super workspace.
 
 ### Atalhos nativos para mover abas
 

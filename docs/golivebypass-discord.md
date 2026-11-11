@@ -23,10 +23,10 @@ Versão instalada:
 | Item | Valor |
 |---|---|
 | Repo | `https://github.com/bezumiya/GoLiveBypass` |
-| Release | `v2.0.4` |
-| AppImage | `~/Applications/GoLiveBypass-2.0.4.AppImage` |
+| Release | `v2.0.13` |
+| AppImage | `~/Applications/GoLiveBypass-2.0.13.AppImage` |
 | Symlink estável | `~/Applications/GoLiveBypass.AppImage` |
-| SHA-256 verificado | `db046ce8cce21445e385203f29b752e7a9aab1dcd350149f0a36bb8e02968c7d` |
+| SHA-256 verificado | `7ad03f01eb5e37eaea35dedc59e32d2a262b847e6d290d5d25997ff71c75f910` |
 | Modo usado | `Arquivo .conf` |
 | Config Proton criada | `golivebypass3` |
 | Servidor Proton | `US-FREE#65` |
@@ -37,7 +37,7 @@ Versão instalada:
 
 | Caminho | Conteúdo | Versionar? |
 |---|---|---|
-| `~/Applications/GoLiveBypass-2.0.4.AppImage` | binário baixado da release | não |
+| `~/Applications/GoLiveBypass-2.0.13.AppImage` | binário baixado da release | não |
 | `~/Applications/GoLiveBypass.AppImage` | symlink estável para a versão atual | não |
 | `~/.local/bin/golivebypass` | wrapper estável do launcher | sim, em `scripts/.local/bin/golivebypass` |
 | `~/.local/share/applications/golivebypass.desktop` | entrada do menu | sim, em `desktop-apps/.local/share/applications/golivebypass.desktop` |
@@ -70,18 +70,18 @@ O estado verificado em 2026-09-06:
 
 ## Instalação da AppImage
 
-Baixar o asset da release `v2.0.4`, dar permissão de execução e criar symlink estável:
+Baixar o asset da release `v2.0.13`, dar permissão de execução e criar symlink estável:
 
 ```bash
 mkdir -p "$HOME/Applications"
 curl -L --fail --show-error \
-  -o "$HOME/Applications/GoLiveBypass-2.0.4.AppImage" \
-  "https://github.com/bezumiya/GoLiveBypass/releases/download/v2.0.4/GoLiveBypass-2.0.4.AppImage"
-chmod +x "$HOME/Applications/GoLiveBypass-2.0.4.AppImage"
-ln -sf "$HOME/Applications/GoLiveBypass-2.0.4.AppImage" "$HOME/Applications/GoLiveBypass.AppImage"
+  -o "$HOME/Applications/GoLiveBypass-2.0.13.AppImage" \
+  "https://github.com/bezumiya/GoLiveBypass/releases/download/v2.0.13/GoLiveBypass-2.0.13.AppImage"
+chmod +x "$HOME/Applications/GoLiveBypass-2.0.13.AppImage"
+ln -sf "$HOME/Applications/GoLiveBypass-2.0.13.AppImage" "$HOME/Applications/GoLiveBypass.AppImage"
 printf '%s  %s\n' \
-  'db046ce8cce21445e385203f29b752e7a9aab1dcd350149f0a36bb8e02968c7d' \
-  "$HOME/Applications/GoLiveBypass-2.0.4.AppImage" | sha256sum -c -
+  '7ad03f01eb5e37eaea35dedc59e32d2a262b847e6d290d5d25997ff71c75f910' \
+  "$HOME/Applications/GoLiveBypass-2.0.13.AppImage" | sha256sum -c -
 ```
 
 Smoke test sem abrir UI:
@@ -108,6 +108,9 @@ O wrapper redireciona stdout/stderr para:
 ```text
 ~/.local/share/GoLiveBypass/logs/appimage-stdio.log
 ```
+
+Após uma atualização automática, o wrapper também repara o symlink estável se ele ficar
+pendente, apontando-o para a AppImage executável de versão mais recente em `~/Applications/`.
 
 Aplicar launcher via Stow:
 

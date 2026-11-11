@@ -5,11 +5,11 @@
 
 ## Descrição
 
-Ajuste de tema para apps GTK3, GTK4/libadwaita e Qt6/Kirigami convivendo no mesmo setup (Hyprland), buscando consistência visual próxima do GNOME (Nautilus como referência), com accent color cinza (`#a0a0a0`, mesmo tom usado no `col.active_border` do Hyprland e no Waybar).
+Ajuste de tema para apps GTK3, GTK4/libadwaita e Qt6/Kirigami convivendo no mesmo setup (Hyprland), buscando consistência visual no tema escuro, com accent color cinza (`#a0a0a0`, mesmo tom usado no `col.active_border` do Hyprland e no Waybar).
 
 ## Decisões tomadas
 
-- **File manager:** trocado `Nemo` (GTK3, Cinnamon) → `Nautilus` (GTK4/libadwaita), pra eliminar divergência de toolkit entre file manager e outros apps GNOME (Overskride, Pavucontrol). `xdg-mime` setado pra `org.gnome.Nautilus.desktop` em `inode/directory`.
+- **File manager (2026-11-09):** Nemo (GTK3, Cinnamon) é o explorador principal por decisão do operador; `Super+E` e os tipos `inode/directory`/`application/x-gnome-saved-search` usam `nemo.desktop`. A janela abre flutuante, centralizada, em `1000×800`. Nautilus permanece instalado, mas sem uso como explorador, pois é dependência de `xdg-desktop-portal-gnome` → GNOME Control Center; removê-lo exigiria remover essa pilha GNOME.
 - **GTK3:** `adw-gtk3-dark` + ícones `Adwaita` — mantido como padrão em vez de `Materia-dark` (testado e revertido) pra bater com libadwaita.
 - **EasyEffects:** upstream (`wwmm/easyeffects`) abandonou GTK4/libadwaita e reescreveu em Qt6/Kirigami a partir da v8.0 — não tem mais build GTK oficial mantido. Fica visualmente "meio Plasma" (Breeze icons, QQC2 controls) sem solução limpa. Tentativa de aproximar via `QT_QUICK_CONTROLS_STYLE=Material` + accent azul GNOME testada e **revertida** (ficou "rosa/estranho").
 - **qt6ct + Kvantum:** instalados. Kvantum continua sem uso. O qt6ct ficou sem config nenhuma até 2026-07-23 ("revertido pro padrão") — decisão revista, ver seção abaixo: sem config o qt6ct não é neutro, ele força tema **claro**.
@@ -41,7 +41,7 @@ Vale para qualquer app Qt6 sem tema próprio, não só o picker. Kvantum ficou d
 
 **Verificação:** `gdbus` abriu um `org.freedesktop.portal.FileChooser.SaveFile` real via `xdg-desktop-portal-gtk`; screenshot com `grim` confirmou o file chooser escuro.
 
-## Resolvido 2026-09-12 — cursor do Obsidian Flatpak mudava de tema
+## Histórico — 2026-09-12: cursor do Obsidian Flatpak mudava de tema
 
 **Sintoma:** dentro do Obsidian o cursor trocava para outro tema, apesar de GTK 3/4 e `gsettings` apontarem para `capitaine-cursors`.
 
@@ -56,6 +56,8 @@ Vale para qualquer app Qt6 sem tema próprio, não só o picker. Kvantum ficou d
 Na máquina atual também existem fallbacks locais em `~/.local/share/icons/default/index.theme` e `~/.icons/default/index.theme` herdando `capitaine-cursors`.
 
 **Verificação:** `luac -p hypr/.config/hypr/hyprland.lua`, `hyprctl reload`, `hyprctl setcursor capitaine-cursors 24`, `flatpak override --user --show md.obsidian.Obsidian` e confirmação visual no Obsidian.
+
+**Estado atual (2026-10-08):** o Obsidian agora usa o pacote nativo `obsidian`; o Flatpak e seu override foram removidos.
 
 ## Problema em aberto — accent color cinza não aplica em libadwaita
 

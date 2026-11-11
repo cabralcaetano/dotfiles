@@ -21,6 +21,38 @@ O pacote AUR substitui a antiga instalação manual em `~/.local/bin`. Manter
 outro binário nesse caminho sombrearia `/usr/bin/spotifast` no shell e faria o
 Hyprland, o launcher e o gerenciador de pacotes usarem versões diferentes.
 
+## AI Radio local
+
+Uma alternativa independente ao Spotify DJ oficial está instalada em
+`~/Projects/ai-radio-station`. O fork de `BetaHuhn/ai-radio-station` controla o
+dispositivo Spotify Connect **Spotifast**, gera locuções pelo Claude Code CLI
+usando a assinatura Anthropic já autenticada e sintetiza voz portuguesa
+localmente com Kokoro ONNX. Não usa Anthropic API, OpenAI API nem serviço pago
+de TTS.
+
+Launchers versionados:
+
+- `~/.local/bin/ai-radio-setup`: renova o login do Claude quando necessário e
+  autoriza a Web API do Spotify;
+- `~/.local/bin/ai-radio`: inicia o show de `show.yaml` no dispositivo
+  Spotify Connect `arch linux` exposto pelo Spotifast; a variável
+  `AI_RADIO_DEVICE` permite sobrescrever o nome;
+- `ai-radio --list-devices`: lista dispositivos Spotify Connect disponíveis.
+
+O launcher reutiliza o Client ID pessoal e a Redirect URI
+`http://127.0.0.1:8989/login`. Tokens ficam em
+`~/.ai-radio/spotify-tokens.json`; `.env`, `show.yaml`, o virtualenv e os pesos
+do Kokoro são locais e ignorados pelo Git.
+
+Essa integração pausa a música durante a locução e a retoma em seguida. Ela
+cria sessões próprias a partir de grupos de playlists; não acessa a seleção,
+voz nem protocolo privado do Spotify DJ. A autenticação Claude e Spotify foi
+concluída. O smoke real carregou 72 faixas, transferiu a reprodução, gerou e
+reproduziu a introdução e iniciou a primeira música. Playlists que não pertencem
+ao usuário nem têm colaboração retornam `403` pela política atual da Web API e
+são ignoradas enquanto o grupo ainda tiver faixas acessíveis.
+
+
 ## Instalação e atualização
 
 Instale a release estável pronta pelo AUR:

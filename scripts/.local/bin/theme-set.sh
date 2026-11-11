@@ -136,6 +136,9 @@ render quickshell-theme.js.tpl "$DOTFILES_DIR/quickshell/.config/quickshell/them
 render quickshell-clock-panel.qml.tpl "$DOTFILES_DIR/quickshell/.config/quickshell/clock-panel/shell.qml"
 render quickshell-theme-picker.qml.tpl "$DOTFILES_DIR/quickshell/.config/quickshell/theme-picker/shell.qml"
 render swaync-style.css.tpl "$DOTFILES_DIR/swaync/.config/swaync/style.css"
+mkdir -p "$DOTFILES_DIR/qutebrowser/.config/qutebrowser"
+render qutebrowser-colors.py.tpl "$DOTFILES_DIR/qutebrowser/.config/qutebrowser/colors.py"
+render firefox-colors.css.tpl "$DOTFILES_DIR/firefox/.config/mozilla/firefox/s6vak7su.default-release/chrome/colors.css"
 
 link_config() {
     local src="$1" dest="$2"
@@ -154,17 +157,8 @@ if [[ -d "$DOTFILES_DIR/icons/.local/share/icons/MatteBlack" ]]; then
     link_config "$DOTFILES_DIR/icons/.local/share/icons/MatteBlack" "$HOME/.local/share/icons/MatteBlack"
     command -v gtk-update-icon-cache >/dev/null && gtk-update-icon-cache -q -f -t "$HOME/.local/share/icons/MatteBlack" >/dev/null 2>&1 || true
 fi
+link_config "$DOTFILES_DIR/qutebrowser/.config/qutebrowser/colors.py" "$HOME/.config/qutebrowser/colors.py"
 
-# btop usa tema estático quando existir em btop/.config/btop/themes/<tema>.theme.
-# Os temas Omarchy portados precisam disso para btop ficar igual ao preview.
-BTOP_THEME="Default"
-if [[ -f "$DOTFILES_DIR/btop/.config/btop/themes/$THEME_NAME.theme" ]]; then
-    BTOP_THEME="$THEME_NAME"
-elif [[ $THEME_NAME == catppuccin ]]; then
-    BTOP_THEME="catppuccin-mocha"
-fi
-sed -i "s/^color_theme = .*/color_theme = \"$BTOP_THEME\"/" \
-    "$DOTFILES_DIR/btop/.config/btop/btop.conf"
 
 # === GTK / Nautilus / Qt ============================================
 # Libadwaita/Nautilus seguem gsettings para dark mode, gtk-theme e icon-theme.
@@ -245,11 +239,16 @@ if pgrep -x ghostty >/dev/null; then
     pkill -SIGUSR2 ghostty 2>/dev/null || true
 fi
 
+# qutebrowser relê as cores via IPC da instância em execução (não inicia outra).
+if pgrep -f '^/usr/bin/python3 /usr/bin/qutebrowser' >/dev/null; then
+    qutebrowser ':config-source' >/dev/null 2>&1 || true
+fi
+
 if command -v tmux >/dev/null && tmux list-sessions >/dev/null 2>&1; then
     tmux source-file "$HOME/.config/tmux/theme.conf" 2>/dev/null || true
     tmux set-environment -g COLORFGBG "$([[ $mode == light ]] && printf '0;15' || printf '15;0')" 2>/dev/null || true
 fi
-pkill -SIGUSR2 btop 2>/dev/null || true
+
 
 # Guarda o tema atual para seletores visuais/atalhos sem acoplar o estado ao
 # formato interno dos arquivos gerados.
