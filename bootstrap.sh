@@ -101,6 +101,7 @@ SYSTEM_INSTALLS=(
   "system/etc/keyd/default.conf|/etc/keyd/default.conf"
   "system/etc/keyd/f75.conf|/etc/keyd/f75.conf"
   "system/etc/nftables.conf|/etc/nftables.conf"
+  "system/etc/pacman.d/hooks/zz-snapper-cleanup.hook|/etc/pacman.d/hooks/zz-snapper-cleanup.hook"
 )
 
 # Hooks do NetworkManager precisam ser executáveis.

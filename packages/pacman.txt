@@ -197,6 +197,8 @@ chromium
 snapper
 grub-btrfs
 btrfs-progs
+# snap-pac: snapshot pre/post a cada transação do pacman; ver docs/snapper-atualizacoes.md
+snap-pac
 
 # --- Backup off-site (ver docs/backup-restic.md) ---
 # Snapshot Btrfs não é backup: a raiz é um btrfs de dois dispositivos com

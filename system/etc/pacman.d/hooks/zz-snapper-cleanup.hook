@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Upgrade
+Operation = Install
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Limpando snapshots antigos do snapper...
+When = PostTransaction
+Exec = /usr/bin/snapper -c root cleanup number

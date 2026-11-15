@@ -112,7 +112,7 @@ O que cada arquivo resolve e como verificar: [`system/README.md`](system/README.
 > | **SDDM Silent theme** | `/etc/sddm.conf.d/`, `/usr/share/sddm/` | aplicar manualmente; ver `sddm/` e o registro em [`docs/history/dotfiles-historico.md`](docs/history/dotfiles-historico.md) |
 > | **Battery conservation helper** | `/usr/local/sbin`, `/etc/systemd/system`, `/etc/sudoers.d` | `~/.local/bin/install-battery-conservation-root.sh` |
 > | **Antigravity desktop entries** | `~/.local/share/applications`, `~/.config/mimeapps.list` | `stow --target="$HOME" desktop-apps` após extrair os apps em `~/.local/opt` |
-> | **Snapshots Btrfs** | snapper + grub-btrfs | ver [`docs/arch-migration.md §1.2`](docs/arch-migration.md) |
+> | **Snapshots Btrfs** | snapper + grub-btrfs + snap-pac | ver [`docs/arch-migration.md §1.2`](docs/arch-migration.md); snapshots automáticos por atualização em [`docs/snapper-atualizacoes.md`](docs/snapper-atualizacoes.md) |
 > | **Windows VM / Incogniton** | libvirt/QEMU, Windows guest | ver [`docs/windows-vm-incogniton.md`](docs/windows-vm-incogniton.md) |
 > | **Network / DNS** | NetworkManager/Tailscale | ver [`docs/network.md`](docs/network.md) |
 > | **NextDNS** | Serviço systemd `nextdns` + conta na nuvem, profile `932497` | ver [`nextdns/nextdns.md`](nextdns/nextdns.md) — `yay -S nextdns-bin && sudo nextdns install -profile 932497 -report-client-info && sudo nextdns activate`, depois replicar config do profile no dashboard |
@@ -187,7 +187,7 @@ firefox/        → userChrome.css/user.js (interface mínima) + tridactylrc; co
 qutebrowser/    → config.py + colors.py (gerado pelo theme-set.sh) + userscripts (anúncios do YouTube, Bitwarden via rbw); navegador secundário; ver docs/qutebrowser-rbw.md
 themes/         → theme-set (troca de paleta system-wide, normal/catppuccin); ver themes/README.md
 claude/         → skills pessoais do Claude Code / harnesses de agente; ver docs/agent-harnesses-and-skills.md
-system/          → configs system-wide manuais em /etc: earlyoom, zram, keyd
+system/          → configs system-wide manuais em /etc: earlyoom, zram, keyd, hook de cleanup do snapper
 ```
 
 ---
@@ -371,6 +371,7 @@ Plugins carregados manualmente de `~/.zsh/`:
 | `top` | `btop` |
 | `y` | `yazi` com `cd` automático ao sair |
 | `copy <cmd>` | Redireciona stdout+stderr para clipboard via `wl-copy` |
+| `system-up` | `yay -Syu && flatpak update -y && flatpak uninstall --unused -y` — atualiza pacman, AUR e Flatpak; o `snap-pac` cria snapshot pre/post e o hook mantém só os 3 mais recentes (ver [`docs/snapper-atualizacoes.md`](docs/snapper-atualizacoes.md)) |
 
 **Integrações**
 
@@ -869,6 +870,7 @@ MIT
 - [[docs/keyboard-keyd|Teclado — keyd, Caps navigation e AULA F75]]
 - [[docs/network|Network — DNS e troubleshooting]]
 - [[docs/printer-hp-deskjet-2774|Impressora — HP DeskJet Ink Advantage 2774]]
+- [[docs/snapper-atualizacoes|Atualizações com snapshot automático — snap-pac + snapper]]
 - [[docs/history/system-setup-fedora|System Setup (Fedora) — ARQUIVADO]]
 - [[docs/theme-switching|Theme switching — troca de paleta system-wide]]
 - [[docs/windows-vm-incogniton|Windows VM — Incogniton / multilogin]]

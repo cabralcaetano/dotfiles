@@ -173,3 +173,4 @@ wdstop() {
   waydroid session stop
   sudo systemctl stop waydroid-container
 }
+alias system-up='yay -Syu && flatpak update -y && flatpak uninstall --unused -y'

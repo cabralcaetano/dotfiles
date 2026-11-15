@@ -24,6 +24,7 @@ esse mesmo bloco como pendência, em vez de aplicá-lo.
 | `etc/NetworkManager/dispatcher.d/50-nextdns-reconnect` | NextDNS | reinicia o proxy DoH após ativação ou renovação IPv4; preserva um serviço deliberadamente parado |
 | `etc/chromium/policies/managed/pwa-install.json` | browser | desativa instalação manual de PWA/web app para ocultar o ícone “instalar app” do Chromium; ver `docs/ungoogled-chromium.md` |
 | `etc/chromium/policies/managed/startup-homepage.json` | browser | `RestoreOnStartup=1` — restaura a sessão real (abas que estavam de fato abertas) em vez de forçar uma lista fixa de URLs |
+| `etc/pacman.d/hooks/zz-snapper-cleanup.hook` | snapper | roda `snapper cleanup number` ao fim de cada transação do pacman, mantendo só os 3 snapshots mais recentes criados pelo `snap-pac`; ver `docs/snapper-atualizacoes.md` |
 
 ## Instalação
 
@@ -41,6 +42,7 @@ sudo install -Dm644 system/etc/nftables.conf                 /etc/nftables.conf
 sudo install -Dm755 system/etc/NetworkManager/dispatcher.d/50-nextdns-reconnect /etc/NetworkManager/dispatcher.d/50-nextdns-reconnect
 sudo install -Dm644 system/etc/chromium/policies/managed/pwa-install.json /etc/chromium/policies/managed/pwa-install.json
 sudo install -Dm644 system/etc/chromium/policies/managed/startup-homepage.json /etc/chromium/policies/managed/startup-homepage.json
+sudo install -Dm644 system/etc/pacman.d/hooks/zz-snapper-cleanup.hook /etc/pacman.d/hooks/zz-snapper-cleanup.hook
 
 sudo sysctl --system
 sudo systemctl restart earlyoom

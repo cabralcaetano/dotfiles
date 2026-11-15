@@ -87,7 +87,7 @@ active
 active
 ```
 
-> **Atualização 2026-10-30 — snapshots só manuais.** O timeline (`TIMELINE_CREATE=no`, `snapper-timeline.timer` desabilitado) foi desligado. Os snapshots `important` ("antes de atualizar tudo") nunca são limpos pelo snapper e, somados ao timeline, chegaram a prender ~104 GiB (apagar arquivos em `@` não liberava espaço). Agora o snapshot é criado à mão antes de atualizar:
+> **Atualização 2026-10-30 — snapshots só manuais.** O timeline (`TIMELINE_CREATE=no`, `snapper-timeline.timer` desabilitado) foi desligado. Os snapshots `important` ("antes de atualizar tudo") nunca são limpos pelo snapper e, somados ao timeline, chegaram a prender ~104 GiB (apagar arquivos em `@` não liberava espaço). Na época o snapshot era criado à mão antes de atualizar:
 >
 > ```bash
 > sudo snapper -c root create -d "antes de atualizar"   # sem -c: nunca é apagado sozinho
@@ -95,6 +95,8 @@ active
 > sudo snapper -c root delete <id>   # apagar os antigos depois de validar o update
 > sudo btrfs subvolume sync /        # espera o espaço voltar
 > ```
+>
+> **Atualização 2026-11-15 — snapshots automáticos nas atualizações.** O fluxo manual acima foi substituído: `snap-pac` cria o par pre/post em cada transação do pacman, um hook de pós-transação roda `snapper cleanup number` com `NUMBER_LIMIT=3`, e o alias `system-up` atualiza pacman, AUR e Flatpak. O timeline segue desligado. O snapshot manual `important` continua valendo para pontos de restauração fora da rotação. Detalhes, instalação e verificação em [`snapper-atualizacoes.md`](snapper-atualizacoes.md).
 
 **Recuperação:** reinicie → menu do GRUB → submenu **"Arch Linux snapshots"** → escolhe o snapshot. Como o layout é flat (sem aninhamento), o rollback aqui tem menos ressalvas que o do Fedora.
 
