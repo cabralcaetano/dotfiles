@@ -34,7 +34,7 @@ local theme_colors = dofile(os.getenv("HOME") .. "/.config/hypr/colors.lua")
 -- === AUTOSTART — SISTEMA E APLICATIVOS ===========
 hl.on("hyprland.start", function()
     hl.exec_cmd("fcitx5 --replace -d")
-    hl.exec_cmd("waybar & qs -c clock-panel --daemonize & awww-daemon & swaync")
+    hl.exec_cmd("~/.local/bin/waybar-run.sh & qs -c clock-panel --daemonize & awww-daemon & swaync")
     hl.exec_cmd("pgrep -x nm-applet >/dev/null || nm-applet --indicator")
     hl.exec_cmd("hypridle")
     hl.exec_cmd("sleep 0.5 && " .. wallpaperRestore)
