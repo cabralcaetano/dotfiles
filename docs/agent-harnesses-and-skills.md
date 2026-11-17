@@ -86,6 +86,42 @@ Comandos relevantes no Horizon:
 
 Payload Horizon usa `camelCase`: `cardId`, `memberUserIds`, `orderIndex`, `isCompleted`.
 
+## Convenção de tasks do OMP
+
+A skill `tasks` instalada em `~/.omp/agent/skills/tasks/` classifica toda task nova pelo tipo de trabalho:
+
+```text
+PREFIX-NN {tipo}: verbo + objeto
+```
+
+Exemplo: `HCRM-42 feat: adicionar filtro por responsável`.
+
+O mesmo prefixo `{tipo}:` abre o título de card ou item de checklist criado no board. Tasks existentes não são renomeadas apenas para migrar a convenção.
+
+| Tipo | Uso |
+|---|---|
+| `feat` | Nova funcionalidade |
+| `fix` / `bug` | Correção de defeito; preservar o tipo já usado no projeto/board |
+| `chore` | Manutenção técnica, dependências ou configuração |
+| `spike` | Investigação ou prova de conceito limitada no tempo |
+| `refactor` | Reorganização interna sem alterar comportamento |
+| `docs` | Documentação |
+| `test` | Criação ou ajuste de testes |
+| `perf` | Melhoria de desempenho |
+| `style` | Formatação ou lint, sem mudança lógica |
+| `build` | Build, empacotamento ou dependências de compilação |
+| `ci` | Pipeline de integração ou entrega contínua |
+| `revert` | Reversão de mudança anterior |
+| `security` | Correção ou melhoria de segurança |
+| `hotfix` | Correção urgente em produção |
+| `research` | Pesquisa ampla; `spike` quando houver experimento limitado |
+| `design` | Design de UX/UI ou arquitetura |
+| `debt` | Dívida técnica |
+| `ops` | Operação, infraestrutura ou observabilidade |
+| `release` | Preparação ou publicação de versão |
+
+Antes de criar, a skill exige tipo, próxima ação concreta, aceite observável, dono/ID, gate destrutivo quando aplicável, verificação de duplicata e destino no board.
+
 ## Como promover ou editar uma skill minha
 
 Checklist de manutenção:
